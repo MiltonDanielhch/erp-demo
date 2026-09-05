@@ -181,10 +181,21 @@
        SCRIPTS DEL NÚCLEO (se cargan ANTES de app.js)
        El orden importa: primero las dependencias, luego app.js
        ══════════════════════════════════════════════════════════ -->
+
+  <!-- 1. Configuración del dominio (sin dependencias) -->
+  <script src="js/config/bolivia.js"></script>
+  <script src="js/config/plan-cuentas.js"></script>
+
+  <!-- 2. Núcleo (utilidades y validadores no dependen de config) -->
   <script src="js/nucleo/utilidades.js"></script>
   <script src="js/nucleo/validadores.js"></script>
   <script src="js/nucleo/almacenamiento.js"></script>
   <script src="js/nucleo/enrutador.js"></script>
+
+  <!-- 3. Capas (pueden usar config y núcleo) -->
+  <script src="js/capas/capa3-motor.js"></script>
+
+  <!-- 4. Punto de entrada (último) -->
   <script src="js/app.js"></script>
 </body>
 </html>

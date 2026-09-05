@@ -52,29 +52,49 @@ const RUTAS_ERP = {
 function iniciarERP() {
   console.log('═══════════════════════════════════════════════════════');
   console.log('🇧🇴 ERP Contable Bolivia — Iniciando...');
-  console.log('Versión: 0.4.0 (Módulo 0: Fase 0.4)');
+  console.log('Versión: 0.5.0 (Módulo 0: Fase 0.5)');
   console.log('Stack: Vanilla JS + LocalStorage');
   console.log('Normativa: NC del CTNAC, Ley 843, LGT');
   console.log('═══════════════════════════════════════════════════════');
 
-  // 1. Instanciar el Almacenamiento
+  // 1. Verificar que BOLIVIA esté cargado
+  if (typeof BOLIVIA === 'undefined') {
+    console.error('❌ BOLIVIA no está cargado. Verifica js/config/bolivia.js');
+    return;
+  }
+
+  // 2. Verificar que PLAN_CUENTAS esté cargado
+  if (typeof PLAN_CUENTAS === 'undefined') {
+    console.error('❌ PLAN_CUENTAS no está cargado. Verifica js/config/plan-cuentas.js');
+    return;
+  }
+
+  // 3. Instanciar el Almacenamiento
   const almacenamiento = new AlmacenamientoLocal('erp_bolivia');
   console.log('💾 Almacenamiento inicializado (localStorage).');
 
-  // 2. Configurar el Enrutador
+  // 4. Instanciar el Motor Contable (stub, se completa en Módulo 3)
+  const motorContable = new MotorContable();
+  console.log('⚙️  Motor Contable inicializado (stub — Módulo 3).');
+
+  // 5. Configurar el Enrutador
   const enrutador = new Enrutador({
     rutas: RUTAS_ERP,
     contenedorId: 'contenido',
     vistaPorDefecto: 'dashboard'
   });
 
-  // 3. Exponer módulos al objeto window (para acceso desde las vistas)
+  // 6. Exponer módulos al objeto window (para acceso desde las vistas)
   window.ERP = {
     enrutador,
     almacenamiento,
+    motorContable,
     utilidades: Utilidades,
     validadores: Validadores,
-    version: '0.4.0',
+    bolivia: BOLIVIA,
+    planCuentas: PLAN_CUENTAS,
+    planCuentasUtilidades: PlanCuentasUtilidades,
+    version: '0.5.0',
     normativa: 'NC del CTNAC, Ley 843, LGT'
   };
 
@@ -82,18 +102,25 @@ function iniciarERP() {
   window.utilidades = Utilidades;
   window.validadores = Validadores;
   window.almacenamiento = almacenamiento;
+  window.motorContable = motorContable;
+  window.BOLIVIA = BOLIVIA;
+  window.PLAN_CUENTAS = PLAN_CUENTAS;
+  window.PlanCuentasUtilidades = PlanCuentasUtilidades;
 
-  // 4. Iniciar el enrutador (carga la vista inicial)
+  // 7. Iniciar el enrutador (carga la vista inicial)
   enrutador.iniciar();
 
-  // 5. Log de estado
+  // 8. Log de estado y comandos disponibles
   console.log('✅ Sistema iniciado correctamente.');
   console.log('');
   console.log('📝 Comandos disponibles en la consola:');
-  console.log('   window.utilidades.formatearBs(1234.5)');
-  console.log('   window.validadores.validarNIT("123456789-1")');
-  console.log('   window.almacenamiento.obtener("clientes")');
-  console.log('   window.ERP.enrutador.navegarA("compras")');
+  console.log('   window.BOLIVIA.IVA_PORCENTAJE');
+  console.log('   window.BOLIVIA.SMN_VIGENTE');
+  console.log('   window.BOLIVIA.calcularFechaVencimiento("123456789-1", "2026-09")');
+  console.log('   window.BOLIVIA.obtenerPorcentajeBonoAntiguedad(6)');
+  console.log('   window.PlanCuentasUtilidades.obtenerCuenta("1.1.01")');
+  console.log('   window.PlanCuentasUtilidades.obtenerTodasLasCuentas()');
+  console.log('   window.PlanCuentasUtilidades.obtenerCuentasPorNaturaleza("deudora")');
   console.log('');
 }
 
