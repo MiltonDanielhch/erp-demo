@@ -216,27 +216,27 @@ Define la **identidad visual** del ERP. Usamos CSS puro (no Tailwind, no Bootstr
 ## Tareas de la Fase 0.3
 
 ```text
-[ ] Crear css/estilos.css
+[x] Crear css/estilos.css
     → Reset CSS básico (box-sizing: border-box, margin: 0).
     → Variables CSS (:root) con la paleta de colores arriba.
     → Tipografía: system-ui (fuente del sistema, sin descargas).
     → Layout base del dashboard (aside fijo + main fluido).
 
-[ ] Crear css/componentes.css
+[x] Crear css/componentes.css
     → Botones (.btn, .btn-primary, .btn-danger).
     → Tarjetas (.card) para los indicadores.
     → Tablas (.tabla) para listas de facturas/asientos.
     → Formularios (.form-group, .form-input, .form-label).
 
-[ ] Crear css/dashboard.css
+[x] Crear css/dashboard.css
     → Grid de 4 columnas para las tarjetas del dashboard.
     → Estilos específicos del menú lateral.
 
-[ ] Crear css/reportes.css
+[x] Crear css/reportes.css
     → Estilos para impresión de estados financieros.
     → @media print para ocultar el menú lateral al imprimir.
 
-[ ] Verificar visualmente
+[x] Verificar visualmente
     → Abrir index.html y confirmar que el menú lateral se ve bien.
     → Probar en ancho de ventana reducido (responsive básico).
     → 🧠 Mini-Prompt para IA: "Genera un CSS minimalista para un 
@@ -262,7 +262,7 @@ Construye los **cimientos de todo el sistema**. Son 4 archivos que TODOS los mó
 ## Tareas de la Fase 0.4
 
 ```text
-[ ] Crear js/nucleo/enrutador.js
+[x] Crear js/nucleo/enrutador.js
     → Función navegarA(vista): carga vistas/{vista}.html en #contenido
     → Función iniciarRouter(): escucha clicks en el menú lateral
     → Usar fetch() para cargar las vistas (o import dinámico).
@@ -271,7 +271,7 @@ Construye los **cimientos de todo el sistema**. Son 4 archivos que TODOS los mó
       /vistas/ usando fetch() y los inserte en un div #contenido. Debe 
       manejar el evento popstate para el botón atrás del navegador."
 
-[ ] Crear js/nucleo/almacenamiento.js
+[x] Crear js/nucleo/almacenamiento.js
     → Función guardar(coleccion, datos): guarda en localStorage
     → Funcion obtener(coleccion): lee de localStorage
     → Funcion eliminar(coleccion, id): borra un registro
@@ -282,7 +282,7 @@ Construye los **cimientos de todo el sistema**. Son 4 archivos que TODOS los mó
       obtenerPorId(coleccion, id), eliminar(coleccion, id). 
       Maneja errores de JSON inválido."
 
-[ ] Crear js/nucleo/utilidades.js
+[x] Crear js/nucleo/utilidades.js
     → formatearBs(monto): "Bs 1.234,56" (formato boliviano)
     → formatearFecha(fecha): "15/09/2026" (DD/MM/AAAA)
     → formatearNIT(nit): "123456789-1" (con guión)
@@ -293,7 +293,7 @@ Construye los **cimientos de todo el sistema**. Son 4 archivos que TODOS los mó
       función calcularIVA(montoBruto) que divida entre 1.13 para 
       extraer el neto (método 'IVA por dentro' vigente en Bolivia)."
 
-[ ] Crear js/nucleo/validadores.js
+[x] Crear js/nucleo/validadores.js
     → validarNIT(nit): algoritmo oficial del SIN (módulo 11)
     → validarCUF(cuf): estructura de 43 caracteres
     → validarMonto(monto): positivo, máximo 2 decimales
@@ -305,13 +305,13 @@ Construye los **cimientos de todo el sistema**. Son 4 archivos que TODOS los mó
       con módulo 11 (pesos del 2 al 9 cíclicos). Incluye validación 
       básica de CUF (Código Único de Factura del SIN)."
 
-[ ] Crear js/app.js (punto de entrada)
+[x] Crear js/app.js (punto de entrada)
     → Importar los 4 módulos del núcleo
     → Llamar a iniciarRouter()
     → Cargar dashboard.html por defecto
     → Exponer funciones globales al objeto window (para las vistas)
 
-[ ] Verificar funcionamiento básico
+[x] Verificar funcionamiento básico
     → Navegar entre vistas del menú lateral sin recargar.
     → Abrir consola y ejecutar: window.utilidades.formatearBs(1234.5)
     → Debe devolver: "Bs 1.234,50"

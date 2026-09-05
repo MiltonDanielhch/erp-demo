@@ -178,8 +178,13 @@
   </footer>
 
   <!-- ══════════════════════════════════════════════════════════
-       SCRIPTS
+       SCRIPTS DEL NÚCLEO (se cargan ANTES de app.js)
+       El orden importa: primero las dependencias, luego app.js
        ══════════════════════════════════════════════════════════ -->
+  <script src="js/nucleo/utilidades.js"></script>
+  <script src="js/nucleo/validadores.js"></script>
+  <script src="js/nucleo/almacenamiento.js"></script>
+  <script src="js/nucleo/enrutador.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
