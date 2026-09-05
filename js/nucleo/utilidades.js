@@ -67,49 +67,123 @@ const Utilidades = {
   // FORMATO DE FECHAS
   // ──────────────────────────────────────────────────────────────
 
-  /**
+   /**
    * Formatea una fecha como DD/MM/AAAA.
    * Ejemplo: "2026-09-15" → "15/09/2026"
+   *
+   * ⚠️ IMPORTANTE: Parsea manualmente para evitar problemas de zona
+   * horaria. Si hacemos new Date("2026-09-15"), JS interpreta UTC,
+   * y en Bolivia (UTC-4) el día sería 14 en lugar de 15.
+   *
    * @param {string|Date} fecha - La fecha a formatear
    * @returns {string} Fecha formateada
    */
   formatearFecha(fecha) {
     if (!fecha) return '--/--/----';
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return '--/--/----';
-    const dia = String(d.getDate()).padStart(2, '0');
-    const mes = String(d.getMonth() + 1).padStart(2, '0');
-    const anio = d.getFullYear();
-    return `${dia}/${mes}/${anio}`;
+
+    let anio, mes, dia;
+
+    if (typeof fecha === 'string') {
+      // Formato ISO: "2026-09-15" o "2026-09-15T10:30:00"
+      // Tomamos solo la parte de la fecha (primeros 10 caracteres)
+      const soloFecha = fecha.slice(0, 10);
+      const partes = soloFecha.split('-');
+      if (partes.length !== 3) return '--/--/----';
+      anio = parseInt(partes[0], 10);
+      mes = parseInt(partes[1], 10);
+      dia = parseInt(partes[2], 10);
+    } else if (fecha instanceof Date) {
+      if (isNaN(fecha.getTime())) return '--/--/----';
+      anio = fecha.getFullYear();
+      mes = fecha.getMonth() + 1;
+      dia = fecha.getDate();
+    } else {
+      return '--/--/----';
+    }
+
+    if (isNaN(anio) || isNaN(mes) || isNaN(dia)) return '--/--/----';
+
+    const diaStr = String(dia).padStart(2, '0');
+    const mesStr = String(mes).padStart(2, '0');
+    return `${diaStr}/${mesStr}/${anio}`;
   },
 
   /**
    * Formatea una fecha como "Mes AAAA" (para períodos).
    * Ejemplo: "2026-09-15" → "Sep 2026"
+   *
+   * ⚠️ Parseo manual para evitar problemas de zona horaria.
+   *
    * @param {string|Date} fecha - La fecha
    * @returns {string} Período formateado
    */
   formatearPeriodo(fecha) {
     if (!fecha) return '--- ----';
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return '--- ----';
     const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
                    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    return `${meses[d.getMonth()]} ${d.getFullYear()}`;
+
+    let anio, mes;
+
+    if (typeof fecha === 'string') {
+      const soloFecha = fecha.slice(0, 10);
+      const partes = soloFecha.split('-');
+      if (partes.length !== 3) return '--- ----';
+      anio = parseInt(partes[0], 10);
+      mes = parseInt(partes[1], 10);
+    } else if (fecha instanceof Date) {
+      if (isNaN(fecha.getTime())) return '--- ----';
+      anio = fecha.getFullYear();
+      mes = fecha.getMonth() + 1;
+    } else {
+      return '--- ----';
+    }
+
+    if (isNaN(anio) || isNaN(mes) || mes < 1 || mes > 12) return '--- ----';
+
+    return `${meses[mes - 1]} ${anio}`;
   },
 
   /**
    * Obtiene el período contable de una fecha.
    * Ejemplo: "2026-09-15" → "2026-09"
+   *
+   * ⚠️ Parseo manual para evitar problemas de zona horaria.
+   * Si usáramos new Date(), el 01/09 en Bolivia podría convertirse
+   * al 31/08, y el período sería "2026-08" en lugar de "2026-09".
+   * CRÍTICO para asignar transacciones al período contable correcto.
+   *
    * @param {string|Date} fecha - La fecha
-   * @returns {string} Período en formato AAAA-MM
+   * @returns {string|null} Período en formato AAAA-MM, o null si inválido
    */
   obtenerPeriodoContable(fecha) {
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return null;
-    const anio = d.getFullYear();
-    const mes = String(d.getMonth() + 1).padStart(2, '0');
-    return `${anio}-${mes}`;
+    let anio, mes;
+
+    if (typeof fecha === 'string') {
+      // Formato ISO: "2026-09-15" o "2026-09-15T10:30:00"
+      // Tomamos solo la parte de la fecha (primeros 10 caracteres)
+      const soloFecha = fecha.slice(0, 10);
+      const partes = soloFecha.split('-');
+      if (partes.length !== 3) return null;
+
+      anio = parseInt(partes[0], 10);
+      mes = parseInt(partes[1], 10);  // Mes ya viene como 1-12
+
+    } else if (fecha instanceof Date) {
+      if (isNaN(fecha.getTime())) return null;
+      anio = fecha.getFullYear();
+      mes = fecha.getMonth() + 1;  // getMonth() devuelve 0-11, sumamos 1
+
+    } else {
+      return null;
+    }
+
+    // Validar rangos
+    if (isNaN(anio) || isNaN(mes)) return null;
+    if (mes < 1 || mes > 12) return null;
+    if (anio < 1900 || anio > 2100) return null;
+
+    const mesStr = String(mes).padStart(2, '0');
+    return `${anio}-${mesStr}`;
   },
 
   /**
