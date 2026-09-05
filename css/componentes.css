@@ -1,0 +1,340 @@
+/* ══════════════════════════════════════════════════════════════
+   componentes.css — ERP Contable Bolivia
+   Componentes reutilizables: botones, tarjetas, tablas, badges
+   ══════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────
+   BOTONES
+   ────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-sm) var(--espacio-lg);
+  border: none;
+  border-radius: var(--radio-borde);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-media);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background-color: var(--color-primario);
+  color: var(--blanco);
+}
+
+.btn-primary:hover {
+  background-color: #B91C1C;
+}
+
+.btn-secondary {
+  background-color: var(--color-secundario);
+  color: var(--blanco);
+}
+
+.btn-secondary:hover {
+  background-color: #005A26;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--gris-medio);
+  color: var(--gris-oscuro);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.btn-sm {
+  padding: var(--espacio-xs) var(--espacio-md);
+  font-size: 0.8rem;
+}
+
+.btn-lg {
+  padding: var(--espacio-md) var(--espacio-xl);
+  font-size: 1rem;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TARJETAS (Cards)
+   ────────────────────────────────────────────────────────────── */
+.card {
+  background-color: var(--blanco);
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra-suave);
+  padding: var(--espacio-lg);
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--sombra-media);
+}
+
+.card-titulo {
+  font-size: 0.85rem;
+  color: var(--gris-medio);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--espacio-sm);
+}
+
+.card-valor {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gris-oscuro);
+}
+
+.card-variacion {
+  font-size: 0.8rem;
+  margin-top: var(--espacio-xs);
+}
+
+.card-variacion.positiva {
+  color: var(--color-exito);
+}
+
+.card-variacion.negativa {
+  color: var(--color-error);
+}
+
+/* Grid de tarjetas */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-lg);
+  margin-bottom: var(--espacio-xl);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TABLAS
+   ────────────────────────────────────────────────────────────── */
+.tabla-contenedor {
+  background-color: var(--blanco);
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra-suave);
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabla thead {
+  background-color: var(--gris-claro);
+}
+
+.tabla th {
+  padding: var(--espacio-md);
+  text-align: left;
+  font-weight: 600;
+  color: var(--gris-medio);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--gris-claro);
+}
+
+.tabla td {
+  padding: var(--espacio-md);
+  border-bottom: 1px solid var(--gris-claro);
+  color: var(--gris-oscuro);
+}
+
+.tabla tbody tr:hover {
+  background-color: #F9FAFB;
+}
+
+.tabla .monto {
+  text-align: right;
+  font-family: var(--fuente-mono);
+  font-size: 0.85rem;
+}
+
+.tabla .monto.positivo {
+  color: var(--color-exito);
+}
+
+.tabla .monto.negativo {
+  color: var(--color-error);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   BADGES (Etiquetas de estado)
+   ────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espacio-xs) var(--espacio-sm);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-pendiente {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.badge-validado {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.badge-rechazado {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.badge-procesado {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   FORMULARIOS
+   ────────────────────────────────────────────────────────────── */
+.form-group {
+  margin-bottom: var(--espacio-lg);
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gris-oscuro);
+  margin-bottom: var(--espacio-xs);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--espacio-sm) var(--espacio-md);
+  border: 1px solid #D1D5DB;
+  border-radius: var(--radio-borde);
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(213, 43, 30, 0.1);
+}
+
+.form-select {
+  width: 100%;
+  padding: var(--espacio-sm) var(--espacio-md);
+  border: 1px solid #D1D5DB;
+  border-radius: var(--radio-borde);
+  font-size: 0.9rem;
+  background-color: var(--blanco);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TABS (Pestañas)
+   ────────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gris-claro);
+  margin-bottom: var(--espacio-lg);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: var(--espacio-sm) var(--espacio-lg);
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--gris-medio);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: var(--gris-oscuro);
+}
+
+.tab.activo {
+  color: var(--color-primario);
+  border-bottom-color: var(--color-primario);
+  font-weight: 600;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ALERTAS / TOASTS
+   ────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: var(--espacio-xl);
+  right: var(--espacio-xl);
+  padding: var(--espacio-md) var(--espacio-lg);
+  border-radius: var(--radio-borde);
+  color: var(--blanco);
+  font-size: 0.9rem;
+  box-shadow: var(--sombra-media);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+.toast-exito {
+  background-color: var(--color-exito);
+}
+
+.toast-error {
+  background-color: var(--color-error);
+}
+
+.toast-alerta {
+  background-color: var(--color-alerta);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SEMÁFORO
+   ────────────────────────────────────────────────────────────── */
+.semaforo {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.semaforo-verde {
+  background-color: var(--color-exito);
+}
+
+.semaforo-amarillo {
+  background-color: var(--color-alerta);
+}
+
+.semaforo-rojo {
+  background-color: var(--color-error);
+}

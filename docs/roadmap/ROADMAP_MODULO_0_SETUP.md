@@ -101,22 +101,22 @@ erp-contable-bo/               ← Raíz del proyecto
 ## Tareas de la Fase 0.1
 
 ```text
-[ ] Crear el directorio raíz e inicializar Git
+[x] Crear el directorio raíz e inicializar Git
     → mkdir erp-contable-bo && cd erp-contable-bo
     → git init && git branch -M main
 
-[ ] Crear el árbol de directorios completo
+[x] Crear el árbol de directorios completo
     → Crear TODAS las carpetas listadas arriba.
     → Dentro de cada carpeta vacía, crear un archivo .gitkeep 
       para que Git las rastree (Git ignora carpetas vacías).
 
-[ ] Crear el archivo .editorconfig en la raíz
+[x] Crear el archivo .editorconfig en la raíz
     → Reglas: 2 espacios para JS/HTML/CSS/JSON. UTF-8, LF (saltos de línea Unix).
     → 🧠 Mini-Prompt para IA: "Genera un .editorconfig para un proyecto 
       educativo en HTML/CSS/JS vanilla, con 2 espacios de indentación, 
       UTF-8 y saltos de línea LF. Debe ser compatible con VS Code."
 
-[ ] Crear el .gitignore unificado
+[x] Crear el .gitignore unificado
     → Excluir: node_modules/ (si luego agregas Vite), dist/, .env, 
       *.db, *.sqlite, coverage/, .DS_Store, Thumbs.db, *.log
     → 🧠 Mini-Prompt para IA: "Genera un .gitignore robusto para un 
@@ -124,7 +124,7 @@ erp-contable-bo/               ← Raíz del proyecto
       Vite más adelante. Excluir archivos de sistema operativo (.DS_Store, 
       Thumbs.db), archivos de entorno (.env), y archivos de build."
 
-[ ] Crear el primer Architecture Decision Record (ADR)
+[x] Crear el primer Architecture Decision Record (ADR)
     → docs/adr/ADR-001-stack-vanilla-sin-backend.md
     → Contexto: Necesitamos construir un ERP educativo rápido para 
       portafolio/exposición, priorizando comprensión del dominio 
@@ -138,7 +138,7 @@ erp-contable-bo/               ← Raíz del proyecto
       prototipo educativo), Excel (sin trazabilidad), frameworks PHP
       (curva de aprendizaje alta).
 
-[ ] Crear el segundo ADR sobre Normativa Contable Boliviana
+[x] Crear el segundo ADR sobre Normativa Contable Boliviana
     → docs/adr/ADR-002-normas-contables-bolivianas.md
     → Contexto: Bolivia tiene su propio cuerpo normativo (NC del CTNAC)
       que difiere de las NIIF internacionales en aspectos clave.
@@ -148,7 +148,7 @@ erp-contable-bo/               ← Raíz del proyecto
     → Consecuencia: Los estados financieros generados cumplen con lo 
       que exige el SIN y el CAUB, no con estándares internacionales.
 
-[ ] Realizar el primer commit
+[x] Realizar el primer commit
     → git add . && git commit -m "chore: setup inicial del monorepo ERP Contable Bolivia"
 ```
 
@@ -173,22 +173,22 @@ index.html
 ## Tareas de la Fase 0.2
 
 ```text
-[ ] Crear el index.html base
+[x] Crear el index.html base
     → Estructura HTML5 semántica: <header>, <aside>, <main>, <footer>.
     → Menú lateral con enlaces a cada módulo (aún sin funcionalidad).
     → Título: "ERP Contable Bolivia — Prototipo Educativo"
 
-[ ] Crear el archivo vistas/dashboard.html
+[x] Crear el archivo vistas/dashboard.html
     → Contenido inicial: "Bienvenido al ERP Contable Bolivia"
     → 4 tarjetas vacías (pronto mostrarán: Ventas del mes, IVA por pagar,
       Utilidad neta, Empleados activos).
 
-[ ] Crear plantillas vacías para las otras 7 vistas
+[x] Crear plantillas vacías para las otras 7 vistas
     → vistas/compras.html, ventas.html, inventario.html, nomina.html,
       impuestos.html, estados-financieros.html, cumplimiento.html
     → Cada una con un <h1> y un <div id="contenido-modulo"> vacío.
 
-[ ] Verificar que el HTML carga sin errores
+[x] Verificar que el HTML carga sin errores
     → Abrir index.html en el navegador (doble clic o Live Server).
     → Consola del navegador (F12) debe estar limpia.
     → 🧠 Mini-Prompt para IA: "Explica cómo abrir un archivo HTML local 

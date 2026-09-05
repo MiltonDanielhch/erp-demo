@@ -3,33 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ERP Contable adaptado a la legislación boliviana - Prototipo Educativo">
   <title>ERP Contable Bolivia — Prototipo Educativo</title>
   <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
+
+  <!-- ══════════════════════════════════════════════════════════
+       HEADER: Barra superior con info del sistema
+       ══════════════════════════════════════════════════════════ -->
+  <header id="header-principal">
+    <div class="header-izquierda">
+      <span class="bandera">🇧🇴</span>
+      <h1>ERP Contable Bolivia</h1>
+      <span class="badge-version">Prototipo Educativo v0.2</span>
+    </div>
+    <div class="header-derecha">
+      <span id="empresa-actual" class="empresa-selector">Comercial Los Andes SRL</span>
+      <span id="periodo-actual" class="periodo-badge">Sep 2026</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       LAYOUT PRINCIPAL: Menú lateral + Contenido
+       ══════════════════════════════════════════════════════════ -->
   <div id="app">
+
+    <!-- ────────────────────────────────────────────────────────
+         ASIDE: Menú lateral de navegación
+         ──────────────────────────────────────────────────────── -->
     <aside id="menu-lateral">
-      <h1>🇧🇴 ERP Bolivia</h1>
-      <nav>
-        <ul>
-          <li><a href="#/dashboard" class="activo">📊 Dashboard</a></li>
-          <li><a href="#/documentos">📄 Documentos</a></li>
-          <li><a href="#/compras">🛒 Compras</a></li>
-          <li><a href="#/ventas">💰 Ventas</a></li>
-          <li><a href="#/inventario">📦 Inventario</a></li>
-          <li><a href="#/nomina">👥 Nómina</a></li>
-          <li><a href="#/impuestos">🧾 Impuestos</a></li>
-          <li><a href="#/estados">📈 Estados Financieros</a></li>
-          <li><a href="#/cumplimiento">✅ Cumplimiento</a></li>
-        </ul>
+      <nav aria-label="Navegación principal">
+
+        <!-- Sección: Principal -->
+        <div class="menu-seccion">
+          <span class="menu-titulo">PRINCIPAL</span>
+          <ul>
+            <li>
+              <a href="#/dashboard" class="menu-link activo" data-vista="dashboard">
+                <span class="menu-icono">📊</span>
+                <span class="menu-texto">Dashboard</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección: Capa 1 - Documentos -->
+        <div class="menu-seccion">
+          <span class="menu-titulo">CAPA 1: DOCUMENTOS</span>
+          <ul>
+            <li>
+              <a href="#/documentos" class="menu-link" data-vista="documentos">
+                <span class="menu-icono">📄</span>
+                <span class="menu-texto">Documentos Fuente</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección: Capa 2 - Módulos Operativos -->
+        <div class="menu-seccion">
+          <span class="menu-titulo">CAPA 2: MÓDULOS</span>
+          <ul>
+            <li>
+              <a href="#/compras" class="menu-link" data-vista="compras">
+                <span class="menu-icono">🛒</span>
+                <span class="menu-texto">Compras</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/ventas" class="menu-link" data-vista="ventas">
+                <span class="menu-icono">💰</span>
+                <span class="menu-texto">Ventas</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/inventario" class="menu-link" data-vista="inventario">
+                <span class="menu-icono">📦</span>
+                <span class="menu-texto">Inventario</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/nomina" class="menu-link" data-vista="nomina">
+                <span class="menu-icono">👥</span>
+                <span class="menu-texto">Nómina</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/impuestos" class="menu-link" data-vista="impuestos">
+                <span class="menu-icono">🧾</span>
+                <span class="menu-texto">Impuestos</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección: Capa 3 - Motor Contable -->
+        <div class="menu-seccion">
+          <span class="menu-titulo">CAPA 3: CONTABILIDAD</span>
+          <ul>
+            <li>
+              <a href="#/libro-diario" class="menu-link" data-vista="libro-diario">
+                <span class="menu-icono">📖</span>
+                <span class="menu-texto">Libro Diario</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/libro-mayor" class="menu-link" data-vista="libro-mayor">
+                <span class="menu-icono">📒</span>
+                <span class="menu-texto">Libro Mayor</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/balanza" class="menu-link" data-vista="balanza">
+                <span class="menu-icono">⚖️</span>
+                <span class="menu-texto">Balanza</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección: Capa 4 - Estados Financieros -->
+        <div class="menu-seccion">
+          <span class="menu-titulo">CAPA 4: ESTADOS</span>
+          <ul>
+            <li>
+              <a href="#/estados-financieros" class="menu-link" data-vista="estados-financieros">
+                <span class="menu-icono">📈</span>
+                <span class="menu-texto">Estados Financieros</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sección: Capa 5 - Cumplimiento -->
+        <div class="menu-seccion">
+          <span class="menu-titulo">CAPA 5: CUMPLIMIENTO</span>
+          <ul>
+            <li>
+              <a href="#/cumplimiento" class="menu-link" data-vista="cumplimiento">
+                <span class="menu-icono">✅</span>
+                <span class="menu-texto">Cumplimiento SIN</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
       </nav>
     </aside>
-    <main id="contenido">
-      <h2>Bienvenido al ERP Contable Bolivia</h2>
-      <p>Prototipo educativo — Módulo 0: Setup completado.</p>
-      <p>Selecciona un módulo en el menú lateral para comenzar.</p>
+
+    <!-- ────────────────────────────────────────────────────────
+         MAIN: Área de contenido dinámico
+         Aquí se cargan las vistas sin recargar la página
+         ──────────────────────────────────────────────────────── -->
+    <main id="contenido" role="main">
+      <!-- El contenido se carga dinámicamente desde js/app.js -->
+      <div class="cargando">
+        <p>Cargando...</p>
+      </div>
     </main>
+
   </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FOOTER: Información del sistema
+       ══════════════════════════════════════════════════════════ -->
+  <footer id="footer-principal">
+    <span>ERP Contable Bolivia — Prototipo Educativo</span>
+    <span>Normativa: Ley 843 · NC del CTNAC · LGT</span>
+    <span id="footer-estado">✅ Sistema operativo</span>
+  </footer>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════════════════════════ -->
   <script src="js/app.js"></script>
 </body>
 </html>

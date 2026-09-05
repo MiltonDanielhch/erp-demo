@@ -1,0 +1,82 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Dashboard Principal
+     Capa: Todas (resumen general)
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">Dashboard</h2>
+<p class="contenido-subtitulo">Resumen general de la empresa — Comercial Los Andes SRL</p>
+
+<!-- Tarjetas de indicadores principales -->
+<div class="dashboard-grid">
+
+  <div class="dashboard-card card-ventas">
+    <div class="card-icono">💰</div>
+    <div class="card-titulo">Ventas del Mes</div>
+    <div class="card-valor" id="dashboard-ventas">Bs 0.00</div>
+    <div class="card-detalle">Septiembre 2026</div>
+  </div>
+
+  <div class="dashboard-card card-iva">
+    <div class="card-icono">🧾</div>
+    <div class="card-titulo">IVA por Pagar</div>
+    <div class="card-valor" id="dashboard-iva">Bs 0.00</div>
+    <div class="card-detalle">Form. 200 — Vence: 10/10/2026</div>
+  </div>
+
+  <div class="dashboard-card card-utilidad">
+    <div class="card-icono">📈</div>
+    <div class="card-titulo">Utilidad Neta</div>
+    <div class="card-valor" id="dashboard-utilidad">Bs 0.00</div>
+    <div class="card-detalle">Acumulado del año</div>
+  </div>
+
+  <div class="dashboard-card card-empleados">
+    <div class="card-icono">👥</div>
+    <div class="card-titulo">Empleados Activos</div>
+    <div class="card-valor" id="dashboard-empleados">0</div>
+    <div class="card-detalle">Nómina mensual: Bs 0.00</div>
+  </div>
+
+</div>
+
+<!-- Sección: Próximos vencimientos -->
+<div class="card" style="margin-bottom: var(--espacio-xl);">
+  <h3 style="margin-bottom: var(--espacio-md); font-size: 1rem;">📅 Próximos Vencimientos</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Formulario</th>
+          <th>Período</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="dashboard-vencimientos">
+        <tr>
+          <td>Form. 200 (IVA)</td>
+          <td>Sep 2026</td>
+          <td>10/10/2026</td>
+          <td><span class="badge badge-pendiente">Pendiente</span></td>
+        </tr>
+        <tr>
+          <td>Form. 400 (IT)</td>
+          <td>Sep 2026</td>
+          <td>10/10/2026</td>
+          <td><span class="badge badge-pendiente">Pendiente</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Sección: Acciones rápidas -->
+<div class="card">
+  <h3 style="margin-bottom: var(--espacio-md); font-size: 1rem;">⚡ Acciones Rápidas</h3>
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap;">
+    <button class="btn btn-primary" onclick="alert('Módulo 2: Compras — próximamente')">🛒 Nueva Compra</button>
+    <button class="btn btn-secondary" onclick="alert('Módulo 2: Ventas — próximamente')">💰 Nueva Venta</button>
+    <button class="btn btn-outline" onclick="alert('Módulo 1: Documentos — próximamente')">📄 Registrar Documento</button>
+    <button class="btn btn-outline" onclick="alert('Módulo 5: Impuestos — próximamente')">🧾 Calcular Impuestos</button>
+  </div>
+</div>
