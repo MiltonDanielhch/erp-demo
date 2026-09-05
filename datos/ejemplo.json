@@ -1,0 +1,397 @@
+{
+  "empresa": {
+    "id": "emp-001",
+    "nit": "123456789-7",
+    "razonSocial": "Comercial Los Andes SRL",
+    "direccion": "Av. 16 de Julio #1500, Edificio Handal, Piso 5",
+    "ciudad": "La Paz",
+    "telefono": "591-2-2441234",
+    "email": "info@comerciallosandes.com.bo",
+    "regimenTributario": "RG",
+    "actividadEconomica": "Venta al por mayor y menor de productos de oficina",
+    "representanteLegal": "María Elena Condori Vargas",
+    "fechaConstitucion": "2015-03-15",
+    "capitalSocial": 150000,
+    "moneda": "BOB",
+    "creadoEn": "2026-01-01T00:00:00.000Z"
+  },
+
+  "clientes": [
+    {
+      "id": "cli-001",
+      "nit": "100123456-9",
+      "razonSocial": "Constructora del Sur SA",
+      "telefono": "591-2-2771234",
+      "email": "compras@constructoradelsur.bo",
+      "direccion": "C. Mercado #234, La Paz",
+      "limiteCredito": 50000,
+      "saldoActual": 11300,
+      "estado": "ACTIVO",
+      "regimenTributario": "RG",
+      "creadoEn": "2026-01-15T10:00:00.000Z"
+    },
+    {
+      "id": "cli-002",
+      "nit": "200987654-0",
+      "razonSocial": "Minera Illimani SRL",
+      "telefono": "591-2-2123456",
+      "email": "admin@minerailimani.bo",
+      "direccion": "Av. Arce #2500, La Paz",
+      "limiteCredito": 80000,
+      "saldoActual": 5650,
+      "estado": "ACTIVO",
+      "regimenTributario": "RG",
+      "creadoEn": "2026-02-10T11:30:00.000Z"
+    },
+    {
+      "id": "cli-003",
+      "nit": "300555123-9",
+      "razonSocial": "Restaurante Pachamama",
+      "telefono": "591-2-2334455",
+      "email": "pachamama@restaurant.bo",
+      "direccion": "C. Sagárnaga #450, La Paz",
+      "limiteCredito": 20000,
+      "saldoActual": 0,
+      "estado": "ACTIVO",
+      "regimenTributario": "RG",
+      "creadoEn": "2026-03-05T09:00:00.000Z"
+    }
+  ],
+
+  "proveedores": [
+    {
+      "id": "prov-001",
+      "nit": "400888777-5",
+      "razonSocial": "Importadora Bolívar SA",
+      "telefono": "591-2-2443322",
+      "email": "ventas@importadorabolivar.bo",
+      "direccion": "Av. Montes #800, La Paz",
+      "condicionesPago": "30_DIAS",
+      "saldoPorPagar": 16950,
+      "estado": "ACTIVO",
+      "esAgenteRetencion": false,
+      "creadoEn": "2026-01-10T08:00:00.000Z"
+    },
+    {
+      "id": "prov-002",
+      "nit": "500333444-0",
+      "razonSocial": "Papelera del Oriente SRL",
+      "telefono": "591-3-3556677",
+      "email": "pedidos@papeleradeloriente.bo",
+      "direccion": "Av. Santos Dumont #1200, Santa Cruz",
+      "condicionesPago": "15_DIAS",
+      "saldoPorPagar": 2260,
+      "estado": "ACTIVO",
+      "esAgenteRetencion": false,
+      "creadoEn": "2026-02-01T14:30:00.000Z"
+    },
+    {
+      "id": "prov-003",
+      "nit": "600222111-9",
+      "razonSocial": "Tecnología Andina SRL",
+      "telefono": "591-2-2998877",
+      "email": "soporte@tecnologiaandina.bo",
+      "direccion": "C. Rosendo Gutiérrez #567, La Paz",
+      "condicionesPago": "CONTADO",
+      "saldoPorPagar": 0,
+      "estado": "ACTIVO",
+      "esAgenteRetencion": false,
+      "creadoEn": "2026-02-20T16:00:00.000Z"
+    }
+  ],
+
+  "productos": [
+    {
+      "id": "prod-001",
+      "codigo": "LAP-001",
+      "nombre": "Laptop Lenovo ThinkPad E14",
+      "categoria": "TECNOLOGIA",
+      "unidadMedida": "UNIDAD",
+      "precioVenta": 6780,
+      "costoUltimo": 5000,
+      "stockActual": 8,
+      "stockMinimo": 3,
+      "almacen": "ALMACEN_CENTRAL",
+      "activo": true,
+      "creadoEn": "2026-01-05T10:00:00.000Z"
+    },
+    {
+      "id": "prod-002",
+      "codigo": "IMP-001",
+      "nombre": "Impresora HP LaserJet Pro M404dn",
+      "categoria": "TECNOLOGIA",
+      "unidadMedida": "UNIDAD",
+      "precioVenta": 3390,
+      "costoUltimo": 2500,
+      "stockActual": 5,
+      "stockMinimo": 2,
+      "almacen": "ALMACEN_CENTRAL",
+      "activo": true,
+      "creadoEn": "2026-01-05T10:00:00.000Z"
+    },
+    {
+      "id": "prod-003",
+      "codigo": "PAP-001",
+      "nombre": "Resma Papel Bond A4 (500 hojas)",
+      "categoria": "PAPELERIA",
+      "unidadMedida": "UNIDAD",
+      "precioVenta": 56.50,
+      "costoUltimo": 40,
+      "stockActual": 120,
+      "stockMinimo": 50,
+      "almacen": "ALMACEN_CENTRAL",
+      "activo": true,
+      "creadoEn": "2026-01-05T10:00:00.000Z"
+    },
+    {
+      "id": "prod-004",
+      "codigo": "SIL-001",
+      "nombre": "Silla Ergonómica de Oficina",
+      "categoria": "MOBILIARIO",
+      "unidadMedida": "UNIDAD",
+      "precioVenta": 1695,
+      "costoUltimo": 1200,
+      "stockActual": 15,
+      "stockMinimo": 5,
+      "almacen": "ALMACEN_CENTRAL",
+      "activo": true,
+      "creadoEn": "2026-01-05T10:00:00.000Z"
+    },
+    {
+      "id": "prod-005",
+      "codigo": "CAR-001",
+      "nombre": "Cartucho de Tinta HP 664 Negro",
+      "categoria": "CONSUMIBLE",
+      "unidadMedida": "UNIDAD",
+      "precioVenta": 169.50,
+      "costoUltimo": 120,
+      "stockActual": 40,
+      "stockMinimo": 15,
+      "almacen": "ALMACEN_CENTRAL",
+      "activo": true,
+      "creadoEn": "2026-01-05T10:00:00.000Z"
+    }
+  ],
+
+  "transacciones": [
+    {
+      "id": "trx-001",
+      "tipo": "COMPRA",
+      "fecha": "2026-09-01",
+      "periodo": "2026-09",
+      "documento": "F-2026-001",
+      "proveedorId": "prov-001",
+      "proveedorNIT": "400888777-5",
+      "cuf": "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V",
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "cantidad": 3, "costoUnitario": 5000, "subtotal": 15000 }
+      ],
+      "montoTotal": 16950,
+      "montoNeto": 15000,
+      "montoIVA": 1950,
+      "estado": "FACTURADA",
+      "creadoEn": "2026-09-01T10:30:00.000Z",
+      "concepto": "Compra de 3 laptops según factura F-2026-001"
+    },
+    {
+      "id": "trx-002",
+      "tipo": "COMPRA",
+      "fecha": "2026-09-05",
+      "periodo": "2026-09",
+      "documento": "F-2026-002",
+      "proveedorId": "prov-002",
+      "proveedorNIT": "500333444-0",
+      "cuf": "B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W",
+      "productos": [
+        { "productoId": "prod-003", "codigo": "PAP-001", "cantidad": 50, "costoUnitario": 40, "subtotal": 2000 },
+        { "productoId": "prod-005", "codigo": "CAR-001", "cantidad": 2, "costoUnitario": 120, "subtotal": 240 }
+      ],
+      "montoTotal": 2530.80,
+      "montoNeto": 2240,
+      "montoIVA": 290.80,
+      "estado": "FACTURADA",
+      "creadoEn": "2026-09-05T14:15:00.000Z",
+      "concepto": "Compra de resmas de papel y cartuchos"
+    },
+    {
+      "id": "trx-003",
+      "tipo": "COMPRA",
+      "fecha": "2026-09-12",
+      "periodo": "2026-09",
+      "documento": "F-2026-003",
+      "proveedorId": "prov-003",
+      "proveedorNIT": "600222111-9",
+      "cuf": "C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X",
+      "productos": [
+        { "productoId": "prod-002", "codigo": "IMP-001", "cantidad": 2, "costoUnitario": 2500, "subtotal": 5000 }
+      ],
+      "montoTotal": 5650,
+      "montoNeto": 5000,
+      "montoIVA": 650,
+      "estado": "FACTURADA",
+      "creadoEn": "2026-09-12T09:45:00.000Z",
+      "concepto": "Compra de 2 impresoras HP"
+    },
+    {
+      "id": "trx-004",
+      "tipo": "VENTA",
+      "fecha": "2026-09-03",
+      "periodo": "2026-09",
+      "documento": "F-2026-V-001",
+      "clienteId": "cli-001",
+      "clienteNIT": "100123456-9",
+      "cuf": "D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y",
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "cantidad": 2, "precioUnitario": 6780, "subtotal": 13560 }
+      ],
+      "montoTotal": 13560,
+      "montoNeto": 12000,
+      "montoIVA": 1560,
+      "montoIT": 406.80,
+      "estado": "FACTURADA",
+      "creadoEn": "2026-09-03T11:20:00.000Z",
+      "concepto": "Venta de 2 laptops a Constructora del Sur"
+    },
+    {
+      "id": "trx-005",
+      "tipo": "VENTA",
+      "fecha": "2026-09-08",
+      "periodo": "2026-09",
+      "documento": "F-2026-V-002",
+      "clienteId": "cli-002",
+      "clienteNIT": "200987654-0",
+      "cuf": "E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z",
+      "productos": [
+        { "productoId": "prod-002", "codigo": "IMP-001", "cantidad": 1, "precioUnitario": 3390, "subtotal": 3390 },
+        { "productoId": "prod-005", "codigo": "CAR-001", "cantidad": 5, "precioUnitario": 169.50, "subtotal": 847.50 }
+      ],
+      "montoTotal": 4237.50,
+      "montoNeto": 3750,
+      "montoIVA": 487.50,
+      "montoIT": 127.13,
+      "estado": "FACTURADA",
+      "creadoEn": "2026-09-08T15:45:00.000Z",
+      "concepto": "Venta de impresora y cartuchos a Minera Illimani"
+    },
+    {
+      "id": "trx-006",
+      "tipo": "VENTA",
+      "fecha": "2026-09-15",
+      "periodo": "2026-09",
+      "documento": "F-2026-V-003",
+      "clienteId": "cli-003",
+      "clienteNIT": "300555123-9",
+      "cuf": "F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A",
+      "productos": [
+        { "productoId": "prod-003", "codigo": "PAP-001", "cantidad": 10, "precioUnitario": 56.50, "subtotal": 565 }
+      ],
+      "montoTotal": 565,
+      "montoNeto": 500,
+      "montoIVA": 65,
+      "montoIT": 16.95,
+      "estado": "COBRADA",
+      "creadoEn": "2026-09-15T16:30:00.000Z",
+      "concepto": "Venta de resmas al Restaurante Pachamama (cobrado al contado)"
+    },
+    {
+      "id": "trx-007",
+      "tipo": "PAGO_PROVEEDOR",
+      "fecha": "2026-09-20",
+      "periodo": "2026-09",
+      "documento": "REC-2026-001",
+      "proveedorId": "prov-003",
+      "transaccionRef": "trx-003",
+      "montoTotal": 5650,
+      "metodoPago": "TRANSFERENCIA",
+      "estado": "PAGADA",
+      "creadoEn": "2026-09-20T10:00:00.000Z",
+      "concepto": "Pago total factura F-2026-003 a Tecnología Andina"
+    },
+    {
+      "id": "trx-008",
+      "tipo": "COBRO_CLIENTE",
+      "fecha": "2026-09-15",
+      "periodo": "2026-09",
+      "documento": "REC-2026-C-001",
+      "clienteId": "cli-003",
+      "transaccionRef": "trx-006",
+      "montoTotal": 565,
+      "metodoPago": "EFECTIVO",
+      "estado": "COBRADA",
+      "creadoEn": "2026-09-15T16:30:00.000Z",
+      "concepto": "Cobro al contado de factura F-2026-V-003"
+    },
+    {
+      "id": "trx-009",
+      "tipo": "NOMINA",
+      "fecha": "2026-09-30",
+      "periodo": "2026-09",
+      "documento": "NOM-2026-09",
+      "empleados": [
+        { "empleadoId": "emp-001", "nombres": "Juan Carlos", "apellidos": "Mamani Quispe", "salarioBase": 5000 },
+        { "empleadoId": "emp-002", "nombres": "Ana Lucía", "apellidos": "Torrez Flores", "salarioBase": 4500 }
+      ],
+      "totalDevengado": 9500,
+      "totalDeducciones": 1235,
+      "totalPatronal": 2090,
+      "netoAPagar": 8265,
+      "estado": "PAGADA",
+      "creadoEn": "2026-09-30T18:00:00.000Z",
+      "concepto": "Planilla de sueldos septiembre 2026"
+    },
+    {
+      "id": "trx-010",
+      "tipo": "DEPRECIACION",
+      "fecha": "2026-09-30",
+      "periodo": "2026-09",
+      "documento": "DEP-2026-09",
+      "activos": [
+        { "codigo": "ACT-001", "nombre": "Mobiliario de Oficina", "valorOriginal": 50000, "vidaUtilMeses": 120, "depreciacionMensual": 416.67 },
+        { "codigo": "ACT-002", "nombre": "Equipo de Cómputo", "valorOriginal": 30000, "vidaUtilMeses": 60, "depreciacionMensual": 500 }
+      ],
+      "totalDepreciacion": 916.67,
+      "estado": "PROCESADA",
+      "creadoEn": "2026-09-30T23:59:00.000Z",
+      "concepto": "Depreciación mensual de activos fijos - septiembre 2026"
+    }
+  ],
+
+  "empleados": [
+    {
+      "id": "emp-001",
+      "ci": "9876543",
+      "nit": "400111222-3",
+      "nombres": "Juan Carlos",
+      "apellidos": "Mamani Quispe",
+      "fechaNacimiento": "1985-03-15",
+      "genero": "MASCULINO",
+      "estadoCivil": "CASADO",
+      "fechaIngreso": "2020-03-01",
+      "cargo": "Vendedor Senior",
+      "departamento": "VENTAS",
+      "tipoContrato": "INDEFINIDO",
+      "salarioBase": 5000,
+      "antiguedadAnios": 6,
+      "estado": "ACTIVO",
+      "creadoEn": "2020-03-01T08:00:00.000Z"
+    },
+    {
+      "id": "emp-002",
+      "ci": "8765432",
+      "nit": "500222333-4",
+      "nombres": "Ana Lucía",
+      "apellidos": "Torrez Flores",
+      "fechaNacimiento": "1992-07-22",
+      "genero": "FEMENINO",
+      "estadoCivil": "SOLTERA",
+      "fechaIngreso": "2022-06-01",
+      "cargo": "Contadora",
+      "departamento": "CONTABILIDAD",
+      "tipoContrato": "INDEFINIDO",
+      "salarioBase": 4500,
+      "antiguedadAnios": 4,
+      "estado": "ACTIVO",
+      "creadoEn": "2022-06-01T08:00:00.000Z"
+    }
+  ]
+}

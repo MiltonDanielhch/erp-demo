@@ -52,7 +52,7 @@ const RUTAS_ERP = {
 function iniciarERP() {
   console.log('═══════════════════════════════════════════════════════');
   console.log('🇧🇴 ERP Contable Bolivia — Iniciando...');
-  console.log('Versión: 0.5.0 (Módulo 0: Fase 0.5)');
+console.log('Versión: 0.6.0 (Módulo 0: Fase 0.6)');
   console.log('Stack: Vanilla JS + LocalStorage');
   console.log('Normativa: NC del CTNAC, Ley 843, LGT');
   console.log('═══════════════════════════════════════════════════════');
@@ -94,7 +94,7 @@ function iniciarERP() {
     bolivia: BOLIVIA,
     planCuentas: PLAN_CUENTAS,
     planCuentasUtilidades: PlanCuentasUtilidades,
-    version: '0.5.0',
+    version: '0.6.0',  // ← CAMBIADO de 0.5.0
     normativa: 'NC del CTNAC, Ley 843, LGT'
   };
 

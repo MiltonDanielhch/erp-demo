@@ -78,7 +78,7 @@ class Enrutador {
     return ruta || this.vistaPorDefecto;
   }
 
-  /**
+    /**
    * Navega a una vista específica.
    * @param {string} ruta - La ruta a la que navegar (ej: "compras")
    */
@@ -115,6 +115,29 @@ class Enrutador {
       const html = await respuesta.text();
       contenedor.innerHTML = html;
 
+      // ────────────────────────────────────────────────────────
+      // 🔥 EJECUTAR LOS SCRIPTS INLINE DE LA VISTA
+      //
+      // Cuando insertamos HTML con innerHTML, los <script> NO se
+      // ejecutan automáticamente. Los creamos de nuevo y los
+      // adjuntamos al DOM para forzar su ejecución.
+      // ────────────────────────────────────────────────────────
+      const scripts = contenedor.querySelectorAll('script');
+      scripts.forEach(scriptViejo => {
+        const scriptNuevo = document.createElement('script');
+
+        // Copiar atributos (src, type, etc.)
+        Array.from(scriptViejo.attributes).forEach(attr => {
+          scriptNuevo.setAttribute(attr.name, attr.value);
+        });
+
+        // Copiar el contenido del script
+        scriptNuevo.textContent = scriptViejo.textContent;
+
+        // Reemplazar el script viejo por el nuevo (esto lo ejecuta)
+        scriptViejo.parentNode.replaceChild(scriptNuevo, scriptViejo);
+      });
+
       // Actualizar estado
       this.vistaActual = ruta;
 
@@ -122,14 +145,13 @@ class Enrutador {
       this.actualizarMenuActivo(ruta);
 
       // Actualizar el hash sin generar un nuevo evento hashchange
-      // (solo si el hash no coincide con la ruta actual)
       const hashActual = window.location.hash.replace(/^#\/?/, '');
       if (hashActual !== ruta) {
         window.history.pushState(null, '', `#/${ruta}`);
       }
 
       // Log para debugging
-      console.log(`📄 Vista cargada: ${ruta} → ${archivoVista}`);
+      console.log(`📄 Vista cargada: ${ruta} → ${archivoVista} (${scripts.length} scripts ejecutados)`);
 
     } catch (error) {
       console.error(`❌ Error al cargar la vista "${ruta}":`, error);

@@ -12,21 +12,21 @@
   <div class="dashboard-card card-ventas">
     <div class="card-icono">💰</div>
     <div class="card-titulo">Ventas del Mes</div>
-    <div class="card-valor" id="dashboard-ventas">Bs 0.00</div>
+    <div class="card-valor" id="dashboard-ventas">Bs 0,00</div>
     <div class="card-detalle">Septiembre 2026</div>
   </div>
 
   <div class="dashboard-card card-iva">
     <div class="card-icono">🧾</div>
     <div class="card-titulo">IVA por Pagar</div>
-    <div class="card-valor" id="dashboard-iva">Bs 0.00</div>
+    <div class="card-valor" id="dashboard-iva">Bs 0,00</div>
     <div class="card-detalle">Form. 200 — Vence: 10/10/2026</div>
   </div>
 
   <div class="dashboard-card card-utilidad">
     <div class="card-icono">📈</div>
     <div class="card-titulo">Utilidad Neta</div>
-    <div class="card-valor" id="dashboard-utilidad">Bs 0.00</div>
+    <div class="card-valor" id="dashboard-utilidad">Bs 0,00</div>
     <div class="card-detalle">Acumulado del año</div>
   </div>
 
@@ -34,7 +34,7 @@
     <div class="card-icono">👥</div>
     <div class="card-titulo">Empleados Activos</div>
     <div class="card-valor" id="dashboard-empleados">0</div>
-    <div class="card-detalle">Nómina mensual: Bs 0.00</div>
+    <div class="card-detalle">Nómina mensual: Bs 0,00</div>
   </div>
 
 </div>
@@ -73,10 +73,188 @@
 <!-- Sección: Acciones rápidas -->
 <div class="card">
   <h3 style="margin-bottom: var(--espacio-md); font-size: 1rem;">⚡ Acciones Rápidas</h3>
-  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap;">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; margin-bottom: var(--espacio-lg);">
     <button class="btn btn-primary" onclick="alert('Módulo 2: Compras — próximamente')">🛒 Nueva Compra</button>
     <button class="btn btn-secondary" onclick="alert('Módulo 2: Ventas — próximamente')">💰 Nueva Venta</button>
     <button class="btn btn-outline" onclick="alert('Módulo 1: Documentos — próximamente')">📄 Registrar Documento</button>
     <button class="btn btn-outline" onclick="alert('Módulo 5: Impuestos — próximamente')">🧾 Calcular Impuestos</button>
   </div>
+
+  <hr class="separador">
+
+  <h3 style="margin-bottom: var(--espacio-md); font-size: 1rem;">🎓 Modo Educativo</h3>
+  <p style="color: var(--texto-secundario); font-size: var(--texto-sm); margin-bottom: var(--espacio-md);">
+    Carga datos de ejemplo para explorar el sistema con una empresa ficticia:
+    <strong>Comercial Los Andes SRL</strong> (NIT 123456789-7).
+  </p>
+  <div style="display: flex; gap: var(--espacio-sm); flex-wrap: wrap;">
+    <button id="btn-cargar-ejemplo" class="btn btn-primary" onclick="cargarDatosEjemploUI()">
+      📥 Cargar datos de ejemplo
+    </button>
+    <button id="btn-recargar-ejemplo" class="btn btn-outline" onclick="recargarDatosEjemploUI()">
+      🔄 Reiniciar datos
+    </button>
+    <button id="btn-limpiar" class="btn btn-ghost" onclick="limpiarDatosUI()">
+      🗑️ Limpiar todo
+    </button>
+  </div>
+  <div id="mensaje-ejemplo" style="margin-top: var(--espacio-md);"></div>
 </div>
+
+<script>
+  // ══════════════════════════════════════════════════════════════
+  // Funciones de UI para carga de datos de ejemplo
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Carga los datos de ejemplo (sobrescribe datos previos).
+   */
+  async function cargarDatosEjemploUI() {
+    const btn = document.getElementById('btn-cargar-ejemplo');
+    const mensaje = document.getElementById('mensaje-ejemplo');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Cargando...';
+    mensaje.innerHTML = '';
+
+    try {
+      const resultado = await window.almacenamiento.cargarDatosEjemplo(true);
+
+      if (resultado.exito) {
+        mensaje.innerHTML = `
+          <div style="background-color: var(--color-exito-light); color: #065F46;
+                      padding: var(--espacio-md); border-radius: var(--radio-md);">
+            <strong>✅ ${resultado.mensaje}</strong><br>
+            <small>Cargadas: ${resultado.coleccionesCargadas.join(', ') || 'ninguna'}</small><br>
+            <small>Sobreescritas: ${resultado.coleccionesSobreescritas.join(', ') || 'ninguna'}</small><br>
+            <small>Omitidas: ${resultado.coleccionesOmitidas.join(', ') || 'ninguna'}</small>
+          </div>
+        `;
+        await actualizarTarjetasDashboard();
+      } else {
+        throw new Error(resultado.mensaje);
+      }
+    } catch (error) {
+      mensaje.innerHTML = `
+        <div style="background-color: var(--color-error-light); color: #991B1B;
+                    padding: var(--espacio-md); border-radius: var(--radio-md);">
+          <strong>❌ ${error.message}</strong>
+        </div>
+      `;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📥 Cargar datos de ejemplo';
+    }
+  }
+
+  /**
+   * Recarga forzada (borra y vuelve a cargar).
+   */
+  async function recargarDatosEjemploUI() {
+    if (!confirm('¿Estás seguro de que quieres borrar todos los datos y volver a cargar los de ejemplo?')) {
+      return;
+    }
+    const btn = document.getElementById('btn-recargar-ejemplo');
+    const mensaje = document.getElementById('mensaje-ejemplo');
+    btn.disabled = true;
+    btn.innerHTML = '🔄 Reiniciando...';
+    mensaje.innerHTML = '';
+
+    try {
+      const resultado = await window.almacenamiento.recargarDatosEjemplo();
+      mensaje.innerHTML = `
+        <div style="background-color: var(--color-exito-light); color: #065F46;
+                    padding: var(--espacio-md); border-radius: var(--radio-md);">
+          <strong>✅ ${resultado.mensaje}</strong>
+        </div>
+      `;
+      await actualizarTarjetasDashboard();
+    } catch (error) {
+      mensaje.innerHTML = `
+        <div style="background-color: var(--color-error-light); color: #991B1B;
+                    padding: var(--espacio-md); border-radius: var(--radio-md);">
+          <strong>❌ ${error.message}</strong>
+        </div>
+      `;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '🔄 Reiniciar datos';
+    }
+  }
+
+  /**
+   * Limpia todos los datos del sistema.
+   */
+  function limpiarDatosUI() {
+    if (!confirm('¿Estás seguro de que quieres borrar TODOS los datos del sistema?')) {
+      return;
+    }
+    window.almacenamiento.limpiarTodo();
+    document.getElementById('mensaje-ejemplo').innerHTML = `
+      <div style="background-color: var(--color-alerta-light); color: #92400E;
+                  padding: var(--espacio-md); border-radius: var(--radio-md);">
+        <strong>🧹 Todos los datos han sido eliminados.</strong>
+      </div>
+    `;
+    actualizarTarjetasDashboard();
+  }
+
+  /**
+   * Actualiza las tarjetas del dashboard con los datos cargados.
+   */
+  function actualizarTarjetasDashboard() {
+    const ventas = window.almacenamiento.buscar('transacciones', t => t.tipo === 'VENTA');
+    const compras = window.almacenamiento.buscar('transacciones', t => t.tipo === 'COMPRA');
+    const empleados = window.almacenamiento.obtener('empleados');
+
+    // Total de ventas del mes
+    const totalVentas = ventas.reduce((sum, v) => sum + (v.montoTotal || 0), 0);
+
+    // IVA débito (de ventas) y crédito (de compras)
+    const ivaDebito = ventas.reduce((sum, v) => sum + (v.montoIVA || 0), 0);
+    const ivaCredito = compras.reduce((sum, c) => sum + (c.montoIVA || 0), 0);
+
+    // IVA por pagar (si crédito > débito, hay saldo a favor, mostrar 0)
+    const ivaPorPagar = Math.max(0, ivaDebito - ivaCredito);
+    const saldoAFavor = Math.max(0, ivaCredito - ivaDebito);
+
+    // Actualizar tarjetas
+    const elVentas = document.getElementById('dashboard-ventas');
+    const elIVA = document.getElementById('dashboard-iva');
+    const elEmpleados = document.getElementById('dashboard-empleados');
+
+    if (elVentas) {
+      elVentas.textContent = window.utilidades.formatearBs(totalVentas);
+    }
+
+    if (elIVA) {
+      if (saldoAFavor > 0) {
+        elIVA.textContent = window.utilidades.formatearBs(saldoAFavor);
+        elIVA.parentElement.querySelector('.card-detalle').textContent =
+          'Saldo a favor (Form. 200)';
+        elIVA.style.color = 'var(--color-exito)';
+      } else {
+        elIVA.textContent = window.utilidades.formatearBs(ivaPorPagar);
+        elIVA.parentElement.querySelector('.card-detalle').textContent =
+          'Form. 200 — Vence: 10/10/2026';
+        elIVA.style.color = '';
+      }
+    }
+
+    if (elEmpleados) {
+      elEmpleados.textContent = empleados.length;
+    }
+
+    console.log('📊 Dashboard actualizado:', {
+      totalVentas,
+      ivaDebito,
+      ivaCredito,
+      ivaPorPagar,
+      saldoAFavor,
+      empleados: empleados.length
+    });
+  }
+
+  // Al cargar la vista, actualizar las tarjetas con los datos existentes
+  actualizarTarjetasDashboard();
+</script>

@@ -327,7 +327,7 @@ Aquí vive la **ley boliviana traducida a código**. Si mañana el SIN cambia el
 ## Tareas de la Fase 0.5
 
 ```text
-[ ] Crear js/config/bolivia.js
+[x] Crear js/config/bolivia.js
     → Constantes exportadas:
       - IVA_PORCENTAJE = 13
       - IT_PORCENTAJE = 3
@@ -344,7 +344,7 @@ Aquí vive la **ley boliviana traducida a código**. Si mañana el SIN cambia el
       IVA-por-dentro (1.13), moneda BOB, zona horaria America/La_Paz. 
       Incluye comentarios citando la ley (Ley 843, Art. X)."
 
-[ ] Crear js/config/plan-cuentas.js
+[x] Crear js/config/plan-cuentas.js
     → Árbol del Plan de Cuentas según NC del CTNAC:
       1. ACTIVOS
         1.1 Activos Corrientes
@@ -371,14 +371,14 @@ Aquí vive la **ley boliviana traducida a código**. Si mañana el SIN cambia el
       típicas: IVA Crédito Fiscal, Aguinaldo por Pagar, IT por Pagar, 
       etc. Formato jerárquico con códigos tipo 1.1.01."
 
-[ ] Crear js/capas/capa3-motor.js (SOLO estructura vacía)
+[x] Crear js/capas/capa3-motor.js (SOLO estructura vacía)
     → Clase MotorContable con métodos stub:
       - registrarAsiento(asiento) { /* pendiente */ }
       - validarPartidaDoble(asiento) { /* pendiente */ }
       - calcularBalanza(periodo) { /* pendiente */ }
     → Este archivo se completará en el Módulo 3, pero ya debe existir.
 
-[ ] Verificar importaciones
+[x] Verificar importaciones
     → Desde app.js, importar bolivia.js y plan-cuentas.js
     → Ejecutar en consola: window.BOLIVIA.IVA_PORCENTAJE
     → Debe devolver: 13
@@ -394,7 +394,7 @@ Para que al abrir el ERP ya haya **algo que mostrar**. Una empresa ficticia ("Co
 ## Tareas de la Fase 0.6
 
 ```text
-[ ] Crear datos/ejemplo.json
+[x] Crear datos/ejemplo.json
     → Empresa ficticia: Comercial Los Andes SRL
     → NIT: 123456789-1 (de prueba, no real)
     → 3 clientes de ejemplo
@@ -409,12 +409,12 @@ Para que al abrir el ERP ya haya **algo que mostrar**. Una empresa ficticia ("Co
       pagos, asiento de nómina simple). Usar NITs ficticios pero con 
       formato boliviano válido (módulo 11)."
 
-[ ] Crear función cargarDatosEjemplo() en almacenamiento.js
+[x] Crear función cargarDatosEjemplo() en almacenamiento.js
     → Lee datos/ejemplo.json con fetch()
     → Guarda cada colección en localStorage si está vacía
     → Botón "Cargar datos de ejemplo" en dashboard.html
 
-[ ] Verificar carga de datos
+[x] Verificar carga de datos
     → Abrir dashboard.html
     → Hacer clic en "Cargar datos de ejemplo"
     → Abrir DevTools → Application → LocalStorage
