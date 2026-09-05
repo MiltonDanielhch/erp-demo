@@ -1,0 +1,51 @@
+# .editorconfig
+# Reglas de formato de código para el ERP Contable Bolivia
+# Compatible con VS Code, WebStorm, Sublime Text
+# Más info: https://editorconfig.org
+
+# Configuración raíz (no buscar más arriba de este archivo)
+root = true
+
+# ──────────────────────────────────────────────────────────────
+# Reglas por defecto para TODOS los archivos
+# ──────────────────────────────────────────────────────────────
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# ──────────────────────────────────────────────────────────────
+# Archivos Markdown: conservar espacios al final de línea
+# (necesarios para saltos de línea en Markdown)
+# ──────────────────────────────────────────────────────────────
+[*.md]
+trim_trailing_whitespace = false
+
+# ──────────────────────────────────────────────────────────────
+# Archivos SQL: 4 espacios (convención estándar SQL)
+# (Si en el Módulo 8 usamos PostgreSQL)
+# ──────────────────────────────────────────────────────────────
+[*.sql]
+indent_size = 4
+
+# ──────────────────────────────────────────────────────────────
+# Archivos YAML: 2 espacios (estándar YAML)
+# (Para futuros docker-compose.yml o CI/CD)
+# ──────────────────────────────────────────────────────────────
+[*.{yml,yaml}]
+indent_size = 2
+
+# ──────────────────────────────────────────────────────────────
+# Archivos JSON: 2 espacios
+# ──────────────────────────────────────────────────────────────
+[*.json]
+indent_size = 2
+
+# ──────────────────────────────────────────────────────────────
+# Makefile: tabs obligatorios (requisito de make)
+# ──────────────────────────────────────────────────────────────
+[Makefile]
+indent_style = tab

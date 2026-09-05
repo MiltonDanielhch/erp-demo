@@ -1,0 +1,117 @@
+# ══════════════════════════════════════════════════════════════
+# .gitignore — ERP Contable Bolivia
+# Archivos que Git NUNCA debe rastrear
+# ══════════════════════════════════════════════════════════════
+
+# ──────────────────────────────────────────────────────────────
+# 1. DEPENDENCIAS (si luego usamos Vite o npm)
+# ──────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ──────────────────────────────────────────────────────────────
+# 2. BUILD / DISTRIBUCIÓN
+# ──────────────────────────────────────────────────────────────
+dist/
+build/
+out/
+*.min.js
+*.min.css
+
+# ──────────────────────────────────────────────────────────────
+# 3. ARCHIVOS DE ENTORNO (¡NUNCA subir credenciales!)
+# ──────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# ──────────────────────────────────────────────────────────────
+# 4. BASES DE DATOS LOCALES
+# ──────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+*.sql.gz
+*.dump
+
+# ──────────────────────────────────────────────────────────────
+# 5. COBERTURA Y TESTS
+# ──────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+
+# ──────────────────────────────────────────────────────────────
+# 6. ARCHIVOS DE SISTEMA OPERATIVO
+# ──────────────────────────────────────────────────────────────
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.nfs*
+
+# ──────────────────────────────────────────────────────────────
+# 7. LOGS
+# ──────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ──────────────────────────────────────────────────────────────
+# 8. EDITORES E IDEs
+# ──────────────────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# ──────────────────────────────────────────────────────────────
+# 9. CACHÉ
+# ──────────────────────────────────────────────────────────────
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# ──────────────────────────────────────────────────────────────
+# 10. TEMPORALES
+# ──────────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# ──────────────────────────────────────────────────────────────
+# 11. ESPECÍFICO DEL PROYECTO
+# ──────────────────────────────────────────────────────────────
+# No subir datos locales del navegador si se exportan
+localStorage-export-*.json
+
+# No subir certificados digitales del SIN (si los tenemos)
+certificados/
+*.pem
+*.p12
+*.cer

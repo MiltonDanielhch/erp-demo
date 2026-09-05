@@ -1,0 +1,136 @@
+/* ══════════════════════════════════════════════════════════════
+   estilos.css — ERP Contable Bolivia
+   Estilos globales del sistema
+   ══════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────
+   VARIABLES CSS (Paleta boliviana profesional)
+   ────────────────────────────────────────────────────────────── */
+:root {
+  /* Colores de la bandera boliviana (adaptados para UI) */
+  --rojo-bolivia: #D52B1E;
+  --amarillo-bolivia: #F9E300;
+  --verde-bolivia: #007A33;
+
+  /* Colores funcionales */
+  --color-primario: #D52B1E;
+  --color-secundario: #007A33;
+  --color-acento: #F9E300;
+  --color-exito: #007A33;
+  --color-alerta: #F59E0B;
+  --color-error: #DC2626;
+
+  /* Grises */
+  --gris-oscuro: #1F2937;
+  --gris-medio: #6B7280;
+  --gris-claro: #F3F4F6;
+  --blanco: #FFFFFF;
+
+  /* Tipografía */
+  --fuente-principal: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+
+  /* Espaciado */
+  --espacio-xs: 0.25rem;
+  --espacio-sm: 0.5rem;
+  --espacio-md: 1rem;
+  --espacio-lg: 1.5rem;
+  --espacio-xl: 2rem;
+
+  /* Bordes y sombras */
+  --radio-borde: 8px;
+  --sombra-suave: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --sombra-media: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RESET BÁSICO
+   ────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--fuente-principal);
+  color: var(--gris-oscuro);
+  background-color: var(--gris-claro);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   LAYOUT PRINCIPAL
+   ────────────────────────────────────────────────────────────── */
+#app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Menú lateral */
+#menu-lateral {
+  width: 240px;
+  background-color: var(--gris-oscuro);
+  color: var(--blanco);
+  padding: var(--espacio-lg);
+  flex-shrink: 0;
+}
+
+#menu-lateral h1 {
+  font-size: 1.1rem;
+  margin-bottom: var(--espacio-xl);
+  padding-bottom: var(--espacio-md);
+  border-bottom: 2px solid var(--rojo-bolivia);
+}
+
+#menu-lateral nav ul {
+  list-style: none;
+}
+
+#menu-lateral nav li {
+  margin-bottom: var(--espacio-xs);
+}
+
+#menu-lateral nav a {
+  display: block;
+  padding: var(--espacio-sm) var(--espacio-md);
+  color: var(--gris-claro);
+  text-decoration: none;
+  border-radius: var(--radio-borde);
+  transition: background-color 0.2s;
+}
+
+#menu-lateral nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#menu-lateral nav a.activo {
+  background-color: var(--rojo-bolivia);
+  color: var(--blanco);
+}
+
+/* Contenido principal */
+#contenido {
+  flex: 1;
+  padding: var(--espacio-xl);
+  overflow-y: auto;
+}
+
+#contenido h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--espacio-md);
+  color: var(--gris-oscuro);
+}
+
+#contenido p {
+  margin-bottom: var(--espacio-md);
+  color: var(--gris-medio);
+}
