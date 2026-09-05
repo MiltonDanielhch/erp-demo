@@ -1,50 +1,11 @@
 /* ══════════════════════════════════════════════════════════════
    estilos.css — ERP Contable Bolivia
-   Estilos globales del sistema
+   Estilos globales: reset, variables, tipografía, layout base
    ══════════════════════════════════════════════════════════════ */
 
 /* ──────────────────────────────────────────────────────────────
-   VARIABLES CSS (Paleta boliviana profesional)
-   ────────────────────────────────────────────────────────────── */
-:root {
-  /* Colores de la bandera boliviana (adaptados para UI) */
-  --rojo-bolivia: #D52B1E;
-  --amarillo-bolivia: #F9E300;
-  --verde-bolivia: #007A33;
-
-  /* Colores funcionales */
-  --color-primario: #D52B1E;
-  --color-secundario: #007A33;
-  --color-acento: #F9E300;
-  --color-exito: #007A33;
-  --color-alerta: #F59E0B;
-  --color-error: #DC2626;
-
-  /* Grises */
-  --gris-oscuro: #1F2937;
-  --gris-medio: #6B7280;
-  --gris-claro: #F3F4F6;
-  --blanco: #FFFFFF;
-
-  /* Tipografía */
-  --fuente-principal: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --fuente-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-
-  /* Espaciado */
-  --espacio-xs: 0.25rem;
-  --espacio-sm: 0.5rem;
-  --espacio-md: 1rem;
-  --espacio-lg: 1.5rem;
-  --espacio-xl: 2rem;
-
-  /* Bordes y sombras */
-  --radio-borde: 8px;
-  --sombra-suave: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --sombra-media: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* ──────────────────────────────────────────────────────────────
-   RESET BÁSICO
+   RESET CSS
+   Normaliza el comportamiento entre navegadores
    ────────────────────────────────────────────────────────────── */
 *,
 *::before,
@@ -57,80 +18,243 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: var(--fuente-principal);
-  color: var(--gris-oscuro);
-  background-color: var(--gris-claro);
+  min-height: 100vh;
   line-height: 1.6;
-  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ──────────────────────────────────────────────────────────────
-   LAYOUT PRINCIPAL
-   ────────────────────────────────────────────────────────────── */
-#app {
-  display: flex;
-  min-height: 100vh;
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
-/* Menú lateral */
-#menu-lateral {
-  width: 240px;
-  background-color: var(--gris-oscuro);
-  color: var(--blanco);
-  padding: var(--espacio-lg);
-  flex-shrink: 0;
+input,
+button,
+textarea,
+select {
+  font: inherit;
 }
 
-#menu-lateral h1 {
-  font-size: 1.1rem;
-  margin-bottom: var(--espacio-xl);
-  padding-bottom: var(--espacio-md);
-  border-bottom: 2px solid var(--rojo-bolivia);
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
 }
 
-#menu-lateral nav ul {
+ul,
+ol {
   list-style: none;
 }
 
-#menu-lateral nav li {
-  margin-bottom: var(--espacio-xs);
-}
-
-#menu-lateral nav a {
-  display: block;
-  padding: var(--espacio-sm) var(--espacio-md);
-  color: var(--gris-claro);
+a {
   text-decoration: none;
-  border-radius: var(--radio-borde);
-  transition: background-color 0.2s;
+  color: inherit;
 }
 
-#menu-lateral nav a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
-#menu-lateral nav a.activo {
-  background-color: var(--rojo-bolivia);
-  color: var(--blanco);
+/* ──────────────────────────────────────────────────────────────
+   VARIABLES CSS — PALETA BOLIVIANA PROFESIONAL
+
+   Inspirada en la bandera boliviana (🔴🟡🟢) pero adaptada
+   para una interfaz SaaS profesional. El rojo se usa como
+   acento principal, el verde para éxito/positivo, y el
+   amarillo solo para destacados puntuales.
+   ────────────────────────────────────────────────────────────── */
+:root {
+  /* ── Colores de la bandera boliviana (adaptados) ── */
+  --rojo-bolivia: #D52B1E;
+  --amarillo-bolivia: #F9E300;
+  --verde-bolivia: #007A33;
+
+  /* ── Paleta funcional ── */
+  --color-primario: #D52B1E;
+  --color-primario-hover: #B91C1C;
+  --color-primario-light: rgba(213, 43, 30, 0.1);
+
+  --color-secundario: #007A33;
+  --color-secundario-hover: #005A26;
+  --color-secundario-light: rgba(0, 122, 51, 0.1);
+
+  --color-acento: #F9E300;
+  --color-acento-texto: #713F12;
+
+  /* ── Colores semánticos ── */
+  --color-exito: #059669;
+  --color-exito-light: #D1FAE5;
+  --color-alerta: #D97706;
+  --color-alerta-light: #FEF3C7;
+  --color-error: #DC2626;
+  --color-error-light: #FEE2E2;
+  --color-info: #2563EB;
+  --color-info-light: #DBEAFE;
+
+  /* ── Escala de grises ── */
+  --gris-900: #111827;
+  --gris-800: #1F2937;
+  --gris-700: #374151;
+  --gris-600: #4B5563;
+  --gris-500: #6B7280;
+  --gris-400: #9CA3AF;
+  --gris-300: #D1D5DB;
+  --gris-200: #E5E7EB;
+  --gris-100: #F3F4F6;
+  --gris-50: #F9FAFB;
+  --blanco: #FFFFFF;
+
+  /* ── Colores de texto ── */
+  --texto-principal: var(--gris-800);
+  --texto-secundario: var(--gris-500);
+  --texto-invertido: var(--blanco);
+
+  /* ── Colores de fondo ── */
+  --fondo-principal: var(--gris-100);
+  --fondo-secundario: var(--blanco);
+  --fondo-menu: var(--gris-800);
+
+  /* ── Tipografía ── */
+  --fuente-principal: system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --fuente-mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono',
+    'Consolas', 'Monaco', monospace;
+
+  /* ── Tamaños de fuente ── */
+  --texto-xs: 0.75rem;    /* 12px */
+  --texto-sm: 0.875rem;   /* 14px */
+  --texto-base: 1rem;     /* 16px */
+  --texto-lg: 1.125rem;   /* 18px */
+  --texto-xl: 1.25rem;    /* 20px */
+  --texto-2xl: 1.5rem;    /* 24px */
+  --texto-3xl: 1.875rem;  /* 30px */
+
+  /* ── Espaciado ── */
+  --espacio-2xs: 0.125rem;  /* 2px */
+  --espacio-xs: 0.25rem;    /* 4px */
+  --espacio-sm: 0.5rem;     /* 8px */
+  --espacio-md: 1rem;       /* 16px */
+  --espacio-lg: 1.5rem;     /* 24px */
+  --espacio-xl: 2rem;       /* 32px */
+  --espacio-2xl: 3rem;      /* 48px */
+
+  /* ── Bordes ── */
+  --radio-sm: 4px;
+  --radio-md: 8px;
+  --radio-lg: 12px;
+  --radio-xl: 16px;
+  --radio-full: 9999px;
+  --borde-color: var(--gris-200);
+  --borde-grosor: 1px;
+
+  /* ── Sombras ── */
+  --sombra-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --sombra-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --sombra-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --sombra-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* ── Transiciones ── */
+  --transicion-rapida: 0.15s ease;
+  --transicion-normal: 0.2s ease;
+  --transicion-lenta: 0.3s ease;
+
+  /* ── Z-index ── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+
+  /* ── Layout ── */
+  --ancho-menu: 260px;
+  --alto-header: 56px;
+  --alto-footer: 36px;
 }
 
-/* Contenido principal */
-#contenido {
+/* ──────────────────────────────────────────────────────────────
+   TIPOGRAFÍA BASE
+   ────────────────────────────────────────────────────────────── */
+body {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-base);
+  color: var(--texto-principal);
+  background-color: var(--fondo-principal);
+}
+
+h1 { font-size: var(--texto-2xl); font-weight: 700; }
+h2 { font-size: var(--texto-xl); font-weight: 600; }
+h3 { font-size: var(--texto-lg); font-weight: 600; }
+h4 { font-size: var(--texto-base); font-weight: 600; }
+
+/* ──────────────────────────────────────────────────────────────
+   LAYOUT BASE DEL ERP
+   Estructura: Header fijo + (Menú lateral + Contenido) + Footer
+   ────────────────────────────────────────────────────────────── */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#app {
+  display: flex;
   flex: 1;
-  padding: var(--espacio-xl);
-  overflow-y: auto;
+  min-height: 0; /* Permite que el flex se encoja */
 }
 
-#contenido h2 {
-  font-size: 1.5rem;
-  margin-bottom: var(--espacio-md);
-  color: var(--gris-oscuro);
+/* ──────────────────────────────────────────────────────────────
+   UTILIDADES GENÉRICAS
+   ────────────────────────────────────────────────────────────── */
+.texto-derecha { text-align: right; }
+.texto-centro { text-align: center; }
+.texto-exito { color: var(--color-exito); }
+.texto-error { color: var(--color-error); }
+.texto-alerta { color: var(--color-alerta); }
+
+.oculto { display: none !important; }
+
+.monto {
+  font-family: var(--fuente-mono);
+  font-size: var(--texto-sm);
 }
 
-#contenido p {
-  margin-bottom: var(--espacio-md);
-  color: var(--gris-medio);
+.separador {
+  border: none;
+  border-top: var(--borde-grosor) solid var(--borde-color);
+  margin: var(--espacio-lg) 0;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SCROLLBAR PERSONALIZADO
+   ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gris-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gris-300);
+  border-radius: var(--radio-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gris-400);
 }

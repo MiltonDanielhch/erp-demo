@@ -1,0 +1,263 @@
+/* ══════════════════════════════════════════════════════════════
+   reportes.css — ERP Contable Bolivia
+   Estilos para impresión de estados financieros y reportes
+   ══════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────
+   ESTILOS DE REPORTE (en pantalla)
+   ────────────────────────────────────────────────────────────── */
+.reporte {
+  background-color: var(--blanco);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--espacio-2xl);
+  box-shadow: var(--sombra-md);
+  border-radius: var(--radio-md);
+}
+
+.reporte-header {
+  text-align: center;
+  margin-bottom: var(--espacio-xl);
+  padding-bottom: var(--espacio-lg);
+  border-bottom: 2px solid var(--gris-800);
+}
+
+.reporte-empresa {
+  font-size: var(--texto-lg);
+  font-weight: 700;
+  color: var(--gris-900);
+}
+
+.reporte-nit {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin-top: var(--espacio-2xs);
+}
+
+.reporte-titulo {
+  font-size: var(--texto-xl);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: var(--espacio-md);
+  color: var(--gris-800);
+}
+
+.reporte-periodo {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  font-style: italic;
+}
+
+.reporte-nota {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  margin-top: var(--espacio-xs);
+}
+
+/* Tabla de reporte */
+.reporte-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--texto-sm);
+  margin-bottom: var(--espacio-lg);
+}
+
+.reporte-tabla th,
+.reporte-tabla td {
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-bottom: 1px solid var(--gris-200);
+}
+
+.reporte-tabla th {
+  text-align: left;
+  font-weight: 600;
+  background-color: var(--gris-50);
+}
+
+.reporte-tabla .col-monto {
+  text-align: right;
+  font-family: var(--fuente-mono);
+  font-size: var(--texto-xs);
+}
+
+.reporte-tabla .fila-subtitulo {
+  font-weight: 600;
+  background-color: var(--gris-50);
+}
+
+.reporte-tabla .fila-total {
+  font-weight: 700;
+  border-top: 2px solid var(--gris-800);
+  background-color: var(--gris-50);
+}
+
+.reporte-tabla .fila-separador td {
+  border-bottom: 2px solid var(--gris-800);
+  padding: 0;
+  height: 4px;
+}
+
+/* Firmas al final del reporte */
+.reporte-firmas {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--espacio-2xl);
+  padding-top: var(--espacio-xl);
+}
+
+.reporte-firma {
+  text-align: center;
+  width: 200px;
+}
+
+.reporte-firma .linea {
+  border-top: 1px solid var(--gris-800);
+  margin-bottom: var(--espacio-xs);
+  padding-top: var(--espacio-sm);
+}
+
+.reporte-firma .nombre {
+  font-size: var(--texto-sm);
+  font-weight: 500;
+}
+
+.reporte-firma .cargo {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ESTILOS DE IMPRESIÓN (@media print)
+
+   Al imprimir (Ctrl+P o window.print()):
+   - Se oculta el menú lateral, header y footer del ERP
+   - Se ocultan botones y elementos interactivos
+   - El reporte ocupa toda la página
+   - Se fuerza saltos de página entre secciones
+   ────────────────────────────────────────────────────────────── */
+@media print {
+  /* Ocultar elementos de navegación del ERP */
+  #header-principal,
+  #menu-lateral,
+  #footer-principal,
+  .btn,
+  .tabs,
+  .toast-contenedor,
+  .modal-overlay,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset del layout */
+  body {
+    background: white !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  #app {
+    display: block !important;
+  }
+
+  #contenido {
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* El reporte ocupa todo el ancho */
+  .reporte {
+    max-width: 100%;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* Tipografía de impresión */
+  .reporte-empresa { font-size: 14pt; }
+  .reporte-titulo { font-size: 12pt; }
+  .reporte-tabla { font-size: 10pt; }
+  .reporte-tabla th,
+  .reporte-tabla td {
+    padding: 4pt 6pt;
+  }
+
+  /* Forzar saltos de página */
+  .salto-pagina {
+    page-break-before: always;
+  }
+
+  .sin-salto {
+    page-break-inside: avoid;
+  }
+
+  /* Evitar que las tablas se corten entre páginas */
+  .reporte-tabla tr {
+    page-break-inside: avoid;
+  }
+
+  .reporte-tabla thead {
+    display: table-header-group; /* Repetir encabezado en cada página */
+  }
+
+  /* Márgenes de página */
+  @page {
+    margin: 2cm;
+    size: A4;
+  }
+
+  /* Primera página sin margen superior extra */
+  @page :first {
+    margin-top: 1.5cm;
+  }
+
+  /* Colores exactos (sin optimización del navegador) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ocultar sombras y bordes decorativos */
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Links: mostrar la URL si es relevante */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #666;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   BOTÓN DE IMPRESIÓN (solo visible en pantalla)
+   ────────────────────────────────────────────────────────────── */
+.btn-imprimir {
+  position: fixed;
+  bottom: var(--espacio-xl);
+  left: var(--espacio-xl);
+  z-index: var(--z-sticky);
+  background-color: var(--gris-800);
+  color: var(--blanco);
+  border: none;
+  padding: var(--espacio-sm) var(--espacio-lg);
+  border-radius: var(--radio-full);
+  cursor: pointer;
+  font-size: var(--texto-sm);
+  box-shadow: var(--sombra-lg);
+  transition: all var(--transicion-normal);
+}
+
+.btn-imprimir:hover {
+  background-color: var(--gris-900);
+  transform: translateY(-2px);
+}
+
+@media print {
+  .btn-imprimir {
+    display: none !important;
+  }
+}
