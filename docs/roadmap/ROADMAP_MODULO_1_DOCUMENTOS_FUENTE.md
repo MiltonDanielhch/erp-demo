@@ -67,10 +67,10 @@ El **Servicio de Impuestos Nacionales (SIN)** exige que toda transacción esté 
 ## Tareas de la Fase 1.1
 
 ```text
-[ ] Crear docs/roadmap/ROADMAP_MODULO_1_DOCUMENTOS_FUENTE.md
+[x] Crear docs/roadmap/ROADMAP_MODULO_1_DOCUMENTOS_FUENTE.md
     → Este mismo archivo (ya lo estás leyendo).
 
-[ ] Crear docs/aprendizaje/01-documentos-fuente.md
+[x] Crear docs/aprendizaje/01-documentos-fuente.md
     → Explicación teórica para exposición (máximo 2 páginas).
     → Incluir: definición, tipos, regla de oro, por qué importa en Bolivia.
     → 🧠 Mini-Prompt para IA: "Escribe una explicación didáctica de 
@@ -79,7 +79,7 @@ El **Servicio de Impuestos Nacionales (SIN)** exige que toda transacción esté 
       Incluye ejemplos concretos: factura de compra, recibo de caja, 
       nota de entrada. Explica la regla 'sin documento no hay asiento'."
 
-[ ] Crear docs/aprendizaje/02-tipos-documentos-tabla.md
+[x] Crear docs/aprendizaje/02-tipos-documentos-tabla.md
     → Tabla con los 12 tipos de documentos de la guía original.
     → Columnas: Tipo | Origen | Módulo que lo recibe | Valida
     → 🧠 Mini-Prompt para IA: "Genera una tabla markdown con los 
