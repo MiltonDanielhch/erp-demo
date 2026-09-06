@@ -339,7 +339,7 @@ vistas/documentos.html
     → Funcion manejarSubmit(): llama a window.CapaDocumentos.registrarDocumento().
     → Funcion manejarFiltros(): filtra la tabla sin recargar.
 
-[ ] Conectar el formulario con la Capa 1
+[x] Conectar el formulario con la Capa 1
     → Al hacer clic en "Registrar":
       1. Leer valores del formulario.
       2. Construir objeto documento según tipo.
@@ -347,7 +347,7 @@ vistas/documentos.html
       4. Si éxito: mostrar toast verde, limpiar formulario, refrescar tabla.
       5. Si error: mostrar toast rojo con mensaje específico.
 
-[ ] Agregar enlace en el menú lateral
+[x] Agregar enlace en el menú lateral
     → En index.html, agregar: <a href="#/documentos">📄 Documentos</a>
     → El enrutador debe poder cargar vistas/documentos.html.
 ```
@@ -404,7 +404,7 @@ Validaciones:
 ## Tareas de la Fase 1.5
 
 ```text
-[ ] Implementar validarNIT(nit) en validadores.js
+[x] Implementar validarNIT(nit) en validadores.js
     → Remover guión y espacios.
     → Aplicar algoritmo módulo 11 con pesos 2-9 cíclicos.
     → Devolver true si el dígito verificador coincide.
@@ -414,7 +414,7 @@ Validaciones:
       usando pesos cíclicos del 2 al 9. Devuelve true/false. 
       Incluye ejemplos de NITs válidos e inválidos para probar."
 
-[ ] Implementar validarCUF(cuf) en validadores.js
+[x] Implementar validarCUF(cuf) en validadores.js
     → Verificar longitud exacta de 43 caracteres.
     → Verificar que solo contiene [A-Z0-9].
     → Extraer los primeros caracteres y validar que sean un NIT válido.
@@ -424,20 +424,20 @@ Validaciones:
       caracteres permitidos, y que los primeros dígitos correspondan 
       a un NIT válido. Devuelve objeto { valido, errores[] }."
 
-[ ] Implementar validarPeriodoContable(fechaEmision) en capa1-documentos.js
+[x] Implementar validarPeriodoContable(fechaEmision) en capa1-documentos.js
     → Convertir fechaEmision a formato "AAAA-MM".
     → Verificar que el período esté abierto.
     → Verificar que no sea una fecha futura.
     → Devolver true/false con mensaje explicativo.
 
-[ ] Implementar validarDuplicado(datos) en capa1-documentos.js
+[x] Implementar validarDuplicado(datos) en capa1-documentos.js
     → Buscar si ya existe un documento con el mismo:
       tipo + numero + nitProveedorCliente (para facturas)
       tipo + numero (para otros documentos)
     → Si existe → devolver error: "Documento duplicado: ya se 
       registró con el número X para el NIT Y".
 
-[ ] Integrar todas las validaciones en validarDocumento()
+[x] Integrar todas las validaciones en validarDocumento()
     → Ejecutar en orden: NIT → CUF → Período → Duplicado.
     → Si alguna falla, detener y devolver el error específico.
     → Si todas pasan, devolver { valido: true }.

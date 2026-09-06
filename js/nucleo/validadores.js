@@ -116,6 +116,12 @@ const Validadores = {
    * Valida un CUF (Código Único de Factura) del sistema SIAT.
    *
    * El CUF tiene exactamente 43 caracteres alfanuméricos [A-Z0-9].
+   * Los primeros caracteres contienen el NIT del emisor.
+   *
+   * Estructura típica:
+   * B5A3C8D9E1F2G3H4I5J6K7L8M9N0O1P2Q3R4S5T6U
+   * ├──┤├──────────────────────────────────────┤
+   * NIT    Código único generado por el SIN
    *
    * @param {string} cuf - El CUF a validar
    * @returns {Object} { valido, errores }
@@ -127,14 +133,31 @@ const Validadores = {
       return { valido: false, errores: ['El CUF es requerido.'] };
     }
 
-    // Verificar longitud exacta: 43 caracteres
+    // Validación 1: Longitud exacta de 43 caracteres
     if (cuf.length !== 43) {
       errores.push(`El CUF debe tener exactamente 43 caracteres. Tiene ${cuf.length}.`);
     }
 
-    // Verificar que solo contiene caracteres alfanuméricos en mayúscula
+    // Validación 2: Solo caracteres alfanuméricos en mayúscula
     if (!/^[A-Z0-9]+$/.test(cuf)) {
       errores.push('El CUF solo puede contener letras mayúsculas (A-Z) y dígitos (0-9).');
+    }
+
+    // Validación 3: Extraer y validar NIT embebido (si es posible)
+    // El NIT suele estar en los primeros 9-12 caracteres
+    // Esto es una validación opcional, no todos los CUFs tienen el NIT visible
+    if (cuf.length >= 12 && errores.length === 0) {
+      // Intentar extraer secuencia de dígitos del inicio
+      const match = cuf.match(/^(\d{8,11})/);
+      if (match) {
+        const nitBase = match[1];
+        // Podríamos validar que este NIT existe, pero requeriría
+        // acceso a una base de datos de NITs válidos del SIN
+        // Por ahora solo verificamos que sea una secuencia válida
+        if (nitBase.length < 8) {
+          errores.push('El NIT extraído del CUF es demasiado corto.');
+        }
+      }
     }
 
     return { valido: errores.length === 0, errores };

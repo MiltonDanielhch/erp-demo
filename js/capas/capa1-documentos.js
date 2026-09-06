@@ -20,14 +20,6 @@
  */
 class CapaDocumentos {
 
-  /**
-   * Constructor de la Capa 1.
-   *
-   * @param {Object} almacenamiento - Instancia de AlmacenamientoLocal
-   *   Se pasa como parámetro (inyección de dependencias) en lugar de
-   *   buscar window.almacenamiento, para evitar problemas de orden
-   *   de inicialización.
-   */
   constructor(almacenamiento) {
     if (!almacenamiento) {
       throw new Error('CapaDocumentos requiere una instancia de AlmacenamientoLocal');
@@ -43,24 +35,10 @@ class CapaDocumentos {
   // REGISTRO DE DOCUMENTOS
   // ════════════════════════════════════════════════════════════
 
-  /**
-   * Registra un nuevo documento fuente en el sistema.
-   *
-   * Flujo:
-   * 1. Validar campos requeridos
-   * 2. Validar reglas de negocio (NIT, CUF, fechas, duplicados)
-   * 3. Calcular campos automáticos (período contable, IVA, IT)
-   * 4. Asignar estado PENDIENTE
-   * 5. Guardar en localStorage
-   *
-   * @param {Object} datos - Datos del documento
-   * @returns {Object} { exito: boolean, mensaje: string, documento: object, errores: array }
-   */
   registrarDocumento(datos) {
     console.log('📄 Registrando documento:', datos.tipo, datos.numero);
 
     try {
-      // 1. Validar que el tipo de documento exista
       if (!TiposDocumentoUtilidades.tipoExiste(datos.tipo)) {
         return {
           exito: false,
@@ -70,7 +48,6 @@ class CapaDocumentos {
         };
       }
 
-      // 2. Validar campos requeridos
       const validacionCampos = CamposDocumentoUtilidades.validarCamposRequeridos(datos.tipo, datos);
       if (!validacionCampos.valido) {
         return {
@@ -81,7 +58,6 @@ class CapaDocumentos {
         };
       }
 
-      // 3. Validar reglas de negocio
       const validacionNegocio = this.validarDocumento(datos);
       if (!validacionNegocio.valido) {
         return {
@@ -92,10 +68,7 @@ class CapaDocumentos {
         };
       }
 
-      // 4. Preparar documento con campos automáticos
       const documento = this._prepararDocumento(datos);
-
-      // 5. Guardar en localStorage
       const documentoGuardado = this.almacenamiento.guardar(this.nombreColeccion, documento);
 
       if (!documentoGuardado) {
@@ -107,9 +80,7 @@ class CapaDocumentos {
         };
       }
 
-      // 6. Disparar evento de documento registrado
       this._dispararEvento('documento-registrado', documentoGuardado);
-
       console.log('✅ Documento registrado:', documentoGuardado.id);
 
       return {
@@ -130,37 +101,25 @@ class CapaDocumentos {
     }
   }
 
-  /**
-   * Prepara el documento con campos automáticos.
-   * @param {Object} datos - Datos originales del documento
-   * @returns {Object} Documento completo con campos calculados
-   * @private
-   */
   _prepararDocumento(datos) {
     const documento = { ...datos };
 
-    // Generar ID único
     if (!documento.id) {
       documento.id = this._generarId();
     }
 
-    // Asignar estado inicial
     documento.estado = ESTADOS_DOCUMENTO.PENDIENTE.codigo;
 
-    // Calcular período contable desde fechaEmision
     if (documento.fechaEmision) {
       documento.periodoContable = Utilidades.obtenerPeriodoContable(documento.fechaEmision);
     }
 
-    // Timestamps de auditoría
     documento.fechaRegistro = new Date().toISOString();
     documento.creadoEn = new Date().toISOString();
-    documento.creadoPor = 'sistema'; // TODO: obtener del usuario autenticado
+    documento.creadoPor = 'sistema';
 
-    // Calcular campos automáticos según el tipo
     this._calcularCamposAutomaticos(documento);
 
-    // Historial de cambios
     documento.historial = [
       {
         fecha: new Date().toISOString(),
@@ -174,15 +133,9 @@ class CapaDocumentos {
     return documento;
   }
 
-  /**
-   * Calcula campos automáticos según el tipo de documento.
-   * @param {Object} documento - Documento a completar
-   * @private
-   */
   _calcularCamposAutomaticos(documento) {
     const tipo = documento.tipo;
 
-    // Facturas (compra y venta): calcular IVA
     if (tipo === 'FACTURA_COMPRA' || tipo === 'FACTURA_VENTA' ||
         tipo === 'NOTA_CREDITO_RECIBIDA' || tipo === 'NOTA_DEBITO_RECIBIDA' ||
         tipo === 'NOTA_CREDITO_EMITIDA' || tipo === 'NOTA_DEBITO_EMITIDA' ||
@@ -196,14 +149,12 @@ class CapaDocumentos {
       }
     }
 
-    // Facturas de venta: calcular IT
     if (tipo === 'FACTURA_VENTA' || tipo === 'NOTA_CREDITO_EMITIDA' || tipo === 'NOTA_DEBITO_EMITIDA') {
       if (documento.montoTotal && !documento.montoIT) {
         documento.montoIT = Utilidades.calcularIT(documento.montoTotal);
       }
     }
 
-    // Comprobante de retención: calcular monto retenido
     if (tipo === 'COMPROBANTE_RETENCION') {
       if (documento.baseImponible && documento.porcentajeRetencion && !documento.montoRetenido) {
         documento.montoRetenido = Utilidades.redondear(
@@ -212,7 +163,6 @@ class CapaDocumentos {
       }
     }
 
-    // Acta de activo fijo: calcular depreciación mensual
     if (tipo === 'ACTA_COMPRA_ACTIVO') {
       if (documento.montoTotal && documento.vidaUtilMeses && !documento.depreciacionMensual) {
         const valorResidual = documento.valorResidual || 0;
@@ -227,17 +177,11 @@ class CapaDocumentos {
   // VALIDACIONES
   // ════════════════════════════════════════════════════════════
 
-  /**
-   * Valida un documento contra reglas de negocio.
-   * @param {Object} datos - Datos del documento
-   * @returns {Object} { valido: boolean, errores: array }
-   */
   validarDocumento(datos) {
     const errores = [];
     const tipo = datos.tipo;
     const configTipo = TiposDocumentoUtilidades.obtenerTipo(tipo);
 
-    // Validación 1: NIT (si el tipo lo requiere)
     if (configTipo.requiereNIT) {
       const nit = datos.nitProveedor || datos.nitCliente || datos.nitRecibidoDe || datos.nitPagadoA;
       if (nit) {
@@ -248,14 +192,12 @@ class CapaDocumentos {
       }
     }
 
-    // Validación 2: CUF (si el tipo lo requiere)
     if (configTipo.requiereCUF && datos.cuf) {
       const validacionCUF = Validadores.validarCUF(datos.cuf);
       if (!validacionCUF.valido) {
         errores.push(...validacionCUF.errores);
       }
 
-      // Validar que el CUF no esté duplicado
       if (validacionCUF.valido) {
         const duplicado = this._buscarPorCUF(datos.cuf);
         if (duplicado) {
@@ -264,15 +206,18 @@ class CapaDocumentos {
       }
     }
 
-    // Validación 3: Fecha de emisión no futura
     if (datos.fechaEmision) {
-      const validacionFecha = Validadores.validarFechaNoFutura(datos.fechaEmision);
-      if (!validacionFecha.valido) {
-        errores.push(...validacionFecha.errores);
+      const validacionPeriodo = this.validarPeriodoContable(datos.fechaEmision);
+      if (!validacionPeriodo.valido) {
+        errores.push(...validacionPeriodo.errores);
       }
     }
 
-    // Validación 4: Monto positivo
+    const validacionDuplicado = this.validarDuplicado(datos);
+    if (!validacionDuplicado.valido) {
+      errores.push(...validacionDuplicado.errores);
+    }
+
     if (datos.montoTotal !== undefined && datos.montoTotal !== null) {
       const validacionMonto = Validadores.validarMonto(datos.montoTotal);
       if (!validacionMonto.valido) {
@@ -280,7 +225,6 @@ class CapaDocumentos {
       }
     }
 
-    // Validación 5: Notas de crédito/débito requieren factura origen
     if (configTipo.requiereFacturaOrigen && datos.facturaOrigenId) {
       const facturaOrigen = this.obtenerDocumentoPorId(datos.facturaOrigenId);
       if (!facturaOrigen) {
@@ -288,7 +232,6 @@ class CapaDocumentos {
       }
     }
 
-    // Validación 6: Productos (si el tipo los requiere)
     if (configTipo.requiereProductos && datos.productos) {
       if (!Array.isArray(datos.productos) || datos.productos.length === 0) {
         errores.push('El documento debe tener al menos un producto');
@@ -300,7 +243,6 @@ class CapaDocumentos {
       });
     }
 
-    // Validación 7: Coherencia de montos (IVA calculado vs declarado)
     if (datos.montoTotal && datos.montoIVA) {
       const ivaCalculado = Utilidades.calcularIVADeTotal(datos.montoTotal);
       const diferencia = Math.abs(ivaCalculado - datos.montoIVA);
@@ -318,12 +260,6 @@ class CapaDocumentos {
     };
   }
 
-  /**
-   * Busca un documento por su CUF.
-   * @param {string} cuf - CUF a buscar
-   * @returns {Object|null} Documento encontrado o null
-   * @private
-   */
   _buscarPorCUF(cuf) {
     const documentos = this.almacenamiento.obtener(this.nombreColeccion);
     return documentos.find(doc => doc.cuf === cuf) || null;
@@ -333,19 +269,9 @@ class CapaDocumentos {
   // CONSULTAS
   // ════════════════════════════════════════════════════════════
 
-  /**
-   * Obtiene documentos con filtros opcionales.
-   * @param {Object} filtros - Filtros de búsqueda
-   * @param {string} [filtros.tipo] - Tipo de documento
-   * @param {string} [filtros.estado] - Estado del documento
-   * @param {string} [filtros.periodoContable] - Período contable (AAAA-MM)
-   * @param {string} [filtros.nitContraparte] - NIT de proveedor/cliente
-   * @returns {Array} Documentos filtrados y ordenados
-   */
   obtenerDocumentos(filtros = {}) {
     let documentos = this.almacenamiento.obtener(this.nombreColeccion);
 
-    // Aplicar filtros
     if (filtros.tipo) {
       documentos = documentos.filter(doc => doc.tipo === filtros.tipo);
     }
@@ -367,7 +293,6 @@ class CapaDocumentos {
       );
     }
 
-    // Ordenar por fechaRegistro descendente (más recientes primero)
     documentos.sort((a, b) => {
       const fechaA = new Date(a.fechaRegistro || a.creadoEn);
       const fechaB = new Date(b.fechaRegistro || b.creadoEn);
@@ -377,29 +302,14 @@ class CapaDocumentos {
     return documentos;
   }
 
-  /**
-   * Obtiene un documento por su ID.
-   * @param {string} id - ID del documento
-   * @returns {Object|null} Documento o null si no existe
-   */
   obtenerDocumentoPorId(id) {
     return this.almacenamiento.obtenerPorId(this.nombreColeccion, id);
   }
 
-  /**
-   * Obtiene documentos por número.
-   * @param {string} numero - Número del documento
-   * @returns {Array} Documentos con ese número
-   */
   obtenerDocumentosPorNumero(numero) {
     return this.almacenamiento.buscar(this.nombreColeccion, doc => doc.numero === numero);
   }
 
-  /**
-   * Obtiene estadísticas de documentos.
-   * @param {string} [periodoContable] - Período opcional
-   * @returns {Object} Estadísticas
-   */
   obtenerEstadisticas(periodoContable = null) {
     const documentos = periodoContable
       ? this.obtenerDocumentos({ periodoContable })
@@ -415,19 +325,16 @@ class CapaDocumentos {
     };
 
     documentos.forEach(doc => {
-      // Por tipo
       if (!estadisticas.porTipo[doc.tipo]) {
         estadisticas.porTipo[doc.tipo] = 0;
       }
       estadisticas.porTipo[doc.tipo]++;
 
-      // Por estado
       if (!estadisticas.porEstado[doc.estado]) {
         estadisticas.porEstado[doc.estado] = 0;
       }
       estadisticas.porEstado[doc.estado]++;
 
-      // Totales
       estadisticas.montoTotal += doc.montoTotal || 0;
       estadisticas.montoIVA += doc.montoIVA || 0;
       estadisticas.montoIT += doc.montoIT || 0;
@@ -440,13 +347,6 @@ class CapaDocumentos {
   // GESTIÓN DE ESTADOS
   // ════════════════════════════════════════════════════════════
 
-  /**
-   * Cambia el estado de un documento.
-   * @param {string} id - ID del documento
-   * @param {string} nuevoEstado - Nuevo estado (código de ESTADOS_DOCUMENTO)
-   * @param {string} motivo - Motivo del cambio
-   * @returns {Object} { exito: boolean, mensaje: string, documento: object }
-   */
   cambiarEstado(id, nuevoEstado, motivo = '') {
     const documento = this.obtenerDocumentoPorId(id);
     if (!documento) {
@@ -457,7 +357,6 @@ class CapaDocumentos {
       };
     }
 
-    // Validar que el nuevo estado sea válido
     if (!ESTADOS_DOCUMENTO[nuevoEstado]) {
       return {
         exito: false,
@@ -466,7 +365,6 @@ class CapaDocumentos {
       };
     }
 
-    // Validar transición de estado
     const estadoAnterior = documento.estado;
     const transicionValida = this._validarTransicionEstado(estadoAnterior, nuevoEstado);
     if (!transicionValida.valida) {
@@ -477,15 +375,13 @@ class CapaDocumentos {
       };
     }
 
-    // Actualizar documento
     const documentoActualizado = {
       ...documento,
       estado: nuevoEstado,
       actualizadoEn: new Date().toISOString(),
-      actualizadoPor: 'sistema' // TODO: obtener del usuario autenticado
+      actualizadoPor: 'sistema'
     };
 
-    // Agregar al historial
     documentoActualizado.historial = documento.historial || [];
     documentoActualizado.historial.push({
       fecha: new Date().toISOString(),
@@ -495,7 +391,6 @@ class CapaDocumentos {
       motivo
     });
 
-    // Guardar cambios
     const resultado = this.almacenamiento.actualizar(this.nombreColeccion, id, documentoActualizado);
 
     if (!resultado) {
@@ -506,7 +401,6 @@ class CapaDocumentos {
       };
     }
 
-    // Disparar evento
     this._dispararEvento('documento-estado-cambiado', {
       documento: documentoActualizado,
       estadoAnterior,
@@ -522,20 +416,13 @@ class CapaDocumentos {
     };
   }
 
-  /**
-   * Valida si una transición de estado es válida.
-   * @param {string} estadoAnterior - Estado actual
-   * @param {string} estadoNuevo - Estado destino
-   * @returns {Object} { valida: boolean, mensaje: string }
-   * @private
-   */
   _validarTransicionEstado(estadoAnterior, estadoNuevo) {
     const transicionesValidas = {
       'PENDIENTE': ['VALIDADO', 'RECHAZADO'],
       'RECHAZADO': ['PENDIENTE'],
       'VALIDADO': ['PROCESADO', 'ANULADO'],
       'PROCESADO': ['ANULADO'],
-      'ANULADO': [] // Estado final
+      'ANULADO': []
     };
 
     const destinosPermitidos = transicionesValidas[estadoAnterior] || [];
@@ -550,11 +437,6 @@ class CapaDocumentos {
     };
   }
 
-  /**
-   * Valida un documento pendiente y lo marca como VALIDADO o RECHAZADO.
-   * @param {string} id - ID del documento
-   * @returns {Object} Resultado de la validación
-   */
   validarYActualizarEstado(id) {
     const documento = this.obtenerDocumentoPorId(id);
     if (!documento) {
@@ -573,7 +455,6 @@ class CapaDocumentos {
       };
     }
 
-    // Validar el documento
     const validacion = this.validarDocumento(documento);
     const nuevoEstado = validacion.valido
       ? ESTADOS_DOCUMENTO.VALIDADO.codigo
@@ -590,25 +471,13 @@ class CapaDocumentos {
   // UTILIDADES INTERNAS
   // ════════════════════════════════════════════════════════════
 
-  /**
-   * Genera un ID único para el documento.
-   * @returns {string} ID único
-   * @private
-   */
   _generarId() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    // Fallback para navegadores antiguos
     return `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Dispara un evento personalizado.
-   * @param {string} nombreEvento - Nombre del evento
-   * @param {Object} datos - Datos del evento
-   * @private
-   */
   _dispararEvento(nombreEvento, datos) {
     const evento = new CustomEvent(`erp:${nombreEvento}`, { detail: datos });
     window.dispatchEvent(evento);
@@ -618,11 +487,6 @@ class CapaDocumentos {
   // MÉTODOS DE ADMINISTRACIÓN
   // ════════════════════════════════════════════════════════════
 
-  /**
-   * Elimina un documento (solo si está en estado PENDIENTE o RECHAZADO).
-   * @param {string} id - ID del documento
-   * @returns {Object} { exito: boolean, mensaje: string }
-   */
   eliminarDocumento(id) {
     const documento = this.obtenerDocumentoPorId(id);
     if (!documento) {
@@ -632,7 +496,6 @@ class CapaDocumentos {
       };
     }
 
-    // Solo permitir eliminar documentos PENDIENTES o RECHAZADOS
     if (documento.estado !== ESTADOS_DOCUMENTO.PENDIENTE.codigo &&
         documento.estado !== ESTADOS_DOCUMENTO.RECHAZADO.codigo) {
       return {
@@ -658,10 +521,6 @@ class CapaDocumentos {
     };
   }
 
-  /**
-   * Cuenta documentos por tipo y estado.
-   * @returns {Object} Conteos
-   */
   contarDocumentos() {
     const documentos = this.almacenamiento.obtener(this.nombreColeccion);
 
@@ -673,5 +532,104 @@ class CapaDocumentos {
       procesados: documentos.filter(d => d.estado === 'PROCESADO').length,
       anulados: documentos.filter(d => d.estado === 'ANULADO').length
     };
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // VALIDACIÓN DE PERÍODO CONTABLE
+  // ════════════════════════════════════════════════════════════
+
+  validarPeriodoContable(fechaEmision) {
+    const errores = [];
+
+    if (!fechaEmision) {
+      return { valido: false, errores: ['La fecha de emisión es requerida.'] };
+    }
+
+    const fecha = new Date(fechaEmision);
+    if (isNaN(fecha.getTime())) {
+      return { valido: false, errores: ['La fecha de emisión no es válida.'] };
+    }
+
+    const hoy = new Date();
+    hoy.setHours(23, 59, 59, 999);
+
+    if (fecha > hoy) {
+      errores.push(
+        `No se pueden registrar documentos con fecha futura. ` +
+        `Fecha ingresada: ${Utilidades.formatearFecha(fechaEmision)}, ` +
+        `Fecha actual: ${Utilidades.formatearFecha(hoy.toISOString())}.`
+      );
+    }
+
+    const periodoContable = Utilidades.obtenerPeriodoContable(fechaEmision);
+    if (!periodoContable) {
+      errores.push('No se pudo determinar el período contable de la fecha.');
+    } else {
+      const periodosAbiertos = this._obtenerPeriodosAbiertos();
+
+      if (periodosAbiertos.length > 0 && !periodosAbiertos.includes(periodoContable)) {
+        errores.push(
+          `El período contable ${periodoContable} está cerrado. ` +
+          `Períodos abiertos: ${periodosAbiertos.join(', ')}.`
+        );
+      }
+    }
+
+    return { valido: errores.length === 0, errores };
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // VALIDACIÓN DE DUPLICADOS
+  // ════════════════════════════════════════════════════════════
+
+  validarDuplicado(datos) {
+    const errores = [];
+    const documentos = this.almacenamiento.obtener(this.nombreColeccion);
+
+    if (documentos.length === 0) {
+      return { valido: true, errores: [] };
+    }
+
+    const duplicado = documentos.find(doc => {
+      if (doc.tipo !== datos.tipo || doc.numero !== datos.numero) {
+        return false;
+      }
+
+      if (datos.tipo.includes('FACTURA') || datos.tipo.includes('NOTA')) {
+        const nitNuevo = datos.nitProveedor || datos.nitCliente;
+        const nitExistente = doc.nitProveedor || doc.nitCliente;
+        return nitNuevo === nitExistente;
+      }
+
+      return true;
+    });
+
+    if (duplicado) {
+      const nitInfo = duplicado.nitProveedor || duplicado.nitCliente
+        ? ` para el NIT ${duplicado.nitProveedor || duplicado.nitCliente}`
+        : '';
+
+      errores.push(
+        `Documento duplicado: ya se registró un ${duplicado.tipo} ` +
+        `con el número ${duplicado.numero}${nitInfo} ` +
+        `(ID: ${duplicado.id}, estado: ${duplicado.estado}).`
+      );
+    }
+
+    return { valido: errores.length === 0, errores };
+  }
+
+  _obtenerPeriodosAbiertos() {
+    const periodos = [];
+    const hoy = new Date();
+
+    for (let i = 0; i < 12; i++) {
+      const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+      const anio = fecha.getFullYear();
+      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+      periodos.push(`${anio}-${mes}`);
+    }
+
+    return periodos;
   }
 }
