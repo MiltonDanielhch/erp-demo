@@ -2,16 +2,18 @@
 // app.js — ERP Contable Bolivia
 // Punto de entrada del sistema
 // Conecta: Enrutador + Almacenamiento + Utilidades + Validadores
+//          + Capa 1 (Documentos) + Configuración boliviana
 // ══════════════════════════════════════════════════════════════
 
 /**
  * ERP Contable Bolivia — Prototipo Educativo
  *
  * Este archivo:
- * 1. Instancia los 4 módulos del núcleo.
- * 2. Configura el enrutador con todas las rutas.
- * 3. Expone las funciones al objeto window (para las vistas).
- * 4. Arranca el sistema.
+ * 1. Verifica que todas las dependencias estén cargadas.
+ * 2. Instancia los módulos del núcleo y las capas.
+ * 3. Configura el enrutador con todas las rutas.
+ * 4. Expone las funciones al objeto window (para las vistas).
+ * 5. Arranca el sistema.
  *
  * Los módulos del núcleo se cargan ANTES que este archivo
  * (mediante <script> tags en index.html).
@@ -52,82 +54,115 @@ const RUTAS_ERP = {
 function iniciarERP() {
   console.log('═══════════════════════════════════════════════════════');
   console.log('🇧🇴 ERP Contable Bolivia — Iniciando...');
-  console.log('Versión: 0.7.0 (Módulo 1: Fase 1.2)');
+  console.log('Versión: 0.8.0 (Módulo 1: Fase 1.3)');
   console.log('Stack: Vanilla JS + LocalStorage');
   console.log('Normativa: NC del CTNAC, Ley 843, LGT');
   console.log('═══════════════════════════════════════════════════════');
 
-  // 1. Verificar que BOLIVIA esté cargado
+  // ── 1. Verificar dependencias críticas ──────────────────────
   if (typeof BOLIVIA === 'undefined') {
     console.error('❌ BOLIVIA no está cargado. Verifica js/config/bolivia.js');
     return;
   }
 
-  // 2. Verificar que PLAN_CUENTAS esté cargado
   if (typeof PLAN_CUENTAS === 'undefined') {
     console.error('❌ PLAN_CUENTAS no está cargado. Verifica js/config/plan-cuentas.js');
     return;
   }
 
-  // 3. Instanciar el Almacenamiento
+  if (typeof TIPOS_DOCUMENTO === 'undefined') {
+    console.error('❌ TIPOS_DOCUMENTO no está cargado. Verifica js/config/tipos-documentos.js');
+    return;
+  }
+
+  if (typeof CAMPOS_DOCUMENTO === 'undefined') {
+    console.error('❌ CAMPOS_DOCUMENTO no está cargado. Verifica js/config/campos-documentos.js');
+    return;
+  }
+
+  // ── 2. Instanciar módulos del núcleo ────────────────────────
   const almacenamiento = new AlmacenamientoLocal('erp_bolivia');
   console.log('💾 Almacenamiento inicializado (localStorage).');
 
-  // 4. Instanciar el Motor Contable (stub, se completa en Módulo 3)
+  // ── 3. Instanciar capas ─────────────────────────────────────
+
+  // Capa 1: Documentos Fuente (Fase 1.3)
+  // Se le pasa 'almacenamiento' como dependencia (inyección)
+  const capaDocumentos = new CapaDocumentos(almacenamiento);
+  console.log('📄 Capa 1 (Documentos Fuente) inicializada.');
+
+  // Capa 3: Motor Contable (stub, se completa en Módulo 3)
   const motorContable = new MotorContable();
   console.log('⚙️  Motor Contable inicializado (stub — Módulo 3).');
 
-  // 5. Configurar el Enrutador
+  // ── 4. Configurar el Enrutador ──────────────────────────────
   const enrutador = new Enrutador({
     rutas: RUTAS_ERP,
     contenedorId: 'contenido',
     vistaPorDefecto: 'dashboard'
   });
 
-  // 6. Exponer módulos al objeto window (para acceso desde las vistas)
+  // ── 5. Exponer módulos al objeto window ─────────────────────
+  // Objeto principal ERP (para acceso estructurado)
   window.ERP = {
     enrutador,
     almacenamiento,
     motorContable,
+    capaDocumentos,
     utilidades: Utilidades,
     validadores: Validadores,
     bolivia: BOLIVIA,
     planCuentas: PLAN_CUENTAS,
     planCuentasUtilidades: PlanCuentasUtilidades,
-    version: '0.6.0',  // ← CAMBIADO de 0.5.0
+    tiposDocumento: TIPOS_DOCUMENTO,
+    estadosDocumento: ESTADOS_DOCUMENTO,
+    tiposDocumentoUtilidades: TiposDocumentoUtilidades,
+    camposDocumento: CAMPOS_DOCUMENTO,
+    camposDocumentoUtilidades: CamposDocumentoUtilidades,
+    version: '0.8.0',
     normativa: 'NC del CTNAC, Ley 843, LGT'
   };
 
-  // También exponer individualmente para acceso directo en consola
+  // Acceso directo en consola (atajos para desarrollo)
   window.utilidades = Utilidades;
   window.validadores = Validadores;
   window.almacenamiento = almacenamiento;
   window.motorContable = motorContable;
+  window.capaDocumentos = capaDocumentos;  // ← NUEVO Fase 1.3
   window.BOLIVIA = BOLIVIA;
   window.PLAN_CUENTAS = PLAN_CUENTAS;
   window.PlanCuentasUtilidades = PlanCuentasUtilidades;
-
-  // NUEVO: Tipos de documentos y campos (Fase 1.2)
   window.TIPOS_DOCUMENTO = TIPOS_DOCUMENTO;
   window.ESTADOS_DOCUMENTO = ESTADOS_DOCUMENTO;
   window.TiposDocumentoUtilidades = TiposDocumentoUtilidades;
   window.CAMPOS_DOCUMENTO = CAMPOS_DOCUMENTO;
   window.CamposDocumentoUtilidades = CamposDocumentoUtilidades;
 
-  // 7. Iniciar el enrutador (carga la vista inicial)
+  // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
 
-  // 8. Log de estado y comandos disponibles
+  // ── 7. Log de estado y comandos disponibles ─────────────────
   console.log('✅ Sistema iniciado correctamente.');
   console.log('');
   console.log('📝 Comandos disponibles en la consola:');
+  console.log('');
+  console.log('   📌 CONFIGURACIÓN BOLIVIANA:');
   console.log('   window.BOLIVIA.IVA_PORCENTAJE');
   console.log('   window.BOLIVIA.SMN_VIGENTE');
   console.log('   window.BOLIVIA.calcularFechaVencimiento("123456789-1", "2026-09")');
   console.log('   window.BOLIVIA.obtenerPorcentajeBonoAntiguedad(6)');
+  console.log('');
+  console.log('   📌 PLAN DE CUENTAS:');
   console.log('   window.PlanCuentasUtilidades.obtenerCuenta("1.1.01")');
   console.log('   window.PlanCuentasUtilidades.obtenerTodasLasCuentas()');
   console.log('   window.PlanCuentasUtilidades.obtenerCuentasPorNaturaleza("deudora")');
+  console.log('');
+  console.log('   📌 DOCUMENTOS (Capa 1):');
+  console.log('   window.TiposDocumentoUtilidades.listarTipos()');
+  console.log('   window.CamposDocumentoUtilidades.obtenerCamposRequeridos("FACTURA_COMPRA")');
+  console.log('   window.capaDocumentos.obtenerDocumentos()');
+  console.log('   window.capaDocumentos.registrarDocumento({...})');
+  console.log('   window.capaDocumentos.contarDocumentos()');
   console.log('');
 }
 

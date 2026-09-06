@@ -164,7 +164,7 @@ const documentoBase = {
 ## Tareas de la Fase 1.2
 
 ```text
-[ ] Crear js/config/tipos-documentos.js
+[x] Crear js/config/tipos-documentos.js
     → Exportar constante TIPOS_DOCUMENTO con todos los tipos:
       - FACTURA_COMPRA
       - FACTURA_VENTA
@@ -185,7 +185,7 @@ const documentoBase = {
       fuente de un ERP boliviano. Cada tipo debe tener: codigo, nombre, 
       descripcion, camposRequeridos (array), y validacionesEspeciales."
 
-[ ] Crear js/config/campos-documentos.js
+[x] Crear js/config/campos-documentos.js
     → Para cada tipo de documento, definir qué campos requiere.
     → Ejemplo: FACTURA_COMPRA requiere: nitProveedorCliente, cuf, 
       autorizacionSIN, montoTotal, fechaEmision
@@ -195,7 +195,7 @@ const documentoBase = {
       específicos. Incluye validación condicional: si tipo es FACTURA, 
       requiere CUF; si es NOTA_ENTRADA, requiere lista de productos."
 
-[ ] Crear docs/aprendizaje/03-modelo-datos-documentos.md
+[x] Crear docs/aprendizaje/03-modelo-datos-documentos.md
     → Explicar por qué se eligió esta estructura.
     → Mostrar diagrama de cómo se relacionan los campos.
     → 🧠 Mini-Prompt para IA: "Explica de forma didáctica por qué 
