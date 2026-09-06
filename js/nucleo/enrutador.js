@@ -78,12 +78,11 @@ class Enrutador {
     return ruta || this.vistaPorDefecto;
   }
 
-    /**
+  /**
    * Navega a una vista específica.
    * @param {string} ruta - La ruta a la que navegar (ej: "compras")
    */
   async navegarA(ruta) {
-    // Verificar que la ruta existe en el mapa de rutas
     if (!this.rutas[ruta]) {
       console.warn(`⚠️ Ruta "${ruta}" no encontrada. Redirigiendo a "${this.vistaPorDefecto}".`);
       ruta = this.vistaPorDefecto;
@@ -96,7 +95,6 @@ class Enrutador {
     }
 
     try {
-      // Mostrar indicador de carga
       contenedor.innerHTML = `
         <div class="cargando">
           <div class="spinner"></div>
@@ -104,7 +102,6 @@ class Enrutador {
         </div>
       `;
 
-      // Cargar el HTML de la vista usando fetch()
       const archivoVista = this.rutas[ruta];
       const respuesta = await fetch(archivoVista);
 
@@ -116,41 +113,36 @@ class Enrutador {
       contenedor.innerHTML = html;
 
       // ────────────────────────────────────────────────────────
-      // 🔥 EJECUTAR LOS SCRIPTS INLINE DE LA VISTA
-      //
-      // Cuando insertamos HTML con innerHTML, los <script> NO se
-      // ejecutan automáticamente. Los creamos de nuevo y los
-      // adjuntamos al DOM para forzar su ejecución.
+      // 🔥 EJECUTAR SCRIPTS DE LA VISTA
+      // 1. Scripts externos (<script src="...">): cargarlos dinámicamente
+      // 2. Scripts inline (<script>...</script>): recrear el tag
       // ────────────────────────────────────────────────────────
-      const scripts = contenedor.querySelectorAll('script');
-      scripts.forEach(scriptViejo => {
-        const scriptNuevo = document.createElement('script');
+      const scripts = Array.from(contenedor.querySelectorAll('script'));
 
-        // Copiar atributos (src, type, etc.)
-        Array.from(scriptViejo.attributes).forEach(attr => {
-          scriptNuevo.setAttribute(attr.name, attr.value);
-        });
+      for (const scriptOriginal of scripts) {
+        if (scriptOriginal.src) {
+          // Script EXTERNO: cargarlo y esperar
+          await this.cargarScriptExterno(scriptOriginal.src);
+          scriptOriginal.remove();
+        } else {
+          // Script INLINE: recrear el tag para forzar ejecución
+          const scriptNuevo = document.createElement('script');
+          Array.from(scriptOriginal.attributes).forEach(attr => {
+            scriptNuevo.setAttribute(attr.name, attr.value);
+          });
+          scriptNuevo.textContent = scriptOriginal.textContent;
+          scriptOriginal.parentNode.replaceChild(scriptNuevo, scriptOriginal);
+        }
+      }
 
-        // Copiar el contenido del script
-        scriptNuevo.textContent = scriptViejo.textContent;
-
-        // Reemplazar el script viejo por el nuevo (esto lo ejecuta)
-        scriptViejo.parentNode.replaceChild(scriptNuevo, scriptViejo);
-      });
-
-      // Actualizar estado
       this.vistaActual = ruta;
-
-      // Actualizar el menú lateral
       this.actualizarMenuActivo(ruta);
 
-      // Actualizar el hash sin generar un nuevo evento hashchange
       const hashActual = window.location.hash.replace(/^#\/?/, '');
       if (hashActual !== ruta) {
         window.history.pushState(null, '', `#/${ruta}`);
       }
 
-      // Log para debugging
       console.log(`📄 Vista cargada: ${ruta} → ${archivoVista} (${scripts.length} scripts ejecutados)`);
 
     } catch (error) {
@@ -170,6 +162,36 @@ class Enrutador {
         </div>
       `;
     }
+  }
+
+  /**
+   * Carga un script externo dinámicamente y espera a que termine.
+   * @param {string} src - Ruta del script
+   * @returns {Promise} Se resuelve cuando el script carga
+   */
+  cargarScriptExterno(src) {
+    return new Promise((resolve, reject) => {
+      // Verificar si ya está cargado (por si la vista se recarga)
+      const existente = document.querySelector(`script[src="${src}"]`);
+      if (existente) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+
+      script.onload = () => {
+        console.log(`✓ Script externo cargado: ${src}`);
+        resolve();
+      };
+
+      script.onerror = () => {
+        reject(new Error(`No se pudo cargar el script: ${src}`));
+      };
+
+      document.head.appendChild(script);
+    });
   }
 
   /**

@@ -235,12 +235,12 @@ js/capas/capa1-documentos.js
 ## Tareas de la Fase 1.3
 
 ```text
-[ ] Crear el archivo js/capas/capa1-documentos.js
+[x] Crear el archivo js/capas/capa1-documentos.js
     → Estructura de clase ES6 con todos los métodos listados arriba.
     → Por ahora, los métodos de validación pueden devolver true (stub).
     → El método guardarDocumento usa window.Almacenamiento.guardar().
 
-[ ] Implementar registrarDocumento(datos)
+[x] Implementar registrarDocumento(datos)
     → Recibe un objeto con los datos del documento.
     → Genera un id único con crypto.randomUUID() o Date.now().
     → Asigna estado inicial: "PENDIENTE".
@@ -254,16 +254,16 @@ js/capas/capa1-documentos.js
       de guardar, y devolver un objeto { exito: boolean, mensaje: string, 
       documento: object }. Usa localStorage para persistencia."
 
-[ ] Implementar obtenerDocumentos(filtros)
+[x] Implementar obtenerDocumentos(filtros)
     → Recibe filtros opcionales: { tipo, estado, periodoContable }.
     → Devuelve array de documentos filtrados.
     → Ordenados por fechaRegistro descendente.
 
-[ ] Implementar obtenerDocumentoPorId(id)
+[x] Implementar obtenerDocumentoPorId(id)
     → Busca en localStorage por id.
     → Devuelve el documento o null si no existe.
 
-[ ] Implementar cambiarEstado(id, nuevoEstado)
+[x] Implementar cambiarEstado(id, nuevoEstado)
     → Estados válidos: PENDIENTE, VALIDADO, RECHAZADO.
     → Registra quién y cuándo cambió el estado.
     → 🧠 Mini-Prompt para IA: "Escribe un método cambiarEstado en JS 
@@ -271,7 +271,7 @@ js/capas/capa1-documentos.js
       estados válidos son PENDIENTE, VALIDADO, RECHAZADO. Debe registrar 
       historial de cambios (quién, cuándo, de qué estado a cuál)."
 
-[ ] Exponer la clase al objeto window
+[x] Exponer la clase al objeto window
     → En app.js: window.CapaDocumentos = new CapaDocumentos()
     → Esto permite que las vistas HTML usen: 
       window.CapaDocumentos.registrarDocumento({...})
@@ -315,13 +315,13 @@ vistas/documentos.html
 ## Tareas de la Fase 1.4
 
 ```text
-[ ] Crear vistas/documentos.html
+[x] Crear vistas/documentos.html
     → Estructura semántica HTML5.
     → Formulario con campos que aparecen según el tipo de documento.
     → Tabla para listar documentos registrados.
     → Botones de acción: Nuevo, Filtrar, Registrar.
 
-[ ] Agregar estilos en css/componentes.css
+[x] Agregar estilos en css/componentes.css
     → Estilos para el formulario (form-group, form-input).
     → Estilos para la tabla (tabla, tabla-fila, tabla-celda).
     → Estilos para badges de estado (PENDIENTE=amarillo, 

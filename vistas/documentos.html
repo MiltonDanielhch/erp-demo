@@ -1,23 +1,414 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Documentos Fuente
-     Capa 1: Documentos Fuente
+     Capa 1: Registro y Validación de Documentos
      ══════════════════════════════════════════════════════════ -->
 
 <h2 class="contenido-titulo">📄 Documentos Fuente</h2>
-<p class="contenido-subtitulo">Registro y validación de documentos — "Sin documento, no hay asiento"</p>
+<p class="contenido-subtitulo">
+  Registro y validación de documentos — <strong>Regla de oro:</strong> Sin documento, no hay asiento
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Nuevo Documento</button>
-  <button class="tab">Listado de Documentos</button>
-  <button class="tab">Validaciones</button>
-</div>
+<!-- BARRA DE ACCIONES -->
+<div class="card" style="margin-bottom: var(--espacio-lg);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: center; justify-content: space-between;">
+    <div style="display: flex; gap: var(--espacio-sm); flex-wrap: wrap;">
+      <button id="btn-nuevo-documento" class="btn btn-primary">➕ Nuevo Documento</button>
+      <button id="btn-cancelar-documento" class="btn btn-ghost oculto">✖️ Cancelar</button>
+    </div>
 
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      📄 Módulo de Documentos — Se implementará en el <strong>Módulo 1</strong>.<br>
-      Aquí podrás registrar facturas, recibos, notas de entrada/salida,<br>
-      y validar NIT (algoritmo módulo 11) y CUF (43 caracteres).
-    </p>
+    <div style="display: flex; gap: var(--espacio-sm); flex-wrap: wrap;">
+      <select id="filtro-tipo" class="form-select" style="min-width: 180px;">
+        <option value="">Todos los tipos</option>
+      </select>
+      <select id="filtro-estado" class="form-select" style="min-width: 150px;">
+        <option value="">Todos los estados</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="VALIDADO">Validado</option>
+        <option value="RECHAZADO">Rechazado</option>
+        <option value="PROCESADO">Procesado</option>
+        <option value="ANULADO">Anulado</option>
+      </select>
+      <button id="btn-refrescar" class="btn btn-outline btn-sm" title="Refrescar lista">🔄</button>
+    </div>
   </div>
 </div>
+
+<!-- FORMULARIO DE REGISTRO -->
+<div id="formulario-documento" class="card oculto" style="margin-bottom: var(--espacio-lg);">
+  <div class="card-header">
+    <h3 id="form-titulo" style="font-size: 1rem;">📝 Nuevo Documento</h3>
+    <span id="form-tipo-badge" class="badge badge-info">Seleccionar tipo</span>
+  </div>
+
+  <form id="form-documento" novalidate>
+    <!-- Campos comunes -->
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="doc-tipo">Tipo de Documento <span class="requerido">*</span></label>
+        <select id="doc-tipo" name="tipo" class="form-select" required>
+          <option value="">-- Seleccionar --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="doc-numero">Número de Documento <span class="requerido">*</span></label>
+        <input type="text" id="doc-numero" name="numero" class="form-input" placeholder="Ej: F-2026-001234" required>
+        <span class="form-help">Número tal como aparece en el documento</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="doc-fecha-emision">Fecha de Emisión <span class="requerido">*</span></label>
+        <input type="date" id="doc-fecha-emision" name="fechaEmision" class="form-input" required>
+        <span class="form-help">No puede ser una fecha futura</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="doc-monto-total">Monto Total (Bs) <span class="requerido">*</span></label>
+        <input type="number" id="doc-monto-total" name="montoTotal" class="form-input" step="0.01" min="0.01" placeholder="0.00" required>
+        <span class="form-help" id="monto-detalle">Neto: Bs 0,00 | IVA: Bs 0,00</span>
+      </div>
+    </div>
+
+    <!-- Campos de FACTURA -->
+    <div id="campos-factura" class="oculto">
+      <hr class="separador">
+      <h4 style="font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: var(--espacio-md);">
+        🧾 Datos Fiscales de Factura
+      </h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="doc-nit-contraparte">
+            <span id="label-nit-contraparte">NIT</span> <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-nit-contraparte" name="nitContraparte" class="form-input" placeholder="123456789-1" maxlength="15">
+          <span class="form-help" id="nit-validacion">Ingrese el NIT con guión verificador</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-razon-social">Razón Social <span class="requerido">*</span></label>
+          <input type="text" id="doc-razon-social" name="razonSocial" class="form-input" placeholder="Nombre de la empresa" maxlength="100">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label" for="doc-cuf">CUF (Código Único de Factura) <span class="requerido">*</span></label>
+          <input type="text" id="doc-cuf" name="cuf" class="form-input form-input-mono" placeholder="43 caracteres [A-Z0-9]" maxlength="43" style="text-transform: uppercase;">
+          <span class="form-help">
+            <span id="cuf-contador">0</span>/43 caracteres —
+            <span id="cuf-validacion">Pendiente</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos de NOTA CRÉDITO/DÉBITO -->
+    <div id="campos-nota" class="oculto">
+      <hr class="separador">
+      <h4 style="font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: var(--espacio-md);">
+        🔄 Datos de la Nota (Crédito/Débito)
+      </h4>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label" for="doc-factura-origen">
+            Factura Origen <span class="requerido">*</span>
+          </label>
+          <select id="doc-factura-origen" name="facturaOrigenId" class="form-select">
+            <option value="">-- Seleccionar factura origen --</option>
+          </select>
+          <span class="form-help">La nota modifica/anula esta factura específica</span>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label" for="doc-motivo-nota">
+            Motivo de la Nota <span class="requerido">*</span>
+          </label>
+          <textarea id="doc-motivo-nota" name="motivo" class="form-textarea" placeholder="Explique el motivo: devolución de mercadería, descuento comercial, error en facturación, etc." maxlength="200" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos de ACTIVO FIJO -->
+    <div id="campos-activo-fijo" class="oculto">
+      <hr class="separador">
+      <h4 style="font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: var(--espacio-md);">
+        🏭 Datos del Activo Fijo
+      </h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="doc-codigo-activo">
+            Código del Activo <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-codigo-activo" name="codigoActivo" class="form-input"
+                 placeholder="Ej: ACT-001" maxlength="20">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-categoria-activo">
+            Categoría <span class="requerido">*</span>
+          </label>
+          <select id="doc-categoria-activo" name="categoriaActivo" class="form-select">
+            <option value="">-- Seleccionar --</option>
+            <option value="MAQUINARIA">Maquinaria</option>
+            <option value="VEHICULO">Vehículo</option>
+            <option value="MUEBLES">Muebles y Útiles</option>
+            <option value="EQUIPO_COMPUTO">Equipo de Cómputo</option>
+            <option value="EDIFICIO">Edificio</option>
+            <option value="TERRENO">Terreno</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label" for="doc-descripcion-activo">
+            Descripción del Activo <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-descripcion-activo" name="descripcionActivo" class="form-input"
+                 placeholder="Ej: Laptop Lenovo ThinkPad E14 Gen 4" maxlength="200">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-vida-util">
+            Vida Útil (meses) <span class="requerido">*</span>
+          </label>
+          <input type="number" id="doc-vida-util" name="vidaUtilMeses" class="form-input"
+                 min="1" placeholder="Ej: 60" value="60">
+          <span class="form-help">
+            Referencia: Equipos cómputo=60, Vehículos=60, Muebles=120, Edificios=480
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-metodo-depreciacion">
+            Método de Depreciación <span class="requerido">*</span>
+          </label>
+          <select id="doc-metodo-depreciacion" name="metodoDepreciacion" class="form-select">
+            <option value="LINEA_RECTA">Línea Recta</option>
+            <option value="UNIDADES_PRODUCCION">Unidades de Producción</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-cuf-factura">
+            CUF de la Factura de Compra <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-cuf-factura" name="cufFactura" class="form-input form-input-mono"
+                 placeholder="43 caracteres [A-Z0-9]" maxlength="43" style="text-transform: uppercase;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-nit-proveedor-activo">
+            NIT del Proveedor <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-nit-proveedor-activo" name="nitProveedor" class="form-input"
+                 placeholder="123456789-1" maxlength="15">
+        </div>
+      </div>
+    </div>
+
+        <!-- Campos de NÓMINA -->
+    <div id="campos-nomina" class="oculto">
+      <hr class="separador">
+      <h4 style="font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: var(--espacio-md);">
+        👥 Datos de Nómina
+      </h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="doc-periodo-nomina">
+            Período de Nómina <span class="requerido">*</span>
+          </label>
+          <input type="month" id="doc-periodo-nomina" name="periodoNomina" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-forma-pago-nomina">
+            Forma de Pago <span class="requerido">*</span>
+          </label>
+          <select id="doc-forma-pago-nomina" name="formaPagoNomina" class="form-select">
+            <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="CHEQUE">Cheque</option>
+          </select>
+        </div>
+      </div>
+      <p class="form-help" style="margin-top: var(--espacio-sm);">
+        💡 Los empleados y sus cálculos (AFP, RC-IVA, bono antigüedad) se gestionan en el módulo de Nómina.
+      </p>
+    </div>
+
+        <!-- Campos de EXTRACTO BANCARIO -->
+    <div id="campos-extracto" class="oculto">
+      <hr class="separador">
+      <h4 style="font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: var(--espacio-md);">
+        🏦 Datos del Extracto Bancario
+      </h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="doc-banco">
+            Banco <span class="requerido">*</span>
+          </label>
+          <select id="doc-banco" name="banco" class="form-select">
+            <option value="BANCO_MERCANTIL">Banco Mercantil Santa Cruz</option>
+            <option value="BNB">Banco Nacional de Bolivia</option>
+            <option value="BISA">Banco BISA</option>
+            <option value="UNION">Banco Unión</option>
+            <option value="GAINPRO">Banco Ganadero</option>
+            <option value="ECONOMICO">Banco Económico</option>
+            <option value="FIE">Banco FIE</option>
+            <option value="SOLIDARIO">Banco Solidario</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-cuenta-bancaria-ext">
+            Número de Cuenta <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-cuenta-bancaria-ext" name="cuentaBancariaExt" class="form-input"
+                 placeholder="Ej: 123-456789-0" maxlength="30">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-tipo-movimiento">
+            Tipo de Movimiento <span class="requerido">*</span>
+          </label>
+          <select id="doc-tipo-movimiento" name="tipoMovimiento" class="form-select">
+            <option value="CARGO">Cargo (salida)</option>
+            <option value="ABONO">Abono (entrada)</option>
+            <option value="COMISION">Comisión bancaria</option>
+            <option value="INTERES">Interés</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label" for="doc-concepto-ext">
+            Concepto del Movimiento <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-concepto-ext" name="conceptoExt" class="form-input"
+                 placeholder="Ej: Transferencia recibida de cliente" maxlength="200">
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos de TESORERÍA -->
+    <div id="campos-tesoreria" class="oculto">
+      <hr class="separador">
+      <h4 style="font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: var(--espacio-md);">
+        💵 Datos de Tesorería
+      </h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="doc-persona">
+            <span id="label-persona">Recibido de / Pagado a</span> <span class="requerido">*</span>
+          </label>
+          <input type="text" id="doc-persona" name="persona" class="form-input" placeholder="Nombre de la persona o empresa" maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-concepto">Concepto <span class="requerido">*</span></label>
+          <input type="text" id="doc-concepto" name="concepto" class="form-input" placeholder="Descripción del movimiento" maxlength="200">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-forma-pago">Forma de Pago <span class="requerido">*</span></label>
+          <select id="doc-forma-pago" name="formaPago" class="form-select">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TRANSFERENCIA">Transferencia</option>
+            <option value="CHEQUE">Cheque</option>
+            <option value="TARJETA">Tarjeta</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="doc-cuenta-bancaria">Cuenta Bancaria (opcional)</label>
+          <input type="text" id="doc-cuenta-bancaria" name="cuentaBancaria" class="form-input" placeholder="Banco - Número de cuenta">
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="form-group" style="margin-top: var(--espacio-md);">
+      <label class="form-label" for="doc-observaciones">Observaciones (opcional)</label>
+      <textarea id="doc-observaciones" name="observaciones" class="form-textarea" placeholder="Notas adicionales..." maxlength="500" rows="3"></textarea>
+    </div>
+
+    <!-- Botones -->
+    <div style="display: flex; gap: var(--espacio-sm); justify-content: flex-end; margin-top: var(--espacio-lg);">
+      <button type="button" id="btn-limpiar-form" class="btn btn-ghost">🧹 Limpiar</button>
+      <button type="submit" id="btn-registrar" class="btn btn-primary btn-lg">✅ Registrar Documento</button>
+    </div>
+  </form>
+</div>
+
+<!-- ESTADÍSTICAS -->
+<div class="grid-cards grid-cards-4" style="margin-bottom: var(--espacio-lg);">
+  <div class="dashboard-card">
+    <div class="card-titulo">Total Documentos</div>
+    <div class="card-valor" id="stats-total">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-alerta);">
+    <div class="card-titulo">Pendientes</div>
+    <div class="card-valor" id="stats-pendientes">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-exito);">
+    <div class="card-titulo">Validados</div>
+    <div class="card-valor" id="stats-validados">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-error);">
+    <div class="card-titulo">Rechazados</div>
+    <div class="card-valor" id="stats-rechazados">0</div>
+  </div>
+</div>
+
+<!-- TABLA DE DOCUMENTOS -->
+<div class="card">
+  <div class="card-header">
+    <h3 style="font-size: 1rem;">📋 Documentos Registrados</h3>
+    <span id="tabla-contador" class="badge badge-info">0 documentos</span>
+  </div>
+
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Número</th>
+          <th>Fecha Emisión</th>
+          <th>Contraparte</th>
+          <th class="texto-derecha">Monto Total</th>
+          <th>Estado</th>
+          <th class="texto-centro">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-documentos-body">
+        <tr>
+          <td colspan="7" style="text-align: center; padding: var(--espacio-xl); color: var(--texto-secundario);">
+            📭 No hay documentos registrados.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCRIPT EXTERNO DE LA VISTA
+     (Cargado dinámicamente por el enrutador)
+     ══════════════════════════════════════════════════════════ -->
+<script src="js/vistas/documentos-vista.js"></script>
+
+<!-- Estilos específicos de esta vista -->
+<style>
+  .form-input-mono {
+    font-family: var(--fuente-mono);
+    letter-spacing: 1px;
+  }
+
+  .oculto {
+    display: none !important;
+  }
+
+  [data-accion] {
+    margin: 0 2px;
+  }
+</style>
