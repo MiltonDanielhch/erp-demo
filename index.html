@@ -182,11 +182,17 @@
        El orden importa: primero las dependencias, luego app.js
        ══════════════════════════════════════════════════════════ -->
 
-  <!-- 1. Configuración del dominio (sin dependencias) -->
+  <!-- ══════════════════════════════════════════════════════════
+       SCRIPTS — Orden correcto de carga
+       ══════════════════════════════════════════════════════════ -->
+
+  <!-- 1. Configuración del dominio boliviano -->
   <script src="js/config/bolivia.js"></script>
   <script src="js/config/plan-cuentas.js"></script>
+  <script src="js/config/tipos-documentos.js"></script>
+  <script src="js/config/campos-documentos.js"></script>
 
-  <!-- 2. Núcleo (utilidades y validadores no dependen de config) -->
+  <!-- 2. Núcleo del sistema -->
   <script src="js/nucleo/utilidades.js"></script>
   <script src="js/nucleo/validadores.js"></script>
   <script src="js/nucleo/almacenamiento.js"></script>

@@ -52,7 +52,7 @@ const RUTAS_ERP = {
 function iniciarERP() {
   console.log('═══════════════════════════════════════════════════════');
   console.log('🇧🇴 ERP Contable Bolivia — Iniciando...');
-console.log('Versión: 0.6.0 (Módulo 0: Fase 0.6)');
+  console.log('Versión: 0.7.0 (Módulo 1: Fase 1.2)');
   console.log('Stack: Vanilla JS + LocalStorage');
   console.log('Normativa: NC del CTNAC, Ley 843, LGT');
   console.log('═══════════════════════════════════════════════════════');
@@ -106,6 +106,13 @@ console.log('Versión: 0.6.0 (Módulo 0: Fase 0.6)');
   window.BOLIVIA = BOLIVIA;
   window.PLAN_CUENTAS = PLAN_CUENTAS;
   window.PlanCuentasUtilidades = PlanCuentasUtilidades;
+
+  // NUEVO: Tipos de documentos y campos (Fase 1.2)
+  window.TIPOS_DOCUMENTO = TIPOS_DOCUMENTO;
+  window.ESTADOS_DOCUMENTO = ESTADOS_DOCUMENTO;
+  window.TiposDocumentoUtilidades = TiposDocumentoUtilidades;
+  window.CAMPOS_DOCUMENTO = CAMPOS_DOCUMENTO;
+  window.CamposDocumentoUtilidades = CamposDocumentoUtilidades;
 
   // 7. Iniciar el enrutador (carga la vista inicial)
   enrutador.iniciar();
