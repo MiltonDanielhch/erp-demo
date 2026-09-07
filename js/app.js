@@ -150,6 +150,15 @@ function iniciarERP() {
   const catalogoProductos = new CatalogoProductos();
   console.log('👥 Catálogos maestros inicializados (Clientes, Proveedores, Productos).');
 
+   // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
+  const moduloCompras = new ModuloCompras({
+    almacenamiento: almacenamiento,
+    capaDocumentos: capaDocumentos,
+    catalogoProveedores: catalogoProveedores,
+    catalogoProductos: catalogoProductos
+  });
+  console.log('🛒 Módulo de Compras inicializado.');
+
   // ── NUEVO: Cargar datos de ejemplo (pasando catálogos como parámetros) ──
   if (typeof cargarDatosEjemplo === 'function') {
     cargarDatosEjemplo({
@@ -178,6 +187,8 @@ function iniciarERP() {
   window.ERP.catalogoClientes = catalogoClientes;
   window.ERP.catalogoProveedores = catalogoProveedores;
   window.ERP.catalogoProductos = catalogoProductos;
+  window.moduloCompras = moduloCompras;
+  window.ERP.moduloCompras = moduloCompras;
 
   // ── Exponer al objeto window ─────────────────────────────────
   window.PeriodosContables = PeriodosContables;
@@ -219,6 +230,15 @@ function iniciarERP() {
   console.log('   window.CatalogoClientes.obtenerTodos()');
   console.log('   window.CatalogoProveedores.buscarPorNIT("123456789-7")');
   console.log('   window.CatalogoProductos.obtenerStockBajo()');
+  console.log('');
+  console.log('   📌 COMPRAS:');
+  console.log('   window.moduloCompras.solicitarCompra({...})');
+  console.log('   window.moduloCompras.generarOrdenCompra(solicitudId, {...})');
+  console.log('   window.moduloCompras.registrarRecepcion(ordenId, {...})');
+  console.log('   window.moduloCompras.registrarFacturaProveedor(ordenId, {...})');
+  console.log('   window.moduloCompras.registrarPago(cuentaId, {...})');
+  console.log('   window.moduloCompras.obtenerCuentasPorPagar()');
+  console.log('   window.moduloCompras.obtenerTotalPendiente()');
 }
 
 // ──────────────────────────────────────────────────────────────

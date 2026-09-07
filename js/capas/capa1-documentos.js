@@ -235,12 +235,24 @@ class CapaDocumentos {
     if (configTipo.requiereProductos && datos.productos) {
       if (!Array.isArray(datos.productos) || datos.productos.length === 0) {
         errores.push('El documento debe tener al menos un producto');
+      } else {
+        datos.productos.forEach((prod, idx) => {
+          // Aceptar diferentes nombres según el tipo de documento
+          let cantidad;
+
+          if (tipo === 'NOTA_ENTRADA') {
+            cantidad = prod.cantidadRecibida || prod.cantidad;
+          } else if (tipo === 'NOTA_SALIDA') {
+            cantidad = prod.cantidadSalida || prod.cantidad;
+          } else {
+            cantidad = prod.cantidad;
+          }
+
+          if (!cantidad || cantidad <= 0) {
+            errores.push(`Producto ${idx + 1}: cantidad debe ser mayor a 0`);
+          }
+        });
       }
-      datos.productos.forEach((prod, idx) => {
-        if (!prod.cantidad || prod.cantidad <= 0) {
-          errores.push(`Producto ${idx + 1}: cantidad debe ser mayor a 0`);
-        }
-      });
     }
 
     if (datos.montoTotal && datos.montoIVA) {
@@ -622,7 +634,7 @@ class CapaDocumentos {
   /**
    * Obtiene la lista de períodos contables abiertos.
    * Usa el gestor PeriodosContables si está disponible.
-   * 
+   *
    * @returns {Array} Lista de períodos en formato "AAAA-MM"
    * @private
    */
@@ -631,7 +643,7 @@ class CapaDocumentos {
     if (typeof PeriodosContables !== 'undefined' && PeriodosContables.obtenerAbiertos) {
       return PeriodosContables.obtenerAbiertos().map(p => p.periodo);
     }
-    
+
     // Fallback: generar los últimos 12 meses
     const periodos = [];
     const hoy = new Date();

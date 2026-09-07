@@ -178,13 +178,13 @@ const producto = {
 ## Tareas de la Fase 2.2
 
 ```text
-[ ] Crear js/config/catalogos.js
+[x] Crear js/config/catalogos.js
     → Clase CatalogoClientes con métodos CRUD básicos.
     → Clase CatalogoProveedores con métodos CRUD básicos.
     → Clase CatalogoProductos con métodos CRUD básicos.
     → Cada clase usa window.Almacenamiento para persistir.
 
-[ ] Implementar métodos CRUD en cada catálogo
+[x] Implementar métodos CRUD en cada catálogo
     → crear(datos): valida y guarda un nuevo registro.
     → obtenerTodos(): devuelve array completo.
     → obtenerPorId(id): busca uno específico.
@@ -197,7 +197,7 @@ const producto = {
       delete). Luego muestra cómo extenderla para CatalogoClientes, 
       CatalogoProveedores y CatalogoProductos con campos específicos."
 
-[ ] Crear validaciones específicas de catálogos
+[x] Crear validaciones específicas de catálogos
     → Cliente: NIT válido + no duplicado.
     → Proveedor: NIT válido + no duplicado.
     → Producto: código único + precio > 0 + stock >= 0.
@@ -207,12 +207,12 @@ const producto = {
       requiere código único y precio positivo. Devuelve objeto 
       { valido, errores[] }."
 
-[ ] Crear vistas/catalogos.html (pantalla de mantenimiento)
+[x] Crear vistas/catalogos.html (pantalla de mantenimiento)
     → Tres pestañas: Clientes | Proveedores | Productos.
     → Formulario para agregar/editar.
     → Tabla para listar con búsqueda por nombre o NIT.
 
-[ ] Cargar datos de ejemplo desde datos/ejemplo.json
+[x] Cargar datos de ejemplo desde datos/ejemplo.json
     → 3 clientes, 3 proveedores, 5 productos precargados.
     → Función cargarCatalogosEjemplo() que solo se ejecuta 
       si las colecciones están vacías.
@@ -238,22 +238,22 @@ SOLICITADA → ORDENADA → RECIBIDA → FACTURADA → PAGADA
 ## Tareas de la Fase 2.3
 
 ```text
-[ ] Crear js/modulos/compras.js
+[x] Crear js/modulos/compras.js
     → Clase ModuloCompras con métodos para cada etapa del ciclo.
 
-[ ] Implementar solicitarCompra(datos)
+[x] Implementar solicitarCompra(datos)
     → Crea una solicitud de compra (documento fuente tipo SOLICITUD_COMPRA).
     → Campos: solicitante, departamento, productos solicitados, justificación.
     → Estado inicial: "SOLICITADA".
 
-[ ] Implementar generarOrdenCompra(solicitudId)
+[x] Implementar generarOrdenCompra(solicitudId)
     → Convierte una solicitud aprobada en una Orden de Compra.
     → Genera número único: "OC-2026-001", "OC-2026-002", etc.
     → Selecciona proveedor (de la solicitud o el usuario elige).
     → Calcula totales por producto y total general.
     → Estado: "ORDENADA".
 
-[ ] Implementar registrarRecepcion(ordenId, datosRecepcion)
+[x] Implementar registrarRecepcion(ordenId, datosRecepcion)
     → Registra la entrada de mercancía al almacén.
     → Genera una NOTA_ENTRADA (documento fuente de Capa 1).
     → Actualiza el stock en el catálogo de productos.
@@ -265,7 +265,7 @@ SOLICITADA → ORDENADA → RECIBIDA → FACTURADA → PAGADA
       actualizar el stock del producto, y devolver un objeto con 
       el resultado. Incluye manejo de recepciones parciales."
 
-[ ] Implementar registrarFacturaProveedor(ordenId, datosFactura)
+[x] Implementar registrarFacturaProveedor(ordenId, datosFactura)
     → Registra la factura del proveedor.
     → Valida NIT del proveedor contra el catálogo.
     → Valida CUF de la factura.
@@ -279,19 +279,19 @@ SOLICITADA → ORDENADA → RECIBIDA → FACTURADA → PAGADA
       contable (Inventario Debe, IVA Crédito Fiscal Debe, 
       Proveedores Haber)."
 
-[ ] Implementar registrarPago(facturaId, datosPago)
+[x] Implementar registrarPago(facturaId, datosPago)
     → Registra el pago al proveedor.
     → Reduce la cuenta por pagar.
     → Si es pago total → estado "PAGADA".
     → Si es pago parcial → estado "PARCIALMENTE_PAGADA".
     → Genera un RECIBO_PAGO (documento fuente).
 
-[ ] Implementar obtenerCuentasPorPagar(filtros)
+[x] Implementar obtenerCuentasPorPagar(filtros)
     → Lista todas las facturas pendientes de pago.
     → Filtros: proveedor, vencimiento, monto mínimo.
     → Ordenado por fecha de vencimiento ascendente.
 
-[ ] Implementar obtenerHistorialCompras(proveedorId)
+[x] Implementar obtenerHistorialCompras(proveedorId)
     → Todas las compras hechas a un proveedor específico.
     → Para análisis de proveedor (volumen, puntualidad, etc.)
 ```
