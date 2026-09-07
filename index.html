@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
   <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/reportes.css">
 </head>
+
 <body>
 
   <!-- ══════════════════════════════════════════════════════════
@@ -64,6 +66,13 @@
           </ul>
         </div>
 
+        <li>
+          <a href="#/catalogos" class="menu-link" data-vista="catalogos">
+            <span class="menu-icono">📚</span>
+            <span class="menu-texto">Catálogos</span>
+          </a>
+        </li>
+        
         <!-- Sección: Capa 2 - Módulos Operativos -->
         <div class="menu-seccion">
           <span class="menu-titulo">CAPA 2: MÓDULOS</span>
@@ -192,6 +201,7 @@
   <script src="js/config/tipos-documentos.js"></script>
   <script src="js/config/campos-documentos.js"></script>
   <script src="js/config/periodos-contables.js"></script>
+  <script src="js/config/catalogos.js"></script>
 
   <!-- 2. Núcleo del sistema -->
   <script src="js/nucleo/utilidades.js"></script>
@@ -203,7 +213,10 @@
   <script src="js/capas/capa3-motor.js"></script>
   <script src="js/capas/capa1-documentos.js"></script>
 
+  <script src="js/cargas/datos-ejemplo.js"></script>
+
   <!-- 4. Punto de entrada (último) -->
   <script src="js/app.js"></script>
 </body>
+
 </html>

@@ -96,7 +96,7 @@ representa el 14.94% de esos Bs 100 netos.
 ## Tareas de la Fase 2.1
 
 ```text
-[ ] Crear docs/aprendizaje/04-ciclo-compra-venta.md
+[x] Crear docs/aprendizaje/04-ciclo-compra-venta.md
     → Explicación teórica de ambos ciclos (máximo 2 páginas).
     → Incluir diagramas de flujo (pueden ser ASCII como arriba).
     → 🧠 Mini-Prompt para IA: "Escribe una explicación didáctica 
@@ -105,7 +105,7 @@ representa el 14.94% de esos Bs 100 netos.
       el IT del 3% se calcula sobre el monto bruto. Máximo 600 
       palabras. Usa ejemplos con montos en bolivianos."
 
-[ ] Crear docs/aprendizaje/05-iva-boliviano-explicado.md
+[x] Crear docs/aprendizaje/05-iva-boliviano-explicado.md
     → Explicar la diferencia entre tasa nominal (13%) y efectiva (14.94%).
     → Incluir el cambio pendiente a "IVA por fuera" (Ley 1733).
     → Mostrar la fórmula y un ejemplo numérico paso a paso.

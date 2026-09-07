@@ -29,6 +29,8 @@ const RUTAS_ERP = {
   // Capa 1: Documentos
   'documentos': 'vistas/documentos.html',
 
+  'catalogos': 'vistas/catalogos.html',
+
   // Capa 2: Módulos Operativos
   'compras': 'vistas/compras.html',
   'ventas': 'vistas/ventas.html',
@@ -54,7 +56,7 @@ const RUTAS_ERP = {
 function iniciarERP() {
   console.log('═══════════════════════════════════════════════════════');
   console.log('🇧🇴 ERP Contable Bolivia — Iniciando...');
-  console.log('Versión: 0.9.0 (Módulo 1: Documentos Fuente)');
+  console.log('Versión: 0.10.0 (Módulo 2: Fase 2.2)');
   console.log('Stack: Vanilla JS + LocalStorage');
   console.log('Normativa: NC del CTNAC, Ley 843, LGT');
   console.log('═══════════════════════════════════════════════════════');
@@ -142,6 +144,41 @@ function iniciarERP() {
   PeriodosContables.inicializar();
   console.log('📅 Gestor de períodos contables inicializado.');
 
+  // ── Instanciar catálogos maestros ────────────────────────────
+  const catalogoClientes = new CatalogoClientes();
+  const catalogoProveedores = new CatalogoProveedores();
+  const catalogoProductos = new CatalogoProductos();
+  console.log('👥 Catálogos maestros inicializados (Clientes, Proveedores, Productos).');
+
+  // ── NUEVO: Cargar datos de ejemplo (pasando catálogos como parámetros) ──
+  if (typeof cargarDatosEjemplo === 'function') {
+    cargarDatosEjemplo({
+      clientes: catalogoClientes,
+      proveedores: catalogoProveedores,
+      productos: catalogoProductos,
+      almacenamiento: almacenamiento
+    }).then(resultado => {
+      if (resultado.cargado) {
+        console.log('🎉 Datos de ejemplo cargados correctamente');
+      }
+    }).catch(error => {
+      console.error('❌ Error en carga de datos:', error);
+    });
+  }
+
+  // ── Exponer al objeto window ─────────────────────────────────
+  window.CatalogoClientes = catalogoClientes;
+  window.CatalogoProveedores = catalogoProveedores;
+  window.CatalogoProductos = catalogoProductos;
+  window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
+  window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
+  window.CONDICIONES_PAGO = CONDICIONES_PAGO;
+  window.UNIDADES_MEDIDA = UNIDADES_MEDIDA;
+  window.CATEGORIAS_PRODUCTO = CATEGORIAS_PRODUCTO;
+  window.ERP.catalogoClientes = catalogoClientes;
+  window.ERP.catalogoProveedores = catalogoProveedores;
+  window.ERP.catalogoProductos = catalogoProductos;
+
   // ── Exponer al objeto window ─────────────────────────────────
   window.PeriodosContables = PeriodosContables;
   window.ERP.periodosContables = PeriodosContables;
@@ -177,6 +214,11 @@ function iniciarERP() {
   console.log('   window.PeriodosContables.cerrarPeriodo("2026-09", "motivo")');
   console.log('   window.PeriodosContables.abrirPeriodo("2026-09")');
   console.log('');
+  console.log('');
+  console.log('   📌 CATÁLOGOS:');
+  console.log('   window.CatalogoClientes.obtenerTodos()');
+  console.log('   window.CatalogoProveedores.buscarPorNIT("123456789-7")');
+  console.log('   window.CatalogoProductos.obtenerStockBajo()');
 }
 
 // ──────────────────────────────────────────────────────────────

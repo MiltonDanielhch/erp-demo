@@ -1,0 +1,259 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Catálogos Maestros
+     Mantenimiento de Clientes, Proveedores y Productos
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">📚 Catálogos Maestros</h2>
+<p class="contenido-subtitulo">
+  Administración de la base de referencia del ERP: clientes, proveedores y productos
+</p>
+
+<!-- ══════════════════════════════════════════════════════════
+     ESTADÍSTICAS RÁPIDAS
+     ══════════════════════════════════════════════════════════ -->
+<div class="grid-cards grid-cards-4" style="margin-bottom: var(--espacio-lg);">
+  <div class="dashboard-card" style="border-left-color: var(--color-info);">
+    <div class="card-titulo">👤 Clientes</div>
+    <div class="card-valor" id="stats-clientes">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-alerta);">
+    <div class="card-titulo">🏭 Proveedores</div>
+    <div class="card-valor" id="stats-proveedores">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-exito);">
+    <div class="card-titulo">📦 Productos</div>
+    <div class="card-valor" id="stats-productos">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-primario);">
+    <div class="card-titulo">💰 Valor Inventario</div>
+    <div class="card-valor" id="stats-inventario">Bs 0</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SISTEMA DE PESTAÑAS
+     ══════════════════════════════════════════════════════════ -->
+<div class="card">
+  <div class="tabs-header" style="display: flex; border-bottom: 2px solid var(--color-borde); margin-bottom: var(--espacio-md);">
+    <button class="tab-btn activo" data-tab="clientes" style="padding: var(--espacio-sm) var(--espacio-md); background: none; border: none; border-bottom: 3px solid var(--color-primario); cursor: pointer; font-weight: 600;">
+      👤 Clientes
+    </button>
+    <button class="tab-btn" data-tab="proveedores" style="padding: var(--espacio-sm) var(--espacio-md); background: none; border: none; cursor: pointer; color: var(--texto-secundario);">
+      🏭 Proveedores
+    </button>
+    <button class="tab-btn" data-tab="productos" style="padding: var(--espacio-sm) var(--espacio-md); background: none; border: none; cursor: pointer; color: var(--texto-secundario);">
+      📦 Productos
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       BARRA DE ACCIONES
+       ══════════════════════════════════════════════════════════ -->
+  <div style="display: flex; gap: var(--espacio-sm); margin-bottom: var(--espacio-md); flex-wrap: wrap;">
+    <button id="btn-nuevo" class="btn btn-primary">➕ Nuevo</button>
+    <button id="btn-cancelar" class="btn btn-ghost oculto">✖️ Cancelar</button>
+    <div style="flex: 1; min-width: 200px;">
+      <input type="text" id="buscar" class="form-input" placeholder="🔍 Buscar por NIT, nombre o código...">
+    </div>
+    <button id="btn-refrescar" class="btn btn-outline btn-sm">🔄</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FORMULARIO (inicialmente oculto)
+       ══════════════════════════════════════════════════════════ -->
+  <div id="formulario" class="card oculto" style="background: var(--color-fondo-claro); margin-bottom: var(--espacio-md);">
+    <h3 id="form-titulo" style="margin-bottom: var(--espacio-md);">Nuevo registro</h3>
+
+    <form id="form-catalogo" novalidate>
+      <input type="hidden" id="form-id" name="id">
+
+      <!-- Campos para CLIENTES -->
+      <div id="campos-cliente" class="form-grid">
+        <div class="form-group">
+          <label class="form-label">NIT <span class="requerido">*</span></label>
+          <input type="text" id="c-nit" name="nit" class="form-input" placeholder="123456789-1" maxlength="15">
+          <span class="form-help" id="c-nit-validacion">Ingrese NIT con guión verificador</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Razón Social <span class="requerido">*</span></label>
+          <input type="text" id="c-razonSocial" name="razonSocial" class="form-input" maxlength="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input type="text" id="c-telefono" name="telefono" class="form-input" placeholder="591-2-2345678">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="c-email" name="email" class="form-input">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Dirección</label>
+          <input type="text" id="c-direccion" name="direccion" class="form-input" maxlength="200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Límite de Crédito (Bs)</label>
+          <input type="number" id="c-limiteCredito" name="limiteCredito" class="form-input" step="0.01" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Régimen Tributario</label>
+          <select id="c-regimenTributario" name="regimenTributario" class="form-select">
+            <option value="REGIMEN_GENERAL">Régimen General (RG)</option>
+            <option value="REGIMEN_SIMPLIFICADO">Régimen Simplificado (RTS)</option>
+            <option value="REGIMEN_AGRARIO">Régimen Agropecuario (RAU)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Campos para PROVEEDORES -->
+      <div id="campos-proveedor" class="form-grid oculto">
+        <div class="form-group">
+          <label class="form-label">NIT <span class="requerido">*</span></label>
+          <input type="text" id="p-nit" name="nit" class="form-input" placeholder="123456789-1" maxlength="15">
+          <span class="form-help" id="p-nit-validacion">Ingrese NIT con guión verificador</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Razón Social <span class="requerido">*</span></label>
+          <input type="text" id="p-razonSocial" name="razonSocial" class="form-input" maxlength="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input type="text" id="p-telefono" name="telefono" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="p-email" name="email" class="form-input">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Dirección</label>
+          <input type="text" id="p-direccion" name="direccion" class="form-input" maxlength="200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Condiciones de Pago</label>
+          <select id="p-condicionesPago" name="condicionesPago" class="form-select">
+            <option value="CONTADO">Contado</option>
+            <option value="CREDITO_15">Crédito 15 días</option>
+            <option value="CREDITO_30">Crédito 30 días</option>
+            <option value="CREDITO_60">Crédito 60 días</option>
+            <option value="CREDITO_90">Crédito 90 días</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Régimen Tributario</label>
+          <select id="p-regimenTributario" name="regimenTributario" class="form-select">
+            <option value="REGIMEN_GENERAL">Régimen General (RG)</option>
+            <option value="REGIMEN_SIMPLIFICADO">Régimen Simplificado (RTS)</option>
+            <option value="REGIMEN_AGRARIO">Régimen Agropecuario (RAU)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display: flex; align-items: center; gap: var(--espacio-sm);">
+            <input type="checkbox" id="p-esAgenteRetencion" name="esAgenteRetencion">
+            Es agente de retención (RC-IVA / IT)
+          </label>
+        </div>
+      </div>
+
+      <!-- Campos para PRODUCTOS -->
+      <div id="campos-producto" class="form-grid oculto">
+        <div class="form-group">
+          <label class="form-label">Código <span class="requerido">*</span></label>
+          <input type="text" id="pr-codigo" name="codigo" class="form-input" placeholder="PROD-001" maxlength="20" style="text-transform: uppercase;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre <span class="requerido">*</span></label>
+          <input type="text" id="pr-nombre" name="nombre" class="form-input" maxlength="100">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Descripción</label>
+          <input type="text" id="pr-descripcion" name="descripcion" class="form-input" maxlength="200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select id="pr-categoria" name="categoria" class="form-select">
+            <option value="TECNOLOGIA">Tecnología</option>
+            <option value="ALIMENTOS">Alimentos</option>
+            <option value="BEBIDAS">Bebidas</option>
+            <option value="LIMPIEZA">Limpieza</option>
+            <option value="PAPELERIA">Papelería</option>
+            <option value="ROPA">Ropa</option>
+            <option value="HERRAMIENTAS">Herramientas</option>
+            <option value="MOBILIARIO">Mobiliario</option>
+            <option value="CONSUMIBLE">Consumible</option>
+            <option value="SERVICIOS">Servicios</option>
+            <option value="OTROS">Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unidad de Medida</label>
+          <select id="pr-unidadMedida" name="unidadMedida" class="form-select">
+            <option value="UNIDAD">Unidad</option>
+            <option value="KILOGRAMO">Kilogramo</option>
+            <option value="GRAMO">Gramo</option>
+            <option value="LITRO">Litro</option>
+            <option value="METRO">Metro</option>
+            <option value="CAJA">Caja</option>
+            <option value="PAQUETE">Paquete</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Precio Venta (Bs, IVA incl.) <span class="requerido">*</span></label>
+          <input type="number" id="pr-precioVenta" name="precioVenta" class="form-input" step="0.01" min="0" value="0">
+          <span class="form-help" id="pr-precio-detalle">Neto: Bs 0.00 | IVA: Bs 0.00</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Costo Último (Bs, sin IVA)</label>
+          <input type="number" id="pr-costoUltimo" name="costoUltimo" class="form-input" step="0.01" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock Actual</label>
+          <input type="number" id="pr-stockActual" name="stockActual" class="form-input" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock Mínimo</label>
+          <input type="number" id="pr-stockMinimo" name="stockMinimo" class="form-input" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Almacén</label>
+          <input type="text" id="pr-almacen" name="almacen" class="form-input" value="ALMACEN_CENTRAL">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: var(--espacio-sm); justify-content: flex-end; margin-top: var(--espacio-md);">
+        <button type="button" id="btn-limpiar" class="btn btn-ghost">🧹 Limpiar</button>
+        <button type="submit" class="btn btn-primary">💾 Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       TABLA DE REGISTROS
+       ══════════════════════════════════════════════════════════ -->
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead id="tabla-head">
+        <!-- Se llena dinámicamente según la pestaña activa -->
+      </thead>
+      <tbody id="tabla-body">
+        <tr>
+          <td colspan="7" style="text-align: center; padding: var(--espacio-xl); color: var(--texto-secundario);">
+            Seleccione una pestaña para ver los registros.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<!-- Script externo -->
+<script src="js/vistas/catalogos-vista.js"></script>
+
+<style>
+  .tab-btn.activo {
+    color: var(--color-primario) !important;
+    border-bottom-color: var(--color-primario) !important;
+  }
+  .oculto { display: none !important; }
+</style>
