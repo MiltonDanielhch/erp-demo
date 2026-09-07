@@ -39,6 +39,7 @@ const DocumentosVista = {
 
     this.capturarElementos();
     this.llenarSelectoresTipos();
+    this.llenarSelectorPeriodos(); 
     this.configurarFechas();
     this.refrescarTabla();
     this.configurarEventListeners();
@@ -62,7 +63,7 @@ const DocumentosVista = {
 
       filtroTipo: document.getElementById('filtro-tipo'),
       filtroEstado: document.getElementById('filtro-estado'),
-
+      filtroPeriodo: document.getElementById('filtro-periodo'),  // NUEVO
       docTipo: document.getElementById('doc-tipo'),
       docNumero: document.getElementById('doc-numero'),
       docFechaEmision: document.getElementById('doc-fecha-emision'),
@@ -166,7 +167,10 @@ const DocumentosVista = {
 
   configurarEventListeners() {
     this.elementos.btnNuevo.addEventListener('click', () => this.mostrarFormulario(true));
-
+    this.elementos.filtroPeriodo.addEventListener('change', () => this.refrescarTabla());  // NUEVO
+    this.elementos.filtroTipo.addEventListener('change', () => this.refrescarTabla());
+    this.elementos.filtroEstado.addEventListener('change', () => this.refrescarTabla());
+    
     this.elementos.btnCancelar.addEventListener('click', () => {
       this.mostrarFormulario(false);
       this.limpiarFormulario();
@@ -233,6 +237,9 @@ const DocumentosVista = {
     this.elementos.nitValidacion.style.color = '';
     this.elementos.formTipoBadge.textContent = 'Seleccionar tipo';
     this.elementos.formTipoBadge.className = 'badge badge-info';
+    this.elementos.camposActivoFijo?.classList.add('oculto');
+    this.elementos.camposNomina?.classList.add('oculto');
+    this.elementos.camposExtracto?.classList.add('oculto');
   },
 
   // ════════════════════════════════════════════════════════════
@@ -302,6 +309,16 @@ const DocumentosVista = {
       this.elementos.camposTesoreria.classList.remove('oculto');
       this.elementos.labelPersona.textContent = tipo === 'RECIBO_CAJA' ? 'Recibido de' : 'Pagado a';
     }
+    // Ocultar TODAS las secciones específicas
+    const secciones = [
+      'camposFactura', 'camposTesoreria', 'camposNota',
+      'camposActivoFijo', 'camposNomina', 'camposExtracto'
+    ];
+    secciones.forEach(seccion => {
+      if (this.elementos[seccion]) {
+        this.elementos[seccion].classList.add('oculto');
+      }
+    });
   },
 
   // ════════════════════════════════════════════════════════════
@@ -559,8 +576,10 @@ const DocumentosVista = {
    * Aplica los filtros actuales y renderiza las filas.
    */
   refrescarTabla() {
+    
     // Obtener filtros actuales
     const filtros = {
+      periodoContable: this.elementos.filtroPeriodo ? this.elementos.filtroPeriodo.value : undefined,  // NUEVO
       tipo: this.elementos.filtroTipo.value || undefined,
       estado: this.elementos.filtroEstado.value || undefined
     };
@@ -613,6 +632,15 @@ const DocumentosVista = {
 
     const badgeEstado = this.obtenerBadgeEstado(doc.estado);
 
+    // NUEVO: Formatear período contable
+    const periodoFormateado = doc.periodoContable 
+      ? window.PeriodosContables.formatearNombre(doc.periodoContable)
+      : '—';
+    
+    const periodoAbierto = doc.periodoContable 
+      ? window.PeriodosContables.estaAbierto(doc.periodoContable)
+      : false;
+
     // Acciones según estado
     let acciones = '';
     if (doc.estado === 'PENDIENTE') {
@@ -639,6 +667,10 @@ const DocumentosVista = {
         </td>
         <td><strong>${doc.numero}</strong></td>
         <td>${window.utilidades.formatearFecha(doc.fechaEmision)}</td>
+        <td>
+          <span style="font-size: 0.85rem;">${periodoFormateado}</span>
+          ${!periodoAbierto ? '<br><small style="color: var(--color-error);">🔒 Cerrado</small>' : ''}
+        </td>
         <td>${contraparte}</td>
         <td class="monto texto-derecha">${window.utilidades.formatearBs(doc.montoTotal)}</td>
         <td>${badgeEstado}</td>
@@ -692,6 +724,39 @@ const DocumentosVista = {
         this.mostrarToast('👁️ Ver detalle (próximamente en Fase 1.5)', 'info');
         break;
     }
+  },
+
+    /**
+   * Llena el selector de períodos con los últimos 12 meses.
+   */
+  llenarSelectorPeriodos() {
+    const periodos = window.PeriodosContables.obtenerUltimosMeses(12);
+    const select = this.elementos.filtroPeriodo;
+
+    if (!select) return;
+
+    // Limpiar opciones existentes (excepto la primera "Todos los períodos")
+    select.innerHTML = '<option value="">Todos los períodos</option>';
+
+    // Agregar los 12 meses
+    periodos.forEach(periodo => {
+      const option = document.createElement('option');
+      option.value = periodo;
+      
+      // Indicar si está abierto o cerrado
+      const estaAbierto = window.PeriodosContables.estaAbierto(periodo);
+      const nombreLegible = window.PeriodosContables.formatearNombre(periodo);
+      
+      option.textContent = estaAbierto 
+        ? `📅 ${nombreLegible}` 
+        : `🔒 ${nombreLegible} (cerrado)`;
+      
+      select.appendChild(option);
+    });
+
+    // Seleccionar por defecto el período actual
+    const periodoActual = window.PeriodosContables.obtenerPeriodoActual();
+    select.value = periodoActual;
   },
 
   // ════════════════════════════════════════════════════════════

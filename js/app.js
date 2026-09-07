@@ -138,6 +138,14 @@ function iniciarERP() {
   window.CAMPOS_DOCUMENTO = CAMPOS_DOCUMENTO;
   window.CamposDocumentoUtilidades = CamposDocumentoUtilidades;
 
+  // ── NUEVO: Inicializar gestor de períodos contables ─────────
+  PeriodosContables.inicializar();
+  console.log('📅 Gestor de períodos contables inicializado.');
+
+  // ── Exponer al objeto window ─────────────────────────────────
+  window.PeriodosContables = PeriodosContables;
+  window.ERP.periodosContables = PeriodosContables;
+
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
 

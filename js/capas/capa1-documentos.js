@@ -619,17 +619,28 @@ class CapaDocumentos {
     return { valido: errores.length === 0, errores };
   }
 
+  /**
+   * Obtiene la lista de períodos contables abiertos.
+   * Usa el gestor PeriodosContables si está disponible.
+   * 
+   * @returns {Array} Lista de períodos en formato "AAAA-MM"
+   * @private
+   */
   _obtenerPeriodosAbiertos() {
+    // Si PeriodosContables está disponible, usarlo
+    if (typeof PeriodosContables !== 'undefined' && PeriodosContables.obtenerAbiertos) {
+      return PeriodosContables.obtenerAbiertos().map(p => p.periodo);
+    }
+    
+    // Fallback: generar los últimos 12 meses
     const periodos = [];
     const hoy = new Date();
-
     for (let i = 0; i < 12; i++) {
       const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
       const anio = fecha.getFullYear();
       const mes = String(fecha.getMonth() + 1).padStart(2, '0');
       periodos.push(`${anio}-${mes}`);
     }
-
     return periodos;
   }
 }
