@@ -159,6 +159,15 @@ function iniciarERP() {
   });
   console.log('🛒 Módulo de Compras inicializado.');
 
+  // ── NUEVO: Inicializar Módulo de Ventas ────────────────
+  const moduloVentas = new ModuloVentas(
+    almacenamiento,
+    new CapaDocumentos(almacenamiento),
+    catalogoClientes,
+    catalogoProductos
+  );
+  console.log('💼 Módulo de Ventas inicializado');
+
   // ── NUEVO: Cargar datos de ejemplo (pasando catálogos como parámetros) ──
   if (typeof cargarDatosEjemplo === 'function') {
     cargarDatosEjemplo({
@@ -190,6 +199,10 @@ function iniciarERP() {
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
 
+  // En la sección donde expones los módulos (línea ~234)
+  window.moduloVentas = moduloVentas;
+  window.ERP.moduloVentas = moduloVentas;
+  
   // ── Exponer al objeto window ─────────────────────────────────
   window.PeriodosContables = PeriodosContables;
   window.ERP.periodosContables = PeriodosContables;

@@ -316,17 +316,17 @@ COTIZADA → PEDIDA → DESPACHADA → FACTURADA → COBRADA
 ## Tareas de la Fase 2.4
 
 ```text
-[ ] Crear js/modulos/ventas.js
+[x] Crear js/modulos/ventas.js
     → Clase ModuloVentas con métodos para cada etapa del ciclo.
 
-[ ] Implementar crearCotizacion(datos)
+[x] Implementar crearCotizacion(datos)
     → Genera una cotización para un cliente.
     → Número único: "COT-2026-001".
     → Incluye productos, cantidades, precios (con IVA incluido).
     → Fecha de vencimiento de la cotización.
     → Estado: "COTIZADA".
 
-[ ] Implementar confirmarPedido(cotizacionId)
+[x] Implementar confirmarPedido(cotizacionId)
     → Convierte la cotización aceptada en un pedido.
     → Verifica stock disponible antes de confirmar.
     → Si no hay stock suficiente → alerta al usuario.
@@ -338,14 +338,14 @@ COTIZADA → PEDIDA → DESPACHADA → FACTURADA → COBRADA
       reservar las cantidades (stockReservado) para que no se 
       vendan a otro cliente."
 
-[ ] Implementar registrarDespacho(pedidoId)
+[x] Implementar registrarDespacho(pedidoId)
     → Genera una NOTA_SALIDA (documento fuente de Capa 1).
     → Descuenta el stock del inventario.
     → Calcula el costo de ventas según el método de valuación 
       (por ahora, usar costo promedio ponderado).
     → Estado: "DESPACHADA".
 
-[ ] Implementar emitirFacturaVenta(pedidoId)
+[x] Implementar emitirFacturaVenta(pedidoId)
     → Genera la factura de venta.
     → Calcula el IVA: neto = total ÷ 1.13, IVA = total − neto.
     → Calcula el IT: total × 3%.
@@ -359,19 +359,19 @@ COTIZADA → PEDIDA → DESPACHADA → FACTURADA → COBRADA
       por cobrar, y preparar los datos para el asiento contable 
       (Clientes Debe, Ventas Haber, IVA Débito Fiscal Haber)."
 
-[ ] Implementar registrarCobro(facturaId, datosCobro)
+[x] Implementar registrarCobro(facturaId, datosCobro)
     → Registra el cobro del cliente.
     → Reduce la cuenta por cobrar.
     → Si es cobro total → estado "COBRADA".
     → Si es cobro parcial → estado "PARCIALMENTE_COBRADA".
     → Genera un RECIBO_CAJA (documento fuente).
 
-[ ] Implementar obtenerCuentasPorCobrar(filtros)
+[x] Implementar obtenerCuentasPorCobrar(filtros)
     → Lista todas las facturas pendientes de cobro.
     → Filtros: cliente, vencimiento, monto mínimo.
     → Calcula antigüedad de la deuda (días vencidos).
 
-[ ] Implementar obtenerHistorialVentas(clienteId)
+[x] Implementar obtenerHistorialVentas(clienteId)
     → Todas las ventas hechas a un cliente específico.
     → Para análisis de cliente (volumen, frecuencia, etc.)
 ```
