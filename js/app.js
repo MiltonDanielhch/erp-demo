@@ -54,7 +54,7 @@ const RUTAS_ERP = {
 function iniciarERP() {
   console.log('═══════════════════════════════════════════════════════');
   console.log('🇧🇴 ERP Contable Bolivia — Iniciando...');
-  console.log('Versión: 0.8.0 (Módulo 1: Fase 1.3)');
+  console.log('Versión: 0.9.0 (Módulo 1: Documentos Fuente)');
   console.log('Stack: Vanilla JS + LocalStorage');
   console.log('Normativa: NC del CTNAC, Ley 843, LGT');
   console.log('═══════════════════════════════════════════════════════');
@@ -119,7 +119,7 @@ function iniciarERP() {
     tiposDocumentoUtilidades: TiposDocumentoUtilidades,
     camposDocumento: CAMPOS_DOCUMENTO,
     camposDocumentoUtilidades: CamposDocumentoUtilidades,
-    version: '0.8.0',
+    version: '0.9.0',
     normativa: 'NC del CTNAC, Ley 843, LGT'
   };
 
@@ -171,6 +171,11 @@ function iniciarERP() {
   console.log('   window.capaDocumentos.obtenerDocumentos()');
   console.log('   window.capaDocumentos.registrarDocumento({...})');
   console.log('   window.capaDocumentos.contarDocumentos()');
+  console.log('');
+  console.log('   📌 PERÍODOS CONTABLES:');
+  console.log('   window.PeriodosContables.obtenerAbiertos()');
+  console.log('   window.PeriodosContables.cerrarPeriodo("2026-09", "motivo")');
+  console.log('   window.PeriodosContables.abrirPeriodo("2026-09")');
   console.log('');
 }
 

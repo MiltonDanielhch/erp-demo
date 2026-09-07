@@ -465,23 +465,23 @@ Documento registrado el 15/09/2026:
 ## Tareas de la Fase 1.6
 
 ```text
-[ ] Implementar asignarPeriodoContable(fechaEmision)
+[x] Implementar asignarPeriodoContable(fechaEmision)
     → Extraer año y mes de la fecha.
     → Devolver string "AAAA-MM".
     → Ejemplo: "2026-09-15" → "2026-09"
 
-[ ] Crear js/config/periodos-contables.js
+[x] Crear js/config/periodos-contables.js
     → Objeto que trackea qué períodos están abiertos/cerrados.
     → Por defecto: solo el mes actual está abierto.
     → Función abrirPeriodo(aaaaMM) para contadores admin.
     → Función cerrarPeriodo(aaaaMM) para cierre mensual.
 
-[ ] Agregar campo periodoContable al modelo de documento
+[x] Agregar campo periodoContable al modelo de documento
     → Se calcula automáticamente al registrar.
     → Se muestra en la tabla de documentos.
     → Se usa como filtro en la vista.
 
-[ ] Implementar filtro por período en la vista
+[x] Implementar filtro por período en la vista
     → <select> con los últimos 12 meses.
     → Al seleccionar, filtra la tabla de documentos.
     → Muestra un contador: "X documentos en este período".
@@ -494,40 +494,40 @@ Documento registrado el 15/09/2026:
 ## Checklist de humo (smoke test)
 
 ```text
-[ ] Smoke test #1: Registrar una factura de compra válida
+[x] Smoke test #1: Registrar una factura de compra válida
     → Abrir vistas/documentos.html
     → Seleccionar tipo: FACTURA_COMPRA
     → Llenar: NIT "123456789-1", CUF de 43 chars, monto 5650
     → Hacer clic en "Registrar"
     → Debe mostrar toast verde y aparecer en la tabla
 
-[ ] Smoke test #2: Rechazar un documento con NIT inválido
+[x] Smoke test #2: Rechazar un documento con NIT inválido
     → Intentar registrar con NIT "999999999-9" (verificador incorrecto)
     → Debe mostrar toast rojo: "NIT inválido: dígito verificador incorrecto"
     → El documento NO debe guardarse
 
-[ ] Smoke test #3: Rechazar un documento duplicado
+[x] Smoke test #3: Rechazar un documento duplicado
     → Registrar el mismo documento dos veces (mismo tipo + número + NIT)
     → Segunda vez debe mostrar: "Documento duplicado"
     → Solo debe aparecer una vez en la tabla
 
-[ ] Smoke test #4: Filtrar por período contable
+[x] Smoke test #4: Filtrar por período contable
     → Registrar documentos en meses distintos
     → Seleccionar un mes en el filtro
     → Solo deben mostrarse los documentos de ese mes
 
-[ ] Smoke test #5: Persistencia en localStorage
+[x] Smoke test #5: Persistencia en localStorage
     → Registrar un documento
     → Recargar la página (F5)
     → El documento debe seguir apareciendo en la tabla
     → Abrir DevTools → Application → LocalStorage
     → Debe existir la colección "documentos"
 
-[ ] Smoke test #6: El menú lateral incluye Documentos
+[x] Smoke test #6: El menú lateral incluye Documentos
     → Verificar que hay un enlace "📄 Documentos" en el aside
     → Al hacer clic, carga vistas/documentos.html correctamente
 
-[ ] Commit de cierre del Módulo 1
+[x] Commit de cierre del Módulo 1
     → git add .
     → git commit -m "feat(modulo-1): Capa 1 - Documentos Fuente completo
     
