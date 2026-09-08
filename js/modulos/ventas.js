@@ -386,9 +386,9 @@ class ModuloVentas {
 
     // Calcular impuestos
     const montoTotal = pedido.montoTotal;
-    const montoNeto = window.utilidades.redondear(montoTotal / 1.13);
-    const montoIVA = window.utilidades.redondear(montoTotal - montoNeto);
-    const montoIT = window.utilidades.redondear(montoTotal * 0.03); // 3% del total
+    const montoNeto = window.BOLIVIA.extraerNetoDeTotal(montoTotal);
+    const montoIVA = window.BOLIVIA.calcularIVADeTotal(montoTotal);
+    const montoIT = window.BOLIVIA.calcularIT(montoTotal);
 
     // Generar documento fuente: FACTURA_VENTA
     const resultadoDoc = this.capa1.registrarDocumento({

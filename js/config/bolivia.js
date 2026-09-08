@@ -460,5 +460,166 @@ const BOLIVIA = {
       t => aniosServicio >= t.min && aniosServicio <= t.max
     );
     return tramo ? tramo.dias : 0;
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // FUNCIONES DE CÁLCULO TRIBUTARIO (IVA, IT)
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * Redondea un monto a 2 decimales.
+   * @param {number} monto - Monto a redondear
+   * @returns {number} Monto redondeado
+   */
+  redondear2(monto) {
+    const numero = Number(monto) || 0;
+    return Math.round(numero * 100) / 100;
+  },
+
+  /**
+   * Extrae el valor neto de un monto con IVA incluido.
+   * 
+   * Fórmula vigente Bolivia: Neto = Total ÷ 1.13
+   * Base legal: Art. 5 Ley 843 (IVA incluido en el precio)
+   * 
+   * @param {number} montoTotal - Monto total con IVA incluido
+   * @returns {number} Valor neto sin IVA
+   * 
+   * @example
+   * BOLIVIA.extraerNetoDeTotal(5650)  // → 5000
+   * BOLIVIA.extraerNetoDeTotal(11300) // → 10000
+   */
+  extraerNetoDeTotal(montoTotal) {
+    const total = Number(montoTotal) || 0;
+    return this.redondear2(total / this.FACTOR_IVA_DENTRO);
+  },
+
+  /**
+   * Calcula el IVA contenido dentro de un monto total.
+   * 
+   * Fórmula vigente Bolivia: IVA = Total − Neto
+   * 
+   * @param {number} montoTotal - Monto total con IVA incluido
+   * @returns {number} Monto del IVA
+   * 
+   * @example
+   * BOLIVIA.calcularIVADeTotal(5650)  // → 650
+   * BOLIVIA.calcularIVADeTotal(11300) // → 1300
+   */
+  calcularIVADeTotal(montoTotal) {
+    const total = Number(montoTotal) || 0;
+    const neto = this.extraerNetoDeTotal(total);
+    return this.redondear2(total - neto);
+  },
+
+  /**
+   * Calcula el Impuesto a las Transacciones (IT) sobre un monto bruto.
+   * 
+   * Fórmula: IT = Total × 3%
+   * Base legal: Ley 843, Art. 72 al 77
+   * 
+   * ⚠️ IMPORTANTE: se calcula sobre el monto BRUTO (total factura),
+   * no sobre el neto. El IT pagado se compensa contra el IUE anual.
+   * 
+   * @param {number} montoBruto - Monto bruto de la transacción
+   * @returns {number} Monto del IT
+   * 
+   * @example
+   * BOLIVIA.calcularIT(11300) // → 339
+   * BOLIVIA.calcularIT(10000) // → 300
+   */
+  calcularIT(montoBruto) {
+    const bruto = Number(montoBruto) || 0;
+    return this.redondear2(bruto * (this.IT_PORCENTAJE / 100));
+  },
+
+  /**
+   * Calcula el IVA que se debe agregar a un neto.
+   * 
+   * Fórmula (IVA por fuera): IVA = Neto × 13%
+   * 
+   * ⚠️ Esta función es para el esquema FUTURO "IVA por fuera"
+   * previsto en la Ley 1733 de Alivio Tributario (27/05/2026),
+   * actualmente pendiente de reglamentación.
+   * 
+   * @param {number} montoNeto - Valor neto sin IVA
+   * @returns {number} Monto del IVA a agregar
+   * 
+   * @example
+   * BOLIVIA.calcularIVASobreNeto(5000) // → 650
+   * BOLIVIA.calcularIVASobreNeto(10000) // → 1300
+   */
+  calcularIVASobreNeto(montoNeto) {
+    const neto = Number(montoNeto) || 0;
+    return this.redondear2(neto * (this.IVA_PORCENTAJE / 100));
+  },
+
+  /**
+   * Valida que el desglose de un monto con IVA sea coherente.
+   * 
+   * Verifica que neto + IVA = total, con tolerancia de ±0.01
+   * para absorber diferencias de redondeo.
+   * 
+   * @param {number} montoTotal - Monto total a validar
+   * @returns {Object} { valido, total, neto, iva, suma, diferencia }
+   * 
+   * @example
+   * BOLIVIA.validarDesgloseIVA(5650)
+   * // → { valido: true, total: 5650, neto: 5000, iva: 650, suma: 5650, diferencia: 0 }
+   */
+  validarDesgloseIVA(montoTotal) {
+    const total = this.redondear2(montoTotal);
+    const neto = this.extraerNetoDeTotal(total);
+    const iva = this.calcularIVADeTotal(total);
+    const suma = this.redondear2(neto + iva);
+    const diferencia = this.redondear2(total - suma);
+
+    return {
+      valido: Math.abs(diferencia) <= 0.01,
+      total,
+      neto,
+      iva,
+      suma,
+      diferencia
+    };
+  },
+
+  /**
+   * Determina qué función usar para calcular IVA según el esquema vigente.
+   * 
+   * Si IVA_MOSTRADO_POR_FUERA es true (futuro): usa calcularIVASobreNeto
+   * Si IVA_MOSTRADO_POR_FUERA es false (vigente): usa calcularIVADeTotal
+   * 
+   * @param {number} monto - Monto de referencia
+   * @param {boolean} esNeto - Si el monto es neto (true) o total (false)
+   * @returns {number} Monto del IVA según el esquema vigente
+   */
+  calcularIVASegunEsquema(monto, esNeto = false) {
+    if (this.IVA_MOSTRADO_POR_FUERA) {
+      // Futuro: IVA por fuera
+      return esNeto ? this.calcularIVASobreNeto(monto) : this.calcularIVADeTotal(monto);
+    } else {
+      // Vigente: IVA incluido en el precio
+      return esNeto ? this.calcularIVASobreNeto(monto) : this.calcularIVADeTotal(monto);
+    }
   }
 };
+// ══════════════════════════════════════════════════════════════
+// Exponer BOLIVIA globalmente
+// ══════════════════════════════════════════════════════════════
+window.BOLIVIA = BOLIVIA;
+
+// ══════════════════════════════════════════════════════════════
+// Compatibilidad: alias en window.utilidades
+// Muchas vistas ya usan window.utilidades.extraerNetoDeTotal()
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.utilidades) {
+    window.utilidades.extraerNetoDeTotal = BOLIVIA.extraerNetoDeTotal.bind(BOLIVIA);
+    window.utilidades.calcularIVADeTotal = BOLIVIA.calcularIVADeTotal.bind(BOLIVIA);
+    window.utilidades.calcularIT = BOLIVIA.calcularIT.bind(BOLIVIA);
+    window.utilidades.calcularIVASobreNeto = BOLIVIA.calcularIVASobreNeto.bind(BOLIVIA);
+    window.utilidades.validarDesgloseIVA = BOLIVIA.validarDesgloseIVA.bind(BOLIVIA);
+    window.utilidades.redondear2 = BOLIVIA.redondear2.bind(BOLIVIA);
+  }
+});

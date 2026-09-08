@@ -451,7 +451,7 @@ Construye las **pantallas** donde el usuario interactúa con los módulos de com
 ## Tareas de la Fase 2.6
 
 ```text
-[ ] Crear vistas/compras.html
+[x] Crear vistas/compras.html
     → Secciones:
       ├── <h1> Compras y Cuentas por Pagar
       ├── <div class="tabs">
@@ -463,7 +463,7 @@ Construye las **pantallas** donde el usuario interactúa con los módulos de com
       ├── <div id="contenido-tab"> (cambia según tab activo)
       └── <table> para listar registros
 
-[ ] Crear vistas/ventas.html
+[x] Crear vistas/ventas.html
     → Secciones:
       ├── <h1> Ventas y Cuentas por Cobrar
       ├── <div class="tabs">
@@ -475,24 +475,24 @@ Construye las **pantallas** donde el usuario interactúa con los módulos de com
       ├── <div id="contenido-tab">
       └── <table> para listar registros
 
-[ ] Crear js/vistas/compras-vista.js
+[x] Crear js/vistas/compras-vista.js
     → Lógica de la vista de compras.
     → Manejar cambio de tabs.
     → Formularios dinámicos según la etapa del ciclo.
     → Llamar a window.ModuloCompras.registrarFacturaProveedor() etc.
 
-[ ] Crear js/vistas/ventas-vista.js
+[x] Crear js/vistas/ventas-vista.js
     → Lógica de la vista de ventas.
     → Manejar cambio de tabs.
     → Formularios dinámicos según la etapa del ciclo.
     → Llamar a window.ModuloVentas.emitirFacturaVenta() etc.
 
-[ ] Agregar estilos específicos en css/componentes.css
+[x] Agregar estilos específicos en css/componentes.css
     → Estilos para tabs (.tab, .tab-activo).
     → Estilos para el flujo de estados (badge de estado por etapa).
     → Estilos para la tabla de kardex.
 
-[ ] Conectar con el menú lateral
+[x] Conectar con el menú lateral
     → Agregar enlaces "🛒 Compras" y "💰 Ventas" en index.html.
     → Verificar que el enrutador carga las vistas correctamente.
 ```
@@ -554,24 +554,24 @@ function calcularIVASobreNeto(montoNeto) {
 ## Tareas de la Fase 2.7
 
 ```text
-[ ] Implementar las 4 funciones de cálculo en bolivia.js
+[x] Implementar las 4 funciones de cálculo en bolivia.js
     → extraerNetoDeTotal(montoTotal)
     → calcularIVADeTotal(montoTotal)
     → calcularIT(montoBruto)
     → calcularIVASobreNeto(montoNeto)  ← Para el futuro "IVA por fuera"
 
-[ ] Crear pruebas manuales en la consola del navegador
+[x] Crear pruebas manuales en la consola del navegador
     → window.BOLIVIA.extraerNetoDeTotal(5650) debe dar 5000
     → window.BOLIVIA.calcularIVADeTotal(5650) debe dar 650
     → window.BOLIVIA.calcularIT(11300) debe dar 339
     → window.BOLIVIA.calcularIVASobreNeto(5000) debe dar 650
 
-[ ] Agregar validación de redondeo
+[x] Agregar validación de redondeo
     → Los montos deben redondearse a 2 decimales.
     → Usar: Math.round(monto * 100) / 100
     → Verificar que neto + IVA = total (con tolerancia de ±0.01)
 
-[ ] Crear docs/aprendizaje/06-funciones-iva-it.md
+[x] Crear docs/aprendizaje/06-funciones-iva-it.md
     → Documentar cada función con ejemplos.
     → Incluir la fórmula matemática y un caso de uso.
     → 🧠 Mini-Prompt para IA: "Documenta en formato markdown 
