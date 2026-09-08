@@ -1,0 +1,87 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Nuevo Asiento Manual
+     Registro de asientos del contador con validación en vivo
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">✍️ Nuevo Asiento Manual</h2>
+<p class="contenido-subtitulo">
+  Registra ajustes del contador con validación de partida doble en tiempo real
+</p>
+
+<div class="card">
+  <form id="form-asiento-manual">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Fecha <span class="requerido">*</span></label>
+        <input type="date" id="am-fecha" class="form-input" required>
+      </div>
+      <div class="form-group" style="margin: 0; grid-column: span 2;">
+        <label class="form-label">Concepto / Glosa <span class="requerido">*</span></label>
+        <input type="text" id="am-concepto" class="form-input" required
+               placeholder="Ej: Ajuste por diferencia de inventario detectada en conteo">
+      </div>
+    </div>
+
+    <!-- Líneas del asiento -->
+    <h4 style="margin: 0 0 8px 0;">Líneas del asiento (mínimo 2)</h4>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th style="width: 40%;">Cuenta</th>
+            <th class="texto-derecha" style="width: 15%;">Debe</th>
+            <th class="texto-derecha" style="width: 15%;">Haber</th>
+            <th style="width: 25%;">Descripción</th>
+            <th style="width: 5%;"></th>
+          </tr>
+        </thead>
+        <tbody id="am-lineas">
+          <!-- filas dinámicas -->
+        </tbody>
+        <tfoot>
+          <tr style="font-weight: bold; background: var(--color-fondo-claro);">
+            <td class="texto-derecha">TOTALES</td>
+            <td class="texto-derecha" id="am-total-debe">Bs 0,00</td>
+            <td class="texto-derecha" id="am-total-haber">Bs 0,00</td>
+            <td colspan="2">
+              <span id="am-indicador" class="badge" style="background:#ef4444; color:#fff;">✗ DESCUADRADO</span>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap;">
+      <button type="button" id="am-btn-agregar" class="btn btn-outline btn-sm">➕ Agregar línea</button>
+      <span id="am-diferencia" style="color: var(--texto-secundario); font-size: 0.85rem;"></span>
+    </div>
+
+    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
+      <button type="button" id="am-btn-limpiar" class="btn btn-ghost">🧹 Limpiar</button>
+      <button type="submit" id="am-btn-registrar" class="btn btn-primary" disabled>💾 Registrar y Contabilizar</button>
+    </div>
+  </form>
+</div>
+
+<!-- Últimos asientos manuales -->
+<div class="card" style="margin-top: var(--espacio-md);">
+  <h3 style="margin-bottom: 12px;">📒 Últimos asientos manuales</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Número</th><th>Fecha</th><th>Concepto</th>
+          <th class="texto-derecha">Total</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="am-historial">
+        <tr><td colspan="5" style="text-align:center; padding:24px;">Sin asientos manuales</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<script src="js/vistas/asientos-vista.js"></script>

@@ -561,12 +561,12 @@ Implementa los **asientos de ajuste** que se generan automáticamente al cierre 
 ## Tareas de la Fase 3.7
 
 ```text
-[ ] Implementar generarAjustesAutomaticos(periodo)
+[x] Implementar generarAjustesAutomaticos(periodo)
     → Genera todos los asientos de ajuste para el período.
     → Los marca como tipo "AJUSTE" y número "AJ-AAAA-MM-NNN".
     → Los agrega a la cola de asientos pendientes.
 
-[ ] Implementar generarAsientoDepreciacion(periodo)
+[x] Implementar generarAsientoDepreciacion(periodo)
     → Calcula la depreciación mensual de cada activo fijo.
     → Método: línea recta (costo − valor residual) ÷ vida útil.
     → Genera el asiento: Gasto Depreciación / Depreciación Acumulada.
@@ -576,7 +576,7 @@ Implementa los **asientos de ajuste** que se generan automáticamente al cierre 
       en años × 12 meses). Genera el asiento contable: Gasto de 
       Depreciación (Debe) / Depreciación Acumulada (Haber)."
 
-[ ] Implementar generarAsientoProvisionAguinaldo(periodo)
+[x] Implementar generarAsientoProvisionAguinaldo(periodo)
     → Calcula 1/12 del aguinaldo estimado anual.
     → Aguinaldo = promedio del total ganado de los últimos 3 meses.
     → Genera el asiento: Gasto Aguinaldo / Aguinaldo por Pagar.
@@ -588,13 +588,13 @@ Implementa los **asientos de ajuste** que se generan automáticamente al cierre 
       (Haber). Incluye la lógica para el segundo aguinaldo 
       condicional (solo si PIB > 4.5%)."
 
-[ ] Implementar generarAsientoProvisionBonoAntiguedad(periodo)
+[x] Implementar generarAsientoProvisionBonoAntiguedad(periodo)
     → Calcula la provisión mensual del bono de antigüedad.
     → Base: 3 × SMN vigente.
     → Porcentaje: según años de servicio (5% a 50%).
     → Genera el asiento: Gasto Bono / Bono por Pagar.
 
-[ ] Implementar generarAsientoProvisionIndemnizacion(periodo)
+[x] Implementar generarAsientoProvisionIndemnizacion(periodo)
     → Calcula la provisión mensual de indemnización.
     → 1 mes de total ganado por año de servicio, proporcional.
     → ⚠️ Aplica también a renuncia voluntaria (DS 28699).
@@ -607,12 +607,12 @@ Implementa los **asientos de ajuste** que se generan automáticamente al cierre 
       renuncia voluntaria (DS 28699), no solo a despido. 
       La provisión mensual es 1/12 del acumulado."
 
-[ ] Implementar registrarAsientoAjuste(asiento)
+[x] Implementar registrarAsientoAjuste(asiento)
     → Registra un asiento de ajuste manual (contador).
     → Valida, registra en diario, actualiza mayor.
     → Número con prefijo "AJ-" en vez de "AD-".
 
-[ ] Crear docs/aprendizaje/11-provisiones-bolivianas.md
+[x] Crear docs/aprendizaje/11-provisiones-bolivianas.md
     → Explicar cada provisión boliviana con ejemplos numéricos.
     → Incluir la particularidad de la indemnización en renuncia.
     → 🧠 Mini-Prompt para IA: "Explica las provisiones contables 
@@ -659,12 +659,12 @@ DESPUÉS DEL CIERRE:
 ## Tareas de la Fase 3.8
 
 ```text
-[ ] Implementar cerrarPeriodo(periodo)
+[x] Implementar cerrarPeriodo(periodo)
     → Marca el período como CERRADO.
     → No se pueden registrar más asientos en ese período.
     → Genera un resumen del período: ingresos, gastos, utilidad.
 
-[ ] Implementar cerrarEjercicio(año)
+[x] Implementar cerrarEjercicio(año)
     → Identifica todas las cuentas de resultados (grupos 4 y 5).
     → Genera el asiento de cierre con todas las cuentas de resultado.
     → Calcula la utilidad o pérdida neta.
@@ -679,19 +679,19 @@ DESPUÉS DEL CIERRE:
       la utilidad a Utilidades Retenidas. Si hay pérdida, el 
       asiento es inverso."
 
-[ ] Implementar reaperturarEjercicio(año)
+[x] Implementar reaperturarEjercicio(año)
     → Solo para contadores admin.
     → Anula el asiento de cierre.
     → Permite registrar ajustes en el período cerrado.
     → ⚠️ Debe dejar rastro de quién y cuándo reabrió.
 
-[ ] Implementar calcularUtilidadNeta(año)
+[x] Implementar calcularUtilidadNeta(año)
     → Suma todos los ingresos del año.
     → Resta todos los gastos y costos del año.
     → Devuelve la utilidad o pérdida neta.
     → Este dato es la base para el IUE (Módulo 5).
 
-[ ] Crear docs/aprendizaje/12-cierre-ejercicio.md
+[x] Crear docs/aprendizaje/12-cierre-ejercicio.md
     → Explicar el cierre del ejercicio con ejemplos.
     → Mostrar qué cuentas se cierran y cuáles no.
     → Explicar la diferencia entre utilidad contable y utilidad 

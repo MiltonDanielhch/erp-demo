@@ -46,6 +46,8 @@ const RUTAS_ERP = {
   // Capa 4: Estados Financieros
   'estados-financieros': 'vistas/estados-financieros.html',
 
+  'asientos': 'vistas/asientos.html',
+
   // Capa 5: Cumplimiento
   'cumplimiento': 'vistas/cumplimiento.html'
 };
