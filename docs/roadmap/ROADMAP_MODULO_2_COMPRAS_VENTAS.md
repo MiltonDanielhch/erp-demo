@@ -694,26 +694,26 @@ IT por Pagar:             Bs 508.50
 ## Tareas de la Fase 2.9
 
 ```text
-[ ] Crear js/modulos/lcv.js
+[x] Crear js/modulos/lcv.js
     → Clase LibroComprasVentas.
 
-[ ] Implementar generarLCV(periodoContable)
+[x] Implementar generarLCV(periodoContable)
     → Recopila todas las compras del período.
     → Recopila todas las ventas del período.
     → Calcula totales: IVA crédito, IVA débito, IT.
     → Devuelve objeto estructurado con todos los datos.
 
-[ ] Implementar calcularIVAPorPagar(periodoContable)
+[x] Implementar calcularIVAPorPagar(periodoContable)
     → IVA Débito − IVA Crédito = IVA por Pagar (o saldo a favor).
     → Si es negativo → saldo a favor del contribuyente.
 
-[ ] Crear vistas/lcv.html
+[x] Crear vistas/lcv.html
     → Tabla con dos secciones: Compras y Ventas.
     → Filtro por período contable (mes/año).
     → Resumen al final con IVA por pagar y IT por pagar.
     → Botón "Exportar a CSV" para descargar.
 
-[ ] Conectar con el menú lateral
+[x] Conectar con el menú lateral
     → Agregar enlace "📋 Libro Compras/Ventas" en index.html.
 ```
 
