@@ -1,17 +1,134 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Libro Mayor
-     Capa 3: Motor Contable
+     Clasificación analítica de movimientos por cuenta
      ══════════════════════════════════════════════════════════ -->
 
-<h2 class="contenido-titulo">📒 Libro Mayor</h2>
-<p class="contenido-subtitulo">Clasificación de movimientos por cuenta contable</p>
+<h2 class="contenido-titulo">📚 Libro Mayor</h2>
+<p class="contenido-subtitulo">
+  Clasificación analítica de movimientos por cuenta — cada cuenta con su propia ficha
+</p>
 
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      📒 Libro Mayor — Se implementará en el <strong>Módulo 3</strong>.<br>
-      Aquí verás los movimientos de cada cuenta contable<br>
-      con sus saldos acumulados.
-    </p>
+<!-- ══════════════════════════════════════════════════════════
+     FILTROS
+     ══════════════════════════════════════════════════════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+      <label class="form-label">Período Contable</label>
+      <select id="mayor-periodo" class="form-select">
+        <option value="">Todo el historial</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0; flex: 2; min-width: 250px;">
+      <label class="form-label">Cuenta</label>
+      <select id="mayor-cuenta" class="form-select">
+        <option value="">Seleccione una cuenta...</option>
+      </select>
+    </div>
+    <button id="mayor-btn-ver" class="btn btn-primary">📚 Ver Ficha</button>
+    <button id="mayor-btn-imprimir" class="btn btn-outline">🖨️ Imprimir</button>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     FICHA DE LA CUENTA SELECCIONADA
+     ══════════════════════════════════════════════════════════ -->
+<div id="mayor-ficha" class="oculto" style="margin-bottom: var(--espacio-md);">
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+      <h3 style="margin: 0;" id="mayor-ficha-titulo">📚 Ficha de Cuenta</h3>
+      <span id="mayor-ficha-naturaleza" class="badge" style="background:#3b82f6; color:#fff;">—</span>
+    </div>
+
+    <!-- Resumen de la ficha -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--espacio-md); margin-bottom: 16px; padding: 12px; background: var(--color-fondo-claro); border-radius: 6px;">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Saldo Inicial</div>
+        <div style="font-weight: bold;" id="mayor-ficha-inicial">Bs 0,00</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Mov. Debe</div>
+        <div style="font-weight: bold; color: var(--color-exito);" id="mayor-ficha-debe">Bs 0,00</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Mov. Haber</div>
+        <div style="font-weight: bold; color: var(--color-error);" id="mayor-ficha-haber">Bs 0,00</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Saldo Final</div>
+        <div style="font-weight: bold; font-size: 1.2rem;" id="mayor-ficha-final">Bs 0,00</div>
+      </div>
+    </div>
+
+    <!-- Tabla de movimientos con saldo corrido -->
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Asiento</th>
+            <th>Concepto</th>
+            <th class="texto-derecha">Debe</th>
+            <th class="texto-derecha">Haber</th>
+            <th class="texto-derecha">Saldo</th>
+          </tr>
+        </thead>
+        <tbody id="mayor-ficha-body">
+          <tr><td colspan="6" style="text-align:center; padding:24px;">Sin movimientos</td></tr>
+        </tbody>
+        <tfoot id="mayor-ficha-foot">
+          <tr style="font-weight: bold; background: var(--color-fondo-claro);">
+            <td colspan="3" class="texto-derecha">TOTALES</td>
+            <td class="texto-derecha" id="mayor-ficha-tot-debe">Bs 0,00</td>
+            <td class="texto-derecha" id="mayor-ficha-tot-haber">Bs 0,00</td>
+            <td class="texto-derecha" id="mayor-ficha-tot-saldo">Bs 0,00</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     RESUMEN DE TODAS LAS CUENTAS (saldos finales)
+     ══════════════════════════════════════════════════════════ -->
+<div class="card">
+  <h3 style="margin-bottom: 12px;">📊 Resumen de Saldos por Cuenta</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Cuenta</th>
+          <th>Naturaleza</th>
+          <th class="texto-derecha">Saldo Inicial</th>
+          <th class="texto-derecha">Movimiento</th>
+          <th class="texto-derecha">Saldo Deudor</th>
+          <th class="texto-derecha">Saldo Acreedor</th>
+        </tr>
+      </thead>
+      <tbody id="mayor-resumen-body">
+        <tr><td colspan="7" style="text-align:center; padding:24px;">Sin datos</td></tr>
+      </tbody>
+      <tfoot id="mayor-resumen-foot">
+        <tr style="font-weight: bold; background: var(--color-fondo-claro);">
+          <td colspan="5" class="texto-derecha">TOTALES</td>
+          <td class="texto-derecha" id="mayor-resumen-tot-deudor">Bs 0,00</td>
+          <td class="texto-derecha" id="mayor-resumen-tot-acreedor">Bs 0,00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+  @media print {
+    #mayor-periodo, #mayor-cuenta, #mayor-btn-ver, #mayor-btn-imprimir { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+
+<script src="js/vistas/libro-mayor-vista.js"></script>

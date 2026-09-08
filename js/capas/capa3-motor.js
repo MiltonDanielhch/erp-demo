@@ -498,13 +498,173 @@ class MotorContable {
   }
 
   /**
-   * Obtiene el mayor de una cuenta específica.
+   * Obtiene la ficha completa de una cuenta en el Libro Mayor,
+   * con saldos acumulados después de cada movimiento.
+   *
    * @param {string} cuentaCodigo
+   * @param {Object} [filtros] - { fechaDesde, fechaHasta, periodoContable }
+   * @returns {Object|null} Ficha de la cuenta
+   */
+  obtenerMayorPorCuenta(cuentaCodigo, filtros = {}) {
+    const mayor = this._leerMayor();
+    const registro = mayor.find(m => m.cuentaCodigo === cuentaCodigo);
+    if (!registro) return null;
+
+    const naturaleza = registro.naturaleza || 'deudora';
+
+    // Filtrar movimientos
+    let movimientos = registro.movimientos || [];
+    if (filtros.fechaDesde) {
+      movimientos = movimientos.filter(m => m.fecha >= filtros.fechaDesde);
+    }
+    if (filtros.fechaHasta) {
+      movimientos = movimientos.filter(m => m.fecha <= filtros.fechaHasta);
+    }
+    if (filtros.periodoContable) {
+      movimientos = movimientos.filter(m => (m.fecha || '').slice(0, 7) === filtros.periodoContable);
+    }
+
+    // Ordenar cronológicamente (fecha, luego número de asiento)
+    movimientos = [...movimientos].sort((a, b) => {
+      const cmpFecha = (a.fecha || '').localeCompare(b.fecha || '');
+      if (cmpFecha !== 0) return cmpFecha;
+      return (a.asientoNumero || '').localeCompare(b.asientoNumero || '');
+    });
+
+    // Calcular saldos acumulados
+    let saldo = this.calcularSaldoInicial(cuentaCodigo, filtros.periodoContable);
+    const saldoInicial = saldo;
+
+    const movimientosConSaldo = movimientos.map(m => {
+      if (naturaleza === 'deudora') {
+        saldo += m.debe - m.haber;
+      } else {
+        saldo += m.haber - m.debe;
+      }
+      return { ...m, saldoAcumulado: window.BOLIVIA.redondear2(saldo) };
+    });
+
+    const totalDebe = window.BOLIVIA.redondear2(
+      movimientos.reduce((s, m) => s + m.debe, 0)
+    );
+    const totalHaber = window.BOLIVIA.redondear2(
+      movimientos.reduce((s, m) => s + m.haber, 0)
+    );
+
+    return {
+      cuentaCodigo,
+      cuentaNombre: registro.cuentaNombre,
+      naturaleza,
+      saldoInicial,
+      movimientos: movimientosConSaldo,
+      totalDebe,
+      totalHaber,
+      saldoFinal: window.BOLIVIA.redondear2(saldo),
+      cantidadMovimientos: movimientos.length
+    };
+  }
+
+    /**
+   * Calcula el saldo inicial de una cuenta al inicio de un período.
+   * Suma todos los movimientos de períodos ANTERIORES al indicado.
+   *
+   * @param {string} cuentaCodigo
+   * @param {string} [periodo] - Formato "AAAA-MM". Si no se pasa, retorna 0.
+   * @returns {number} Saldo inicial (signo según naturaleza)
+   */
+  calcularSaldoInicial(cuentaCodigo, periodo) {
+    if (!periodo) return 0;
+
+    const mayor = this._leerMayor();
+    const registro = mayor.find(m => m.cuentaCodigo === cuentaCodigo);
+    if (!registro) return 0;
+
+    const naturaleza = registro.naturaleza || 'deudora';
+    let saldo = 0;
+
+    (registro.movimientos || []).forEach(m => {
+      const periodoMov = (m.fecha || '').slice(0, 7);
+      if (periodoMov && periodoMov < periodo) {
+        if (naturaleza === 'deudora') {
+          saldo += m.debe - m.haber;
+        } else {
+          saldo += m.haber - m.debe;
+        }
+      }
+    });
+
+    return window.BOLIVIA.redondear2(saldo);
+  }
+
+  /**
+   * Obtiene todos los movimientos de una cuenta en un período.
+   * Alias semántico de obtenerMayorPorCuenta con filtro de período.
+   *
+   * @param {string} cuentaCodigo
+   * @param {string} periodo - Formato "AAAA-MM"
    * @returns {Object|null}
    */
-  obtenerMayorPorCuenta(cuentaCodigo) {
+  obtenerMovimientosDeCuenta(cuentaCodigo, periodo) {
+    return this.obtenerMayorPorCuenta(cuentaCodigo, { periodoContable: periodo });
+  }
+
+  /**
+   * Obtiene el saldo de cada cuenta al cierre de un período.
+   * Es la base para la Balanza de Comprobación (Fase 3.6).
+   *
+   * @param {string} [periodo] - Si no se pasa, calcula con todo el historial
+   * @returns {Array} [{ cuentaCodigo, cuentaNombre, naturaleza,
+   *                    saldoInicial, movimiento, saldoFinal,
+   *                    saldoDeudor, saldoAcreedor }]
+   */
+  obtenerSaldosDeCuentas(periodo) {
     const mayor = this._leerMayor();
-    return mayor.find(m => m.cuentaCodigo === cuentaCodigo) || null;
+    const resultado = [];
+
+    mayor.forEach(registro => {
+      const naturaleza = registro.naturaleza || 'deudora';
+      const saldoInicial = this.calcularSaldoInicial(registro.cuentaCodigo, periodo);
+
+      // Movimiento del período (o de todo el historial si no hay período)
+      let movimiento = 0;
+      (registro.movimientos || []).forEach(m => {
+        const periodoMov = (m.fecha || '').slice(0, 7);
+        if (!periodo || periodoMov === periodo) {
+          if (naturaleza === 'deudora') {
+            movimiento += m.debe - m.haber;
+          } else {
+            movimiento += m.haber - m.debe;
+          }
+        }
+      });
+
+      const saldoFinal = window.BOLIVIA.redondear2(saldoInicial + movimiento);
+
+      // Clasificar el saldo final en deudor o acreedor según naturaleza
+      let saldoDeudor = 0;
+      let saldoAcreedor = 0;
+      if (saldoFinal >= 0) {
+        if (naturaleza === 'deudora') saldoDeudor = saldoFinal;
+        else saldoAcreedor = saldoFinal;
+      } else {
+        // Saldo "al revés" de la naturaleza (ej: Bancos en negativo)
+        if (naturaleza === 'deudora') saldoAcreedor = -saldoFinal;
+        else saldoDeudor = -saldoFinal;
+      }
+
+      resultado.push({
+        cuentaCodigo: registro.cuentaCodigo,
+        cuentaNombre: registro.cuentaNombre,
+        naturaleza,
+        saldoInicial,
+        movimiento: window.BOLIVIA.redondear2(movimiento),
+        saldoFinal,
+        saldoDeudor,
+        saldoAcreedor
+      });
+    });
+
+    return resultado.sort((a, b) => a.cuentaCodigo.localeCompare(b.cuentaCodigo));
   }
 
   /**

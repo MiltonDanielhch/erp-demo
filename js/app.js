@@ -318,6 +318,11 @@ function iniciarERP() {
   console.log('   window.motorContable.obtenerDiario({tipo, cuentaCodigo})');
   console.log('   window.motorContable.obtenerDiarioPorPeriodo("2026-09")');
   console.log('   window.motorContable.obtenerDiarioPorDocumento(docId)');
+
+  console.log('   window.motorContable.obtenerMayorPorCuenta("1.1.06")');
+  console.log('   window.motorContable.obtenerMovimientosDeCuenta("1.1.06", "2026-09")');
+  console.log('   window.motorContable.obtenerSaldosDeCuentas("2026-09")');
+  console.log('   window.motorContable.calcularSaldoInicial("1.1.06", "2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────

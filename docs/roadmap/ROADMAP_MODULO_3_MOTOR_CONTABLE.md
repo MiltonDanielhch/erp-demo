@@ -357,26 +357,26 @@ Concepto: Costo de ventas según despacho PED-2026-001
 ## Tareas de la Fase 3.4
 
 ```text
-[ ] Implementar agregarAlDiario(asiento)
+[x] Implementar agregarAlDiario(asiento)
     → Agrega el asiento a la colección "libroDiario" en localStorage.
     → Asigna número correlativo si no lo tiene.
     → Ordena por fecha y número.
     → Verifica que no exista un asiento con el mismo número.
 
-[ ] Implementar obtenerDiario(filtros)
+[x] Implementar obtenerDiario(filtros)
     → Filtros opcionales: { fechaDesde, fechaHasta, tipo, cuentaCodigo }.
     → Devuelve array de asientos filtrados.
     → Ordenado por fecha ascendente y número ascendente.
 
-[ ] Implementar obtenerDiarioPorPeriodo(periodo)
+[x] Implementar obtenerDiarioPorPeriodo(periodo)
     → Devuelve todos los asientos del período "AAAA-MM".
     → Incluye resumen: totalDebe, totalHaber, cantidadAsientos.
 
-[ ] Implementar obtenerDiarioPorDocumento(documentoFuenteId)
+[x] Implementar obtenerDiarioPorDocumento(documentoFuenteId)
     → Busca el asiento vinculado a un documento fuente específico.
     → Para trazabilidad: desde Capa 1 → Capa 3.
 
-[ ] Implementar anularAsiento(asientoId, motivo)
+[x] Implementar anularAsiento(asientoId, motivo)
     → No elimina el asiento (por trazabilidad).
     → Crea un asiento REVERSO con las líneas invertidas.
     → Marca el original como ANULADO.
