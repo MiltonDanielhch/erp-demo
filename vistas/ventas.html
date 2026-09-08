@@ -1,25 +1,301 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Ventas y Cuentas por Cobrar
-     Capa 2: Módulos Operativos
+     Ciclo: Cotización → Pedido → Despacho → Factura → Cobro
      ══════════════════════════════════════════════════════════ -->
 
 <h2 class="contenido-titulo">💰 Ventas y Cuentas por Cobrar</h2>
-<p class="contenido-subtitulo">Ciclo de ventas: Cotización → Pedido → Despacho → Factura → Cobro</p>
+<p class="contenido-subtitulo">
+  Gestione el ciclo completo de ventas: desde la cotización hasta el cobro al cliente
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Nueva Cotización</button>
-  <button class="tab">Pedidos</button>
-  <button class="tab">Despachos</button>
-  <button class="tab">Facturas de Venta</button>
-  <button class="tab">Cuentas por Cobrar</button>
+<!-- ══════════════════════════════════════════════════════════
+     SISTEMA DE TABS
+     ══════════════════════════════════════════════════════════ -->
+<div class="tabs" style="display: flex; gap: 4px; border-bottom: 2px solid var(--color-borde, #ddd); margin-bottom: var(--espacio-md, 16px); flex-wrap: wrap;">
+  <button class="tab tab-activo" data-tab="cotizacion">📄 Nueva Cotización</button>
+  <button class="tab" data-tab="pedidos">🛍️ Pedidos</button>
+  <button class="tab" data-tab="despachos">🚚 Despachos</button>
+  <button class="tab" data-tab="facturas">🧾 Facturas de Venta</button>
+  <button class="tab" data-tab="cuentas-cobrar">💳 Cuentas por Cobrar</button>
 </div>
 
-<div id="contenido-modulo">
+<!-- ══════════════════════════════════════════════════════════
+     TAB 1: NUEVA COTIZACIÓN
+     ══════════════════════════════════════════════════════════ -->
+<div id="tab-cotizacion" class="contenido-tab">
   <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      💰 Módulo de Ventas — Se implementará en el <strong>Módulo 2</strong>.<br>
-      Aquí podrás registrar cotizaciones, pedidos, despachos,<br>
-      facturas de venta y cobros.
-    </p>
+    <h3 style="margin-bottom: var(--espacio-md, 16px);">📄 Registrar Cotización</h3>
+
+    <form id="form-cotizacion">
+      <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">Cliente <span class="requerido">*</span></label>
+          <select id="vt-cliente" class="form-select" required>
+            <option value="">Seleccione cliente...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vigencia (días)</label>
+          <input type="number" id="vt-vigencia" class="form-input" value="7" min="1" max="60">
+        </div>
+      </div>
+
+      <h4 style="margin: 16px 0 8px;">Productos Cotizados</h4>
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th style="width: 110px;">Cantidad</th>
+              <th style="width: 160px;">Precio Unit. (Bs)</th>
+              <th style="width: 130px;">Descuento (Bs)</th>
+              <th class="texto-derecha" style="width: 130px;">Subtotal</th>
+              <th style="width: 60px;"></th>
+            </tr>
+          </thead>
+          <tbody id="vt-tabla-productos"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="texto-derecha"><strong>Total (IVA incluido):</strong></td>
+              <td class="texto-derecha"><strong id="vt-total">Bs 0,00</strong></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <button type="button" id="vt-btn-agregar-producto" class="btn btn-outline btn-sm" style="margin-top: 8px;">➕ Agregar Producto</button>
+
+      <div class="form-group" style="margin-top: 12px;">
+        <label class="form-label">Observaciones</label>
+        <textarea id="vt-observaciones" class="form-input" rows="2" placeholder="Notas de la cotización"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button type="button" id="vt-btn-limpiar" class="btn btn-ghost">🧹 Limpiar</button>
+        <button type="submit" class="btn btn-primary">💾 Guardar Cotización</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="margin-top: 16px;">
+    <h3 style="margin-bottom: 12px;">📄 Cotizaciones Registradas</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Número</th><th>Cliente</th><th>Emisión</th><th>Vence</th>
+            <th class="texto-derecha">Total</th><th>Estado</th><th class="texto-centro">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="vt-tabla-cotizaciones">
+          <tr><td colspan="7" style="text-align:center; padding:24px; color:var(--texto-secundario,#666);">Sin cotizaciones.</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 2: PEDIDOS
+     ══════════════════════════════════════════════════════════ -->
+<div id="tab-pedidos" class="contenido-tab oculto">
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">🛍️ Pedidos de Venta</h3>
+    <p style="color: var(--texto-secundario,#666); margin-bottom: 12px;">
+      Los pedidos se generan desde cotizaciones aceptadas. Verifique el stock antes de confirmar.
+    </p>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Número</th><th>Cotización</th><th>Cliente</th><th>Fecha</th>
+            <th class="texto-derecha">Total</th><th>Estado</th><th class="texto-centro">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="vd-tabla-pedidos">
+          <tr><td colspan="7" style="text-align:center; padding:24px; color:var(--texto-secundario,#666);">Sin pedidos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 3: DESPACHOS
+     ══════════════════════════════════════════════════════════ -->
+<div id="tab-despachos" class="contenido-tab oculto">
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">🚚 Registrar Despacho de Mercadería</h3>
+    <form id="form-despacho">
+      <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">Pedido de Venta <span class="requerido">*</span></label>
+          <select id="ds-pedido" class="form-select" required>
+            <option value="">Seleccione pedido pendiente...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Despachado Por <span class="requerido">*</span></label>
+          <input type="text" id="ds-despachado-por" class="form-input" required placeholder="Nombre de quien despacha">
+        </div>
+      </div>
+
+      <h4 style="margin: 16px 0 8px;">Productos a Despachar</h4>
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="texto-derecha" style="width:110px;">Pedida</th>
+              <th class="texto-derecha" style="width:110px;">Pendiente</th>
+              <th class="texto-derecha" style="width:110px;">Stock</th>
+              <th style="width:140px;">Despachar</th>
+            </tr>
+          </thead>
+          <tbody id="ds-tabla-productos"></tbody>
+        </table>
+      </div>
+
+      <div class="form-group" style="margin-top: 12px;">
+        <label class="form-label">Observaciones</label>
+        <textarea id="ds-observaciones" class="form-input" rows="2" placeholder="Notas del despacho"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button type="submit" class="btn btn-primary">💾 Registrar Despacho</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 4: FACTURAS DE VENTA
+     ══════════════════════════════════════════════════════════ -->
+<div id="tab-facturas" class="contenido-tab oculto">
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">🧾 Emitir Factura de Venta</h3>
+    <form id="form-factura-venta">
+      <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">Pedido de Venta <span class="requerido">*</span></label>
+          <select id="fv-pedido" class="form-select" required>
+            <option value="">Seleccione pedido despachado...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha Emisión <span class="requerido">*</span></label>
+          <input type="date" id="fv-fecha" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">N° Factura</label>
+          <input type="text" id="fv-numero" class="form-input" placeholder="Dejar vacío para automático">
+        </div>
+      </div>
+
+      <!-- Resumen de impuestos -->
+      <div id="fv-resumen-impuestos" class="oculto"
+           style="background: var(--color-fondo-claro,#f5f5f5); border-radius:6px; padding:12px; margin-top:12px; display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:12px;">
+        <div><strong>Total:</strong> <span id="fv-total">Bs 0,00</span></div>
+        <div><strong>Neto:</strong> <span id="fv-neto">Bs 0,00</span></div>
+        <div><strong>IVA Débito (13%):</strong> <span id="fv-iva">Bs 0,00</span></div>
+        <div><strong>IT (3%):</strong> <span id="fv-it">Bs 0,00</span></div>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button type="submit" class="btn btn-primary">💾 Emitir Factura</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 5: CUENTAS POR COBRAR
+     ══════════════════════════════════════════════════════════ -->
+<div id="tab-cuentas-cobrar" class="contenido-tab oculto">
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+      <h3>💳 Cuentas por Cobrar</h3>
+      <div style="font-size:1.1rem;"><strong>Total por cobrar:</strong> <span id="cc-total-pendiente">Bs 0,00</span></div>
+    </div>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Factura</th><th>Cliente</th><th>Emisión</th><th>Vencimiento</th>
+            <th class="texto-derecha">Total</th><th class="texto-derecha">Cobrado</th>
+            <th class="texto-derecha">Saldo</th><th>Estado</th><th class="texto-centro">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="cc-tabla-cuentas">
+          <tr><td colspan="9" style="text-align:center; padding:24px; color:var(--texto-secundario,#666);">Sin cuentas por cobrar.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: REGISTRAR COBRO
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-cobro" class="oculto"
+     style="position: fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+  <div style="background: var(--color-fondo,#fff); border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.3); width:90%; max-width:500px; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid var(--color-borde,#ddd);">
+      <h3 style="margin:0;">💵 Registrar Cobro</h3>
+      <button id="cb-btn-cerrar" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+    <div style="padding:16px;">
+      <p style="margin-bottom:12px;">Factura: <strong id="cb-factura">-</strong> | Saldo: <strong id="cb-saldo">Bs 0,00</strong></p>
+      <form id="form-cobro">
+        <input type="hidden" id="cb-cuenta-id">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label">Monto a Cobrar (Bs) <span class="requerido">*</span></label>
+          <input type="number" id="cb-monto" class="form-input" step="0.01" min="0" required>
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label">Método de Pago</label>
+          <select id="cb-metodo" class="form-select">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TRANSFERENCIA">Transferencia</option>
+            <option value="CHEQUE">Cheque</option>
+            <option value="TARJETA">Tarjeta</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">Referencia</label>
+          <input type="text" id="cb-referencia" class="form-input" placeholder="Ej: TRF-2026-001">
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn btn-ghost" id="cb-btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn-primary">💵 Cobrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<!-- El script de lógica se agregará en el siguiente paso -->
+<script src="js/vistas/ventas-vista.js"></script>
+
+<style>
+  /* Estilos de tabs (respaldo local; luego se moverán a componentes.css) */
+  .tab {
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--texto-secundario, #666);
+    font-size: 0.95rem;
+  }
+  .tab:hover { color: var(--color-primario, #2563eb); }
+  .tab-activo {
+    color: var(--color-primario, #2563eb);
+    border-bottom-color: var(--color-primario, #2563eb);
+  }
+  .contenido-tab.oculto { display: none !important; }
+</style>
