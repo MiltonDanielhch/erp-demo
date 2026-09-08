@@ -327,6 +327,9 @@ function iniciarERP() {
   console.log('   window.motorContable.calcularBalanza("2026-09")');
   console.log('   window.motorContable.verificarCuadratura(totales)');
   console.log('   window.motorContable.detectarErroresComunes("2026-09")');
+
+  console.log('   window.motorContable.cerrarEjercicio("2026-09")');
+  console.log('   window.motorContable.simularCierreEjercicio("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────

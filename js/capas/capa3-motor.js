@@ -32,7 +32,8 @@ class MotorContable {
     // Clave directa en localStorage para el Libro Mayor
     // (no se usa colección porque cada asiento MODIFICA cuentas,
     // no agrega nuevos items. Evita QuotaExceededError.)
-    this.MAYOR_STORAGE_KEY = 'erp_bolivia_libro_mayor';
+    // Clave PROPIA del mayor (NO colisiona con colecciones del AlmacenamientoLocal)
+    this.MAYOR_STORAGE_KEY = 'erp_bolivia_MAYOR_CONTABLE_v2';
 
     // Asegurar que las colecciones existen
     if (!this.almacenamiento.obtener(this.COL_PENDIENTES)) {
@@ -45,40 +46,8 @@ class MotorContable {
       this.almacenamiento.guardar(this.COL_ANULADOS, []);
     }
 
-    // Migrar cualquier libro_mayor corrupto anterior de la colección
-    // al storage directo (una sola vez)
-    this._migrarMayorDeColeccion();
 
     console.log('⚙️ Motor Contable inicializado.');
-  }
-
-  /**
-   * Migra datos del libro_mayor de la colección antigua (si existen)
-   * al nuevo formato de localStorage directo.
-   * @private
-   */
-  _migrarMayorDeColeccion() {
-    try {
-      const mayorColeccion = this.almacenamiento.obtener('libro_mayor') || [];
-      if (mayorColeccion.length > 0) {
-        // Eliminar IDs únicos innecesarios (ya no se usan en el nuevo formato)
-        const mayorLimpio = mayorColeccion.map(m => ({
-          cuentaCodigo: m.cuentaCodigo,
-          cuentaNombre: m.cuentaNombre,
-          naturaleza: m.naturaleza || 'deudora',
-          movimientos: m.movimientos || [],
-          totalDebe: m.totalDebe || 0,
-          totalHaber: m.totalHaber || 0,
-          saldo: m.saldo || 0
-        }));
-        localStorage.setItem(this.MAYOR_STORAGE_KEY, JSON.stringify(mayorLimpio));
-        // Limpiar colección vieja
-        mayorColeccion.forEach(item => this.almacenamiento.eliminar('libro_mayor', item.id));
-        console.log(`🔧 [MOTOR] Migrados ${mayorLimpio.length} registros de libro_mayor a nuevo formato`);
-      }
-    } catch (e) {
-      console.warn('⚠️ No se pudo migrar libro_mayor:', e);
-    }
   }
 
   // ════════════════════════════════════════════════════════════
@@ -1015,6 +984,486 @@ class MotorContable {
       if (a.periodoContable) periodos.add(a.periodoContable);
     });
     return Array.from(periodos).sort((a, b) => b.localeCompare(a));
+  }
+
+    // ════════════════════════════════════════════════════════════
+  // ASIENTOS DE AJUSTE (CIERRE MENSUAL)
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * Genera todos los asientos de ajuste automático para un período.
+   *
+   * Ajustes incluidos:
+   * 1. Depreciación de activos fijos (línea recta)
+   * 2. Provisión de aguinaldo (1/12 del estimado anual)
+   * 3. Provisión de bono de antigüedad (DS 21060)
+   * 4. Provisión de indemnización (DS 28699, aplica a renuncia)
+   * 5. Devengados (parámetros opcionales)
+   *
+   * @param {string} periodo - Formato "AAAA-MM"
+   * @param {Object} [datos] - Datos externos (empleados, activos)
+   * @returns {Object} { generados, asientos, errores }
+   */
+  generarAjustesAutomaticos(periodo, datos = {}) {
+    console.log(`⚙️ [MOTOR] Generando ajustes automáticos para ${periodo}...`);
+
+    const resultados = [];
+    const errores = [];
+
+    // 1. Depreciación
+    if (datos.activosFijos && datos.activosFijos.length > 0) {
+      const dep = this.generarAsientoDepreciacion(periodo, datos.activosFijos);
+      if (dep.exito) resultados.push(dep.asiento);
+      else errores.push({ tipo: 'depreciacion', errores: dep.errores });
+    }
+
+    // 2. Aguinaldo
+    if (datos.empleados && datos.empleados.length > 0) {
+      const agui = this.generarAsientoProvisionAguinaldo(periodo, datos.empleados);
+      if (agui.exito) resultados.push(agui.asiento);
+      else errores.push({ tipo: 'aguinaldo', errores: agui.errores });
+
+      // 3. Bono de antigüedad
+      const bono = this.generarAsientoProvisionBonoAntiguedad(periodo, datos.empleados);
+      if (bono.exito) resultados.push(bono.asiento);
+      else errores.push({ tipo: 'bono_antiguedad', errores: bono.errores });
+
+      // 4. Indemnización
+      const ind = this.generarAsientoProvisionIndemnizacion(periodo, datos.empleados);
+      if (ind.exito) resultados.push(ind.asiento);
+      else errores.push({ tipo: 'indemnizacion', errores: ind.errores });
+    }
+
+    console.log(`✅ [MOTOR] ${resultados.length} asientos de ajuste generados, ${errores.length} errores`);
+    return { generados: resultados.length, asientos: resultados, errores };
+  }
+
+  /**
+   * Genera asiento de depreciación mensual por línea recta.
+   * Crea líneas separadas por tipo de activo para usar las cuentas
+   * específicas del plan (5.5.01-5.5.05 y 1.2.02-1.2.10).
+   */
+  generarAsientoDepreciacion(periodo, activosFijos) {
+    // Mapeo de tipo de activo a cuentas específicas del plan
+    const MAPA_CUENTAS = {
+      maquinaria:     { gasto: '5.5.01', depAcum: '1.2.02', nombreGasto: 'Depreciación de Maquinaria y Equipo', nombreDepAcum: 'Depreciación Acumulada - Maquinaria y Equipo' },
+      vehiculo:       { gasto: '5.5.02', depAcum: '1.2.04', nombreGasto: 'Depreciación de Vehículos', nombreDepAcum: 'Depreciación Acumulada - Vehículos' },
+      mueble:         { gasto: '5.5.03', depAcum: '1.2.06', nombreGasto: 'Depreciación de Muebles y Útiles', nombreDepAcum: 'Depreciación Acumulada - Muebles y Útiles' },
+      equipo_computacion: { gasto: '5.5.04', depAcum: '1.2.08', nombreGasto: 'Depreciación de Equipos de Computación', nombreDepAcum: 'Depreciación Acumulada - Equipos de Computación' },
+      edificio:       { gasto: '5.5.05', depAcum: '1.2.10', nombreGasto: 'Depreciación de Edificios', nombreDepAcum: 'Depreciación Acumulada - Edificios' }
+    };
+
+    // Agrupar depreciación por tipo
+    const porTipo = {};
+
+    activosFijos.forEach(activo => {
+      if (!activo.costo || activo.costo <= 0) return;
+      if (activo.tipo === 'terreno') return; // Terrenos no se deprecian
+
+      const valorResidual = activo.valorResidual || 0;
+      const vidaUtilMeses = (activo.vidaUtilAnios || 5) * 12;
+      const depreciacionMensual = window.BOLIVIA.redondear2(
+        (activo.costo - valorResidual) / vidaUtilMeses
+      );
+
+      if (depreciacionMensual <= 0) return;
+
+      const tipo = activo.tipo || 'maquinaria';
+      if (!porTipo[tipo]) porTipo[tipo] = { total: 0, detalles: [] };
+      porTipo[tipo].total += depreciacionMensual;
+      porTipo[tipo].detalles.push(`${activo.nombre}: ${depreciacionMensual}`);
+    });
+
+    const tipos = Object.keys(porTipo);
+    if (tipos.length === 0) {
+      return { exito: false, asiento: null, errores: ['No hay depreciación que registrar'] };
+    }
+
+    // Construir líneas del asiento
+    const lineas = [];
+    tipos.forEach(tipo => {
+      const cuentas = MAPA_CUENTAS[tipo] || MAPA_CUENTAS.maquinaria;
+      const total = window.BOLIVIA.redondear2(porTipo[tipo].total);
+
+      lineas.push({
+        cuentaCodigo: cuentas.gasto,
+        cuentaNombre: cuentas.nombreGasto,
+        debe: total,
+        haber: 0,
+        descripcion: porTipo[tipo].detalles.join(', ')
+      });
+      lineas.push({
+        cuentaCodigo: cuentas.depAcum,
+        cuentaNombre: cuentas.nombreDepAcum,
+        debe: 0,
+        haber: total,
+        descripcion: porTipo[tipo].detalles.join(', ')
+      });
+    });
+
+    const totalDepreciacion = window.BOLIVIA.redondear2(
+      lineas.filter(l => l.debe > 0).reduce((s, l) => s + l.debe, 0)
+    );
+
+    const resultado = window.estructuraAsiento.crearAsiento({
+      fecha: `${periodo}-${this._ultimoDiaDelMes(periodo)}`,
+      tipo: window.estructuraAsiento.TIPOS_ASIENTO.AJUSTE,
+      concepto: `Depreciación mensual ${periodo} — ${tipos.length} tipos de activos`,
+      lineas: lineas
+    });
+
+    if (resultado.exito) {
+      this.almacenamiento.guardar(this.COL_PENDIENTES, resultado.asiento);
+      this.contabilizarAsiento(resultado.asiento.id);
+    }
+
+    return resultado;
+  }
+
+  generarAsientoProvisionAguinaldo(periodo, empleados) {
+    const CUENTA_GASTO = '5.2.05';  // Gasto de Aguinaldo
+    const CUENTA_PAGAR = '2.1.11';  // Aguinaldo por Pagar
+
+    let totalAguinaldo = 0;
+
+    empleados.forEach(emp => {
+      const totalGanado = emp.totalGanadoUltimos3Meses || 0;
+      const promedioMensual = totalGanado / 3;
+      const provisionMensual = window.BOLIVIA.redondear2(promedioMensual / 12);
+      totalAguinaldo += provisionMensual;
+    });
+
+    if (totalAguinaldo === 0) {
+      return { exito: false, asiento: null, errores: ['No hay aguinaldo que provisionar'] };
+    }
+
+    totalAguinaldo = window.BOLIVIA.redondear2(totalAguinaldo);
+
+    const resultado = window.estructuraAsiento.crearAsiento({
+      fecha: `${periodo}-${this._ultimoDiaDelMes(periodo)}`,
+      tipo: window.estructuraAsiento.TIPOS_ASIENTO.AJUSTE,
+      concepto: `Provisión aguinaldo ${periodo} — ${empleados.length} empleados (LGT Art. 56)`,
+      lineas: [
+        { cuentaCodigo: CUENTA_GASTO, cuentaNombre: 'Gasto de Aguinaldo', debe: totalAguinaldo, haber: 0 },
+        { cuentaCodigo: CUENTA_PAGAR, cuentaNombre: 'Aguinaldo por Pagar', debe: 0, haber: totalAguinaldo }
+      ]
+    });
+
+    if (resultado.exito) {
+      this.almacenamiento.guardar(this.COL_PENDIENTES, resultado.asiento);
+      this.contabilizarAsiento(resultado.asiento.id);
+    }
+
+    return resultado;
+  }
+
+  /**
+   * Provisión mensual de bono de antigüedad (DS 21060).
+   *
+   * Base: 3 × SMN vigente.
+   * Porcentaje por años de servicio:
+   *   2 años:  5%  |  4 años:  9%  |  6 años: 11%
+   *   8 años: 15%  | 10 años: 20%  | 15 años: 25%
+   *  20 años: 30%  | 25 años: 50%
+   *
+   * Asiento:
+   *   Gasto Bono Antigüedad        (Debe)
+   *       Bono de Antigüedad por Pagar      (Haber)
+   */
+  generarAsientoProvisionBonoAntiguedad(periodo, empleados) {
+    const CUENTA_GASTO = '5.2.04';  // Bono de Antigüedad
+    const CUENTA_PAGAR = '2.1.13';  // Bono de Antigüedad por Pagar
+    const SMN = window.BOLIVIA.SMN_VIGENTE || 2500;
+    const BASE = SMN * 3;
+
+    let totalBono = 0;
+
+    empleados.forEach(emp => {
+      const aniosServicio = emp.aniosServicio || 0;
+      const porcentaje = this._porcentajeBonoAntiguedad(aniosServicio);
+      const bonoMensual = window.BOLIVIA.redondear2(BASE * porcentaje / 100);
+      totalBono += bonoMensual;
+    });
+
+    if (totalBono === 0) {
+      return { exito: false, asiento: null, errores: ['No hay bono de antigüedad que provisionar (mín. 2 años de servicio)'] };
+    }
+
+    totalBono = window.BOLIVIA.redondear2(totalBono);
+
+    const resultado = window.estructuraAsiento.crearAsiento({
+      fecha: `${periodo}-${this._ultimoDiaDelMes(periodo)}`,
+      tipo: window.estructuraAsiento.TIPOS_ASIENTO.AJUSTE,
+      concepto: `Provisión bono antigüedad ${periodo} — ${empleados.length} empleados (DS 21060)`,
+      lineas: [
+        { cuentaCodigo: CUENTA_GASTO, cuentaNombre: 'Bono de Antigüedad', debe: totalBono, haber: 0 },
+        { cuentaCodigo: CUENTA_PAGAR, cuentaNombre: 'Bono de Antigüedad por Pagar', debe: 0, haber: totalBono }
+      ]
+    });
+
+    if (resultado.exito) {
+      this.almacenamiento.guardar(this.COL_PENDIENTES, resultado.asiento);
+      this.contabilizarAsiento(resultado.asiento.id);
+    }
+
+    return resultado;
+  }
+
+  /**
+   * Provisión mensual de indemnización por tiempo de servicio.
+   *
+   * DS 28699: aplica incluso a RENUNCIA VOLUNTARIA.
+   * Indemnización = 1 mes de sueldo por año de servicio + fracción.
+   * Provisión mensual = acumulado anual ÷ 12.
+   *
+   * Asiento:
+   *   Gasto Indemnización          (Debe)
+   *       Indemnización por Pagar           (Haber)
+   */
+  generarAsientoProvisionIndemnizacion(periodo, empleados) {
+    const CUENTA_GASTO = '5.2.07';  // Gasto de Indemnización
+    const CUENTA_PAGAR = '2.1.14';  // Indemnización por Tiempo de Servicio por Pagar
+
+    let totalIndemnizacion = 0;
+
+    empleados.forEach(emp => {
+      const totalGanado = emp.totalGanadoUltimos3Meses || 0;
+      const promedioMensual = totalGanado / 3;
+      const aniosServicio = emp.aniosServicio || 0;
+      const provisionAnual = promedioMensual * aniosServicio;
+      const provisionMensual = window.BOLIVIA.redondear2(provisionAnual / 12);
+      totalIndemnizacion += provisionMensual;
+    });
+
+    if (totalIndemnizacion === 0) {
+      return { exito: false, asiento: null, errores: ['No hay indemnización que provisionar'] };
+    }
+
+    totalIndemnizacion = window.BOLIVIA.redondear2(totalIndemnizacion);
+
+    const resultado = window.estructuraAsiento.crearAsiento({
+      fecha: `${periodo}-${this._ultimoDiaDelMes(periodo)}`,
+      tipo: window.estructuraAsiento.TIPOS_ASIENTO.AJUSTE,
+      concepto: `Provisión indemnización ${periodo} — ${empleados.length} empleados (DS 28699, aplica a renuncia)`,
+      lineas: [
+        { cuentaCodigo: CUENTA_GASTO, cuentaNombre: 'Gasto de Indemnización', debe: totalIndemnizacion, haber: 0 },
+        { cuentaCodigo: CUENTA_PAGAR, cuentaNombre: 'Indemnización por Tiempo de Servicio por Pagar', debe: 0, haber: totalIndemnizacion }
+      ]
+    });
+
+    if (resultado.exito) {
+      this.almacenamiento.guardar(this.COL_PENDIENTES, resultado.asiento);
+      this.contabilizarAsiento(resultado.asiento.id);
+    }
+
+    return resultado;
+  }
+
+    // ════════════════════════════════════════════════════════════
+  // CIERRE DEL EJERCICIO
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * Cierra el ejercicio contable de un período.
+   *
+   * Proceso:
+   * 1. Suma todos los ingresos (cuentas 4.x)
+   * 2. Suma todos los gastos y costos (cuentas 5.x)
+   * 3. Calcula utilidad/pérdida: Ingresos − Gastos
+   * 4. Genera asiento de cierre que lleva cuentas de resultado a cero
+   * 5. Transfiere el resultado a Utilidad del Ejercicio (3.2.04)
+   * 6. Marca el período como cerrado
+   *
+   * @param {string} periodo - Formato "AAAA-MM" o "AAAA" para cierre anual
+   * @param {Object} [opciones]
+   * @param {boolean} [opciones.simular=false] - Si true, no guarda cambios
+   * @returns {Object} { exito, utilidad, asiento, errores }
+   */
+  cerrarEjercicio(periodo, opciones = {}) {
+    console.log(`⚙️ [MOTOR] Cerrando ejercicio ${periodo}...`);
+
+    const simular = opciones.simular || false;
+
+    // 1. Obtener todas las cuentas de resultado (ingresos y gastos)
+    const saldos = this.obtenerSaldosDeCuentas(periodo);
+
+    const ingresos = saldos.filter(s => s.cuentaCodigo.startsWith('4.'));
+    const gastos = saldos.filter(s => s.cuentaCodigo.startsWith('5.'));
+
+    // 2. Calcular totales
+    let totalIngresos = 0;
+    let totalGastos = 0;
+
+    ingresos.forEach(c => {
+      // Ingresos tienen naturaleza acreedora: saldo positivo = ingreso
+      totalIngresos += c.saldoFinal;
+    });
+
+    gastos.forEach(c => {
+      // Gastos tienen naturaleza deudora: saldo positivo = gasto
+      totalGastos += c.saldoFinal;
+    });
+
+    totalIngresos = window.BOLIVIA.redondear2(totalIngresos);
+    totalGastos = window.BOLIVIA.redondear2(totalGastos);
+    const utilidad = window.BOLIVIA.redondear2(totalIngresos - totalGastos);
+
+    console.log(`   Ingresos: ${window.utilidades.formatearBs(totalIngresos)}`);
+    console.log(`   Gastos:   ${window.utilidades.formatearBs(totalGastos)}`);
+    console.log(`   Utilidad: ${window.utilidades.formatearBs(utilidad)}`);
+
+    if (totalIngresos === 0 && totalGastos === 0) {
+      return {
+        exito: false,
+        utilidad: 0,
+        asiento: null,
+        errores: ['No hay cuentas de resultado para cerrar en este período']
+      };
+    }
+
+    // 3. Construir líneas del asiento de cierre
+    const lineas = [];
+    const CUENTA_UTILIDAD = '3.2.04'; // Utilidad del Ejercicio
+
+    // Cerrar cuentas de ingresos (llevar a cero)
+    // Ingresos tienen saldo acreedor → debitamos para cerrar
+    ingresos.forEach(c => {
+      if (Math.abs(c.saldoFinal) > 0.01) {
+        lineas.push({
+          cuentaCodigo: c.cuentaCodigo,
+          cuentaNombre: c.cuentaNombre,
+          debe: c.saldoFinal,
+          haber: 0,
+          descripcion: `Cierre de ${c.cuentaNombre}`
+        });
+      }
+    });
+
+    // Cerrar cuentas de gastos (llevar a cero)
+    // Gastos tienen saldo deudor → acreditamos para cerrar
+    gastos.forEach(c => {
+      if (Math.abs(c.saldoFinal) > 0.01) {
+        lineas.push({
+          cuentaCodigo: c.cuentaCodigo,
+          cuentaNombre: c.cuentaNombre,
+          debe: 0,
+          haber: c.saldoFinal,
+          descripcion: `Cierre de ${c.cuentaNombre}`
+        });
+      }
+    });
+
+    // Transferir utilidad/pérdida a cuenta de resultado del ejercicio
+    if (utilidad >= 0) {
+      // Utilidad: acreditamos la cuenta de utilidad
+      lineas.push({
+        cuentaCodigo: CUENTA_UTILIDAD,
+        cuentaNombre: 'Utilidad del Ejercicio',
+        debe: 0,
+        haber: utilidad,
+        descripcion: `Utilidad del ejercicio ${periodo}`
+      });
+    } else {
+      // Pérdida: debitamos la cuenta de utilidad (saldo deudor)
+      lineas.push({
+        cuentaCodigo: CUENTA_UTILIDAD,
+        cuentaNombre: 'Utilidad del Ejercicio',
+        debe: -utilidad,
+        haber: 0,
+        descripcion: `Pérdida del ejercicio ${periodo}`
+      });
+    }
+
+    // 4. Crear asiento de cierre
+    const resultado = window.estructuraAsiento.crearAsiento({
+      fecha: `${periodo}-${this._ultimoDiaDelMes(periodo)}`,
+      tipo: window.estructuraAsiento.TIPOS_ASIENTO.CIERRE,
+      concepto: `Cierre del ejercicio ${periodo} — Utilidad: ${window.utilidades.formatearBs(utilidad)}`,
+      lineas: lineas
+    });
+
+    if (!resultado.exito) {
+      return {
+        exito: false,
+        utilidad,
+        asiento: null,
+        errores: resultado.errores
+      };
+    }
+
+    // 5. Si no es simulación, guardar y contabilizar
+    if (!simular) {
+      this.almacenamiento.guardar(this.COL_PENDIENTES, resultado.asiento);
+      const contabilizacion = this.contabilizarAsiento(resultado.asiento.id);
+
+      if (!contabilizacion.exito) {
+        return {
+          exito: false,
+          utilidad,
+          asiento: null,
+          errores: contabilizacion.errores
+        };
+      }
+
+      // Marcar período como cerrado (si existe el gestor)
+      if (typeof window.PeriodosContables !== 'undefined') {
+        try {
+          window.PeriodosContables.cerrarPeriodo(periodo, `Cierre contable automático. Utilidad: ${window.utilidades.formatearBs(utilidad)}`);
+        } catch (e) {
+          console.warn('⚠️ No se pudo marcar período como cerrado:', e);
+        }
+      }
+
+      console.log(`✅ [MOTOR] Ejercicio ${periodo} cerrado. Utilidad: ${window.utilidades.formatearBs(utilidad)}`);
+    } else {
+      console.log(`🔍 [MOTOR] Simulación de cierre. No se guardaron cambios.`);
+    }
+
+    return {
+      exito: true,
+      utilidad,
+      totalIngresos,
+      totalGastos,
+      asiento: resultado.asiento,
+      errores: []
+    };
+  }
+
+  /**
+   * Simula el cierre del ejercicio sin guardar cambios.
+   * Útil para previsualizar el resultado antes de confirmar.
+   *
+   * @param {string} periodo
+   * @returns {Object}
+   */
+  simularCierreEjercicio(periodo) {
+    return this.cerrarEjercicio(periodo, { simular: true });
+  }
+
+  /**
+   * Porcentaje de bono de antigüedad según años de servicio (DS 21060).
+   * @private
+   */
+  _porcentajeBonoAntiguedad(anios) {
+    if (anios >= 25) return 50;
+    if (anios >= 20) return 30;
+    if (anios >= 15) return 25;
+    if (anios >= 10) return 20;
+    if (anios >= 8) return 15;
+    if (anios >= 6) return 11;
+    if (anios >= 4) return 9;
+    if (anios >= 2) return 5;
+    return 0;
+  }
+
+  /**
+   * Calcula el último día del mes para un período.
+   * @private
+   */
+  _ultimoDiaDelMes(periodo) {
+    const [anio, mes] = periodo.split('-').map(Number);
+    const ultimoDia = new Date(anio, mes, 0).getDate();
+    return String(ultimoDia).padStart(2, '0');
   }
 
   // ════════════════════════════════════════════════════════════
