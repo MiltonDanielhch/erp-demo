@@ -1,24 +1,215 @@
 <!-- ══════════════════════════════════════════════════════════
-     VISTA: Inventario / Kardex
-     Capa 2: Módulos Operativos
+     VISTA: Inventario y Kardex
+     Gestión visual del inventario con kardex valorado
      ══════════════════════════════════════════════════════════ -->
 
-<h2 class="contenido-titulo">📦 Inventario / Kardex</h2>
-<p class="contenido-subtitulo">Control de existencias con costo promedio ponderado</p>
+<h2 class="contenido-titulo">📦 Inventario y Kardex</h2>
+<p class="contenido-subtitulo">
+  Control de existencias, valorización del inventario y trazabilidad de movimientos
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Productos</button>
-  <button class="tab">Kardex</button>
-  <button class="tab">Movimientos</button>
-  <button class="tab">Alertas de Stock</button>
-</div>
-
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      📦 Módulo de Inventario — Se implementará en el <strong>Módulo 2</strong>.<br>
-      Aquí podrás gestionar productos, kardex valorado,<br>
-      entradas/salidas y alertas de stock mínimo.
-    </p>
+<!-- ══════════════════════════════════════════════════════════
+     DASHBOARD DE INVENTARIO
+     ══════════════════════════════════════════════════════════ -->
+<div class="grid-cards grid-cards-4" style="margin-bottom: var(--espacio-lg);">
+  <div class="dashboard-card" style="border-left-color: var(--color-primario);">
+    <div class="card-titulo">💰 Valor Total Inventario</div>
+    <div class="card-valor" id="stats-valor-inventario">Bs 0,00</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-exito);">
+    <div class="card-titulo">📦 Productos con Stock</div>
+    <div class="card-valor" id="stats-productos-stock">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-alerta);">
+    <div class="card-titulo">⚠️ Stock Bajo</div>
+    <div class="card-valor" id="stats-stock-bajo">0</div>
+  </div>
+  <div class="dashboard-card" style="border-left-color: var(--color-error);">
+    <div class="card-titulo">🚫 Sin Stock</div>
+    <div class="card-valor" id="stats-sin-stock">0</div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CONTENEDOR PRINCIPAL
+     ══════════════════════════════════════════════════════════ -->
+<div class="card">
+  
+  <!-- BARRA DE ACCIONES -->
+  <div style="display: flex; gap: var(--espacio-sm); margin-bottom: var(--espacio-md); flex-wrap: wrap;">
+    <button id="btn-ajuste-inventario" class="btn btn-secondary">🔧 Ajuste de Inventario</button>
+    <button id="btn-exportar-kardex" class="btn btn-outline">📥 Exportar Kardex</button>
+    <div style="flex: 1; min-width: 200px;">
+      <input type="text" id="buscar-producto" class="form-input" placeholder="🔍 Buscar producto por código o nombre...">
+    </div>
+    <button id="btn-refrescar" class="btn btn-outline btn-sm">🔄</button>
+  </div>
+
+  <!-- TABLA DE PRODUCTOS -->
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th class="texto-derecha">Stock Actual</th>
+          <th class="texto-derecha">Stock Mínimo</th>
+          <th class="texto-derecha">Costo Promedio</th>
+          <th class="texto-derecha">Valor Total</th>
+          <th>Estado</th>
+          <th class="texto-centro">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-productos-body">
+        <tr>
+          <td colspan="9" style="text-align: center; padding: var(--espacio-xl); color: var(--texto-secundario);">
+            📦 No hay productos registrados en el inventario.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: KARDEX DETALLADO
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-kardex" class="inv-modal oculto"
+     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+  <div class="inv-modal-contenido"
+       style="background: var(--color-fondo, #fff); border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 90%; max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--color-borde, #ddd);">
+      <h3 id="kardex-titulo" style="margin:0;">📊 Kardex del Producto</h3>
+      <button id="btn-cerrar-kardex" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+
+    <div style="padding: 16px;">
+      <!-- Resumen del producto -->
+      <div style="background: var(--color-fondo-claro, #f5f5f5); border-radius: 6px; padding: 12px; margin-bottom: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+        <div><strong>Código:</strong> <span id="kardex-codigo">-</span></div>
+        <div><strong>Producto:</strong> <span id="kardex-nombre">-</span></div>
+        <div><strong>Stock:</strong> <span id="kardex-stock">0</span> uds</div>
+        <div><strong>Costo Prom:</strong> <span id="kardex-costo">Bs 0,00</span></div>
+        <div><strong>Valor Total:</strong> <span id="kardex-valor">Bs 0,00</span></div>
+        <div><strong>Movimientos:</strong> <span id="kardex-movimientos">0</span></div>
+      </div>
+
+      <!-- Filtros -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex:1; min-width:140px;">
+          <label style="display:block; font-size:0.85rem; margin-bottom:4px;">Desde:</label>
+          <input type="date" id="kardex-fecha-inicio" class="form-input">
+        </div>
+        <div style="flex:1; min-width:140px;">
+          <label style="display:block; font-size:0.85rem; margin-bottom:4px;">Hasta:</label>
+          <input type="date" id="kardex-fecha-fin" class="form-input">
+        </div>
+        <div style="flex:1; min-width:140px;">
+          <label style="display:block; font-size:0.85rem; margin-bottom:4px;">Tipo:</label>
+          <select id="kardex-tipo-filtro" class="form-select">
+            <option value="">Todos</option>
+            <option value="ENTRADA">Entradas</option>
+            <option value="SALIDA">Salidas</option>
+          </select>
+        </div>
+        <button id="btn-filtrar-kardex" class="btn btn-primary btn-sm">Filtrar</button>
+        <button id="btn-limpiar-filtros" class="btn btn-ghost btn-sm">Limpiar</button>
+      </div>
+
+      <!-- Tabla kardex -->
+      <div style="max-height: 400px; overflow: auto; border: 1px solid var(--color-borde, #ddd); border-radius: 6px;">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Tipo</th><th>Motivo</th><th>Referencia</th>
+              <th class="texto-derecha">Cant.</th><th class="texto-derecha">Costo Unit.</th>
+              <th class="texto-derecha">Valor</th><th class="texto-derecha">Stock Ant.</th>
+              <th class="texto-derecha">Stock Nuevo</th><th class="texto-derecha">Prom. Ant.</th>
+              <th class="texto-derecha">Prom. Nuevo</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-kardex-body">
+            <tr><td colspan="11" style="text-align:center; padding:24px;">Seleccione un producto.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Resumen período -->
+      <div style="background: var(--color-fondo-claro, #f5f5f5); border-radius: 6px; padding: 12px; margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+        <div><strong>Total Entradas:</strong> <span id="kardex-total-entradas">Bs 0,00</span></div>
+        <div><strong>Total Salidas:</strong> <span id="kardex-total-salidas">Bs 0,00</span></div>
+        <div><strong>Valor Neto:</strong> <span id="kardex-valor-neto">Bs 0,00</span></div>
+        <div><strong>Movimientos:</strong> <span id="kardex-total-movimientos">0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: AJUSTE DE INVENTARIO
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-ajuste" class="inv-modal oculto"
+     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+  <div class="inv-modal-contenido"
+       style="background: var(--color-fondo, #fff); border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--color-borde, #ddd);">
+      <h3 style="margin:0;">🔧 Ajuste de Inventario</h3>
+      <button id="btn-cerrar-ajuste" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+
+    <div style="padding: 16px;">
+      <p style="color: var(--texto-secundario, #666); margin-bottom: 16px;">
+        Realice un ajuste cuando la cantidad física no coincide con el sistema.
+      </p>
+
+      <form id="form-ajuste">
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; margin-bottom:4px;">Producto <span style="color:red;">*</span></label>
+          <select id="ajuste-producto" name="productoId" class="form-select" required>
+            <option value="">Seleccione un producto...</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <label style="display:block; margin-bottom:4px;">Stock en Sistema</label>
+            <input type="number" id="ajuste-stock-sistema" class="form-input" disabled>
+          </div>
+          <div>
+            <label style="display:block; margin-bottom:4px;">Stock Físico (Real) <span style="color:red;">*</span></label>
+            <input type="number" id="ajuste-stock-real" name="cantidadReal" class="form-input" min="0" required>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; margin-bottom:4px;">Diferencia</label>
+          <input type="number" id="ajuste-diferencia" class="form-input" disabled>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display:block; margin-bottom:4px;">Motivo del Ajuste <span style="color:red;">*</span></label>
+          <textarea id="ajuste-motivo" name="motivo" class="form-input" rows="3" required
+                    placeholder="Explique el motivo (ej: diferencia en conteo físico)..."></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display:block; margin-bottom:4px;">Referencia</label>
+          <input type="text" id="ajuste-referencia" name="referencia" class="form-input"
+                 placeholder="Ej: AJUSTE_FISICO_SEP_2026">
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button type="button" class="btn btn-ghost" id="btn-cancelar-ajuste">Cancelar</button>
+          <button type="submit" class="btn btn-primary">🔧 Realizar Ajuste</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<!-- Script externo -->
+<script src="js/vistas/inventario-vista.js"></script>
