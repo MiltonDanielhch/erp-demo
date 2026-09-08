@@ -622,10 +622,10 @@ COBRO DEL CLIENTE:
 ## Tareas de la Fase 2.8
 
 ```text
-[ ] Crear js/modulos/generador-asientos.js
+[x] Crear js/modulos/generador-asientos.js
     → Clase GeneradorAsientos con métodos para cada tipo de transacción.
 
-[ ] Implementar generarAsientoCompra(datosCompra)
+[x] Implementar generarAsientoCompra(datosCompra)
     → Crea el asiento de compra (Inventario + IVA CF / Proveedores).
     → Devuelve un objeto asiento con líneas de Debe y Haber.
     → Verifica que Debe = Haber antes de devolver.
@@ -636,22 +636,22 @@ COBRO DEL CLIENTE:
       un objeto asiento con líneas: Inventario (Debe), IVA Crédito 
       Fiscal (Debe), Proveedores (Haber). Verifica que Debe = Haber."
 
-[ ] Implementar generarAsientoVenta(datosVenta)
+[x] Implementar generarAsientoVenta(datosVenta)
     → Crea el asiento de venta (Clientes / Ventas + IVA DF).
     → Calcula el IT: total × 3%.
     → Devuelve un objeto asiento.
 
-[ ] Implementar generarAsientoCostoVentas(datosDespacho)
+[x] Implementar generarAsientoCostoVentas(datosDespacho)
     → Crea el asiento de costo de ventas (Costo de Ventas / Inventario).
     → Usa el costo promedio ponderado del kardex.
 
-[ ] Implementar generarAsientoPagoProveedor(datosPago)
+[x] Implementar generarAsientoPagoProveedor(datosPago)
     → Crea el asiento de pago (Proveedores / Bancos).
 
-[ ] Implementar generarAsientoCobroCliente(datosCobro)
+[x] Implementar generarAsientoCobroCliente(datosCobro)
     → Crea el asiento de cobro (Bancos / Clientes).
 
-[ ] Guardar asientos en colección "asientosPendientes"
+[x] Guardar asientos en colección "asientosPendientes"
     → Cada asiento tiene: id, fecha, concepto, lineas[], estado: "PENDIENTE".
     → El Motor Contable (Módulo 3) los procesará y validará.
 ```

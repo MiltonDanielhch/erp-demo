@@ -175,6 +175,13 @@ function iniciarERP() {
   });
   console.log('📦 Módulo de Inventario (Kardex) inicializado.');
 
+  // ── Instanciar Generador de Asientos Contables ───────────────
+  const generadorAsientos = new GeneradorAsientos({
+    almacenamiento: almacenamiento,
+    planCuentas: PlanCuentasUtilidades
+  });
+  console.log('📒 Generador de Asientos Contables inicializado.');
+
   // ── NUEVO: Cargar datos de ejemplo (pasando catálogos como parámetros) ──
   if (typeof cargarDatosEjemplo === 'function') {
     cargarDatosEjemplo({
@@ -208,6 +215,9 @@ function iniciarERP() {
   // ── Exponer al objeto window ─────────────────────────────────
   window.moduloInventario = moduloInventario;
   window.ERP.moduloInventario = moduloInventario;
+  // ── Exponer al objeto window ─────────────────────────────────
+  window.generadorAsientos = generadorAsientos;
+  window.ERP.generadorAsientos = generadorAsientos;
 
 
   // En la sección donde expones los módulos (línea ~234)
@@ -270,6 +280,11 @@ function iniciarERP() {
   console.log('   window.moduloInventario.obtenerKardex({productoId})');
   console.log('   window.moduloInventario.obtenerValorInventario()');
   console.log('   window.moduloInventario.verificarStockBajo()');
+    console.log('');
+  console.log('   📌 CONTABILIDAD:');
+  console.log('   window.generadorAsientos.obtenerAsientos()');
+  console.log('   window.generadorAsientos.obtenerAsientosPendientes()');
+  console.log('   window.generadorAsientos.obtenerResumenPorPeriodo("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────
