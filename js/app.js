@@ -42,7 +42,7 @@ const RUTAS_ERP = {
   'libro-diario': 'vistas/libro-diario.html',
   'libro-mayor': 'vistas/libro-mayor.html',
   'balanza': 'vistas/balanza.html',
-
+  'lcv': 'vistas/lcv.html',
   // Capa 4: Estados Financieros
   'estados-financieros': 'vistas/estados-financieros.html',
 
@@ -182,6 +182,13 @@ function iniciarERP() {
   });
   console.log('📒 Generador de Asientos Contables inicializado.');
 
+  // ── Instanciar Libro de Compras y Ventas ─────────────────────
+  const libroComprasVentas = new LibroComprasVentas({
+    almacenamiento: almacenamiento,
+    capaDocumentos: capaDocumentos
+  });
+  console.log('📋 Libro de Compras y Ventas inicializado.');
+
   // ── NUEVO: Cargar datos de ejemplo (pasando catálogos como parámetros) ──
   if (typeof cargarDatosEjemplo === 'function') {
     cargarDatosEjemplo({
@@ -218,7 +225,8 @@ function iniciarERP() {
   // ── Exponer al objeto window ─────────────────────────────────
   window.generadorAsientos = generadorAsientos;
   window.ERP.generadorAsientos = generadorAsientos;
-
+  // ── Exponer al objeto window ─────────────────────────────────
+  window.libroComprasVentas = libroComprasVentas;
 
   // En la sección donde expones los módulos (línea ~234)
   window.moduloVentas = moduloVentas;
@@ -280,11 +288,16 @@ function iniciarERP() {
   console.log('   window.moduloInventario.obtenerKardex({productoId})');
   console.log('   window.moduloInventario.obtenerValorInventario()');
   console.log('   window.moduloInventario.verificarStockBajo()');
-    console.log('');
+  console.log('');
   console.log('   📌 CONTABILIDAD:');
   console.log('   window.generadorAsientos.obtenerAsientos()');
   console.log('   window.generadorAsientos.obtenerAsientosPendientes()');
   console.log('   window.generadorAsientos.obtenerResumenPorPeriodo("2026-09")');
+  console.log('');
+  console.log('   📌 LIBRO COMPRAS/VENTAS:');
+  console.log('   window.libroComprasVentas.generarLCV("2026-09")');
+  console.log('   window.libroComprasVentas.calcularIVAPorPagar("2026-09")');
+  console.log('   window.libroComprasVentas.exportarCSV("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────

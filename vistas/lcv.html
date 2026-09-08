@@ -1,0 +1,126 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Libro de Compras y Ventas (LCV)
+     Reporte tributario obligatorio para el SIN
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">📋 Libro de Compras y Ventas IVA</h2>
+<p class="contenido-subtitulo">
+  Reporte tributario preliminar para el Servicio de Impuestos Nacionales (SIN)
+</p>
+
+<!-- ══════════════════════════════════════════════════════════
+     CONTROLES
+     ══════════════════════════════════════════════════════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+      <label class="form-label">Período Contable</label>
+      <select id="lcv-periodo" class="form-select">
+        <option value="">Seleccione un período...</option>
+      </select>
+    </div>
+    <button id="lcv-btn-generar" class="btn btn-primary">📋 Generar LCV</button>
+    <button id="lcv-btn-exportar" class="btn btn-outline" disabled>📥 Exportar CSV</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CONTENIDO DEL LCV
+     ══════════════════════════════════════════════════════════ -->
+<div id="lcv-contenido" class="oculto">
+
+  <!-- COMPRAS -->
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h3 style="margin-bottom: var(--espacio-md);">🛒 Libro de Compras</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>NIT Proveedor</th>
+            <th>Razón Social</th>
+            <th>N° Factura</th>
+            <th>CUF</th>
+            <th>Fecha</th>
+            <th class="texto-derecha">Total Bs</th>
+            <th class="texto-derecha">Neto Bs</th>
+            <th class="texto-derecha">IVA Bs</th>
+          </tr>
+        </thead>
+        <tbody id="lcv-compras-body">
+          <tr><td colspan="8" style="text-align:center; padding:24px;">Sin datos</td></tr>
+        </tbody>
+        <tfoot id="lcv-compras-foot" style="display:none;">
+          <tr style="font-weight: bold; background: var(--color-fondo-claro);">
+            <td colspan="5" class="texto-derecha">TOTAL COMPRAS:</td>
+            <td class="texto-derecha monto" id="lcv-compras-total"></td>
+            <td class="texto-derecha monto" id="lcv-compras-neto"></td>
+            <td class="texto-derecha monto" id="lcv-compras-iva"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- VENTAS -->
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h3 style="margin-bottom: var(--espacio-md);">💰 Libro de Ventas</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>NIT Cliente</th>
+            <th>Razón Social</th>
+            <th>N° Factura</th>
+            <th>CUF</th>
+            <th>Fecha</th>
+            <th class="texto-derecha">Total Bs</th>
+            <th class="texto-derecha">Neto Bs</th>
+            <th class="texto-derecha">IVA Bs</th>
+            <th class="texto-derecha">IT Bs</th>
+          </tr>
+        </thead>
+        <tbody id="lcv-ventas-body">
+          <tr><td colspan="9" style="text-align:center; padding:24px;">Sin datos</td></tr>
+        </tbody>
+        <tfoot id="lcv-ventas-foot" style="display:none;">
+          <tr style="font-weight: bold; background: var(--color-fondo-claro);">
+            <td colspan="5" class="texto-derecha">TOTAL VENTAS:</td>
+            <td class="texto-derecha monto" id="lcv-ventas-total"></td>
+            <td class="texto-derecha monto" id="lcv-ventas-neto"></td>
+            <td class="texto-derecha monto" id="lcv-ventas-iva"></td>
+            <td class="texto-derecha monto" id="lcv-ventas-it"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div class="card">
+    <h3 style="margin-bottom: var(--espacio-md);">📊 Resumen del Período</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--espacio-md);">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.9rem;">IVA Débito (Ventas)</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-error);" id="lcv-iva-debito">Bs 0,00</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.9rem;">IVA Crédito (Compras)</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-exito);" id="lcv-iva-credito">Bs 0,00</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.9rem;">IVA por Pagar</div>
+        <div style="font-size: 1.5rem; font-weight: bold;" id="lcv-iva-pagar">Bs 0,00</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.9rem;">IT por Pagar</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-alerta);" id="lcv-it-pagar">Bs 0,00</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<script src="js/vistas/lcv-vista.js"></script>
