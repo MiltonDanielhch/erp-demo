@@ -93,9 +93,13 @@ function iniciarERP() {
   const capaDocumentos = new CapaDocumentos(almacenamiento);
   console.log('📄 Capa 1 (Documentos Fuente) inicializada.');
 
-  // Capa 3: Motor Contable (stub, se completa en Módulo 3)
-  const motorContable = new MotorContable();
-  console.log('⚙️  Motor Contable inicializado (stub — Módulo 3).');
+  // Capa 3: Motor Contable (implementación completa)
+  const motorContable = new MotorContable({
+    almacenamiento: almacenamiento,
+    capaDocumentos: capaDocumentos,
+    planCuentas: PlanCuentasUtilidades
+  });
+  console.log('⚙️ Motor Contable (Capa 3) inicializado.');
 
   // ── 4. Configurar el Enrutador ──────────────────────────────
   const enrutador = new Enrutador({
@@ -298,6 +302,13 @@ function iniciarERP() {
   console.log('   window.libroComprasVentas.generarLCV("2026-09")');
   console.log('   window.libroComprasVentas.calcularIVAPorPagar("2026-09")');
   console.log('   window.libroComprasVentas.exportarCSV("2026-09")');
+  console.log('');
+  console.log('   📌 MOTOR CONTABLE (Capa 3):');
+  console.log('   window.motorContable.procesarAsientosPendientes()');
+  console.log('   window.motorContable.obtenerLibroMayor()');
+  console.log('   window.motorContable.calcularBalanzaComprobacion()');
+  console.log('   window.motorContable.crearAsientoManual({...})');
+  console.log('   window.motorContable.anularAsiento(id, motivo)');
 }
 
 // ──────────────────────────────────────────────────────────────

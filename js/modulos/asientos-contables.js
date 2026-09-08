@@ -27,27 +27,42 @@ class GeneradorAsientos {
 
     this.coleccionAsientos = 'asientos_pendientes';
 
-    // Mapeo de códigos de cuenta (plan contable boliviano típico)
+    // Mapeo de códigos de cuenta (alineado al plan de cuentas boliviano real)
     this.CUENTAS = {
-      // Activos
-      CAJA: '1.1.01',
-      BANCOS: '1.1.02',
-      CLIENTES: '1.1.03',
-      INVENTARIO: '1.1.05',
-      IVA_CREDITO_FISCAL: '1.1.06',
+      // ═══ ACTIVOS (1.x) ═══
+      CAJA: '1.1.03',                          // Caja
+      BANCOS: '1.1.02',                        // Bancos
+      CLIENTES: '1.1.04',                      // Clientes / Cuentas por Cobrar
+      INVENTARIO: '1.1.06',                    // Inventario de Mercancías
+      IVA_CREDITO_FISCAL: '1.1.07',            // IVA Crédito Fiscal
+      IVA_SALDO_FAVOR: '1.1.08',               // IVA Saldo a Favor
 
-      // Pasivos
-      PROVEEDORES: '2.1.01',
-      IVA_DEBITO_FISCAL: '2.1.02',
-      IT_POR_PAGAR: '2.1.03',
+      // ═══ PASIVOS (2.x) ═══
+      PROVEEDORES: '2.1.01',                   // Proveedores
+      CUENTAS_POR_PAGAR: '2.1.02',             // Cuentas por Pagar
+      IVA_DEBITO_FISCAL: '2.1.03',             // IVA Débito Fiscal
+      IVA_POR_PAGAR: '2.1.04',                 // IVA por Pagar
+      IT_POR_PAGAR: '2.1.05',                  // IT por Pagar
+      RC_IVA_POR_PAGAR: '2.1.06',              // RC-IVA por Pagar
 
-      // Ingresos
-      VENTAS: '4.1.01',
+      // Pasivos laborales (para Fase 4 - Nómina)
+      NOMINA_POR_PAGAR: '2.1.08',
+      APORTES_LABORALES: '2.1.09',
+      APORTES_PATRONALES: '2.1.10',
+      AGUINALDO_POR_PAGAR: '2.1.11',
+      BONO_ANTIGUEDAD: '2.1.13',
+      INDEMNIZACION_POR_PAGAR: '2.1.14',
+      VACACIONES_POR_PAGAR: '2.1.16',
 
-      // Costos
-      COSTO_VENTAS: '5.1.01',
+      // ═══ INGRESOS (4.x) ═══
+      VENTAS: '4.1.01',                        // Ventas de Mercancías
+      VENTAS_SERVICIOS: '4.1.02',              // Ventas de Servicios
 
-      // Gastos
+      // ═══ COSTOS (5.x) ═══
+      COSTO_VENTAS: '5.1.01',                  // Costo de Mercancías Vendidas
+      COSTO_SERVICIOS: '5.1.02',               // Costo de Servicios Prestados
+
+      // ═══ GASTOS (6.x) ═══
       GASTOS_GENERALES: '6.1.01'
     };
 
