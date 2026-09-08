@@ -422,28 +422,28 @@ TOTALES     │             │                       │ 5,650.00 │ 5,650.00 
 ## Tareas de la Fase 3.5
 
 ```text
-[ ] Implementar actualizarMayor(asiento)
+[x] Implementar actualizarMayor(asiento)
     → Para cada línea del asiento:
       - Si la cuenta no existe en el mayor → crearla.
       - Agregar el movimiento a la ficha de la cuenta.
       - Recalcular el saldo acumulado.
     → Guardar en colección "libroMayor" de localStorage.
 
-[ ] Implementar obtenerMayorPorCuenta(cuentaCodigo, filtros)
+[x] Implementar obtenerMayorPorCuenta(cuentaCodigo, filtros)
     → Devuelve todos los movimientos de una cuenta específica.
     → Filtros opcionales: { fechaDesde, fechaHasta, periodoContable }.
     → Incluye saldos acumulados después de cada movimiento.
 
-[ ] Implementar obtenerSaldosDeCuentas(periodo)
+[x] Implementar obtenerSaldosDeCuentas(periodo)
     → Devuelve un array con el saldo de cada cuenta al cierre del período.
     → Formato: { cuentaCodigo, cuentaNombre, saldoDeudor, saldoAcreedor }.
     → Este método es la base para la Balanza de Comprobación.
 
-[ ] Implementar obtenerMovimientosDeCuenta(cuentaCodigo, periodo)
+[x] Implementar obtenerMovimientosDeCuenta(cuentaCodigo, periodo)
     → Devuelve todos los movimientos de una cuenta en un período.
     → Para mostrar en la vista de Mayor.
 
-[ ] Implementar calcularSaldoInicial(cuentaCodigo, periodo)
+[x] Implementar calcularSaldoInicial(cuentaCodigo, periodo)
     → Suma los saldos de todos los períodos anteriores.
     → Para mostrar el saldo inicial del período actual.
 ```
@@ -490,14 +490,14 @@ Verificación:
 ## Tareas de la Fase 3.6
 
 ```text
-[ ] Implementar calcularBalanza(periodo)
+[x] Implementar calcularBalanza(periodo)
     → Recorre todas las cuentas del Libro Mayor.
     → Para cada cuenta: suma movimientos Debe, movimientos Haber.
     → Calcula saldo: si es cuenta deudora (activo/gasto) → Debe − Haber.
     → Si es cuenta acreedora (pasivo/patrimonio/ingreso) → Haber − Debe.
     → Devuelve objeto con todas las cuentas y totales.
 
-[ ] Implementar verificarCuadratura()
+[x] Implementar verificarCuadratura()
     → Compara total movimientos Debe vs. total movimientos Haber.
     → Compara total saldos Deudores vs. total saldos Acreedores.
     → Si no cuadran → devolver diferencia y posibles causas.
@@ -508,13 +508,13 @@ Verificación:
       y un boolean indicando si cuadra. Si no cuadra, sugiere 
       posibles causas (asiento sin contrapartida, error de digitación)."
 
-[ ] Implementar detectarErroresComunes()
+[x] Implementar detectarErroresComunes()
     → Verificar asientos con una sola línea (error grave).
     → Verificar asientos donde Debe ≠ Haber (error grave).
     → Verificar cuentas con saldo negativo cuando no debería.
     → Verificar cuentas que no tuvieron movimiento en el período.
 
-[ ] Crear la estructura para la vista de Balanza
+[x] Crear la estructura para la vista de Balanza
     → Tabla con columnas: Cuenta, Mov. Debe, Mov. Haber, Saldo Deudor, Saldo Acreedor.
     → Fila de totales al final.
     → Indicador visual: ✓ verde si cuadra, ❌ rojo si no.

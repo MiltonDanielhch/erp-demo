@@ -323,6 +323,10 @@ function iniciarERP() {
   console.log('   window.motorContable.obtenerMovimientosDeCuenta("1.1.06", "2026-09")');
   console.log('   window.motorContable.obtenerSaldosDeCuentas("2026-09")');
   console.log('   window.motorContable.calcularSaldoInicial("1.1.06", "2026-09")');
+
+  console.log('   window.motorContable.calcularBalanza("2026-09")');
+  console.log('   window.motorContable.verificarCuadratura(totales)');
+  console.log('   window.motorContable.detectarErroresComunes("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────

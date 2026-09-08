@@ -1,17 +1,133 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Balanza de Comprobación
-     Capa 3: Motor Contable
+     Verificación matemática de la contabilidad
      ══════════════════════════════════════════════════════════ -->
 
 <h2 class="contenido-titulo">⚖️ Balanza de Comprobación</h2>
-<p class="contenido-subtitulo">Verificación matemática: Mov. Debe = Mov. Haber</p>
+<p class="contenido-subtitulo">
+  Verifica que Σ Movimientos Debe = Σ Movimientos Haber y Σ Saldos Deudores = Σ Saldos Acreedores
+</p>
 
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      ⚖️ Balanza de Comprobación — Se implementará en el <strong>Módulo 3</strong>.<br>
-      Aquí verás la suma de todos los movimientos y saldos,<br>
-      con verificación de que Debe = Haber.
-    </p>
+<!-- ══════════════════════════════════════════════════════════
+     FILTROS
+     ══════════════════════════════════════════════════════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+      <label class="form-label">Período Contable</label>
+      <select id="balanza-periodo" class="form-select">
+        <option value="">Todo el historial</option>
+      </select>
+    </div>
+    <button id="balanza-btn-calcular" class="btn btn-primary">⚖️ Calcular Balanza</button>
+    <button id="balanza-btn-imprimir" class="btn btn-outline">🖨️ Imprimir</button>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     VERIFICACIÓN DE CUADRATURA
+     ══════════════════════════════════════════════════════════ -->
+<div id="balanza-verificacion" class="card oculto" style="margin-bottom: var(--espacio-md);">
+  <h3 style="margin-bottom: 12px;">🔍 Verificación</h3>
+
+  <div id="balanza-verif-contenido">
+    <!-- Renderizado dinámicamente -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TABLA DE BALANZA
+     ══════════════════════════════════════════════════════════ -->
+<div class="card oculto" id="balanza-tabla-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+    <h3 style="margin: 0;" id="balanza-titulo">⚖️ Balanza de Comprobación</h3>
+    <span id="balanza-fecha" style="color: var(--texto-secundario); font-size: 0.85rem;"></span>
+  </div>
+
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th style="width: 80px;">Código</th>
+          <th>Cuenta</th>
+          <th class="texto-derecha" style="width: 130px;">Mov. Debe</th>
+          <th class="texto-derecha" style="width: 130px;">Mov. Haber</th>
+          <th class="texto-derecha" style="width: 130px;">Saldo Deudor</th>
+          <th class="texto-derecha" style="width: 130px;">Saldo Acreedor</th>
+        </tr>
+      </thead>
+      <tbody id="balanza-body">
+        <tr><td colspan="6" style="text-align:center; padding:24px;">Sin datos</td></tr>
+      </tbody>
+      <tfoot id="balanza-foot">
+        <tr style="font-weight: bold; background: var(--color-fondo-claro); border-top: 2px solid var(--color-borde);">
+          <td colspan="2" class="texto-derecha">TOTALES</td>
+          <td class="texto-derecha" id="balanza-tot-mov-d">Bs 0,00</td>
+          <td class="texto-derecha" id="balanza-tot-mov-h">Bs 0,00</td>
+          <td class="texto-derecha" id="balanza-tot-sal-d">Bs 0,00</td>
+          <td class="texto-derecha" id="balanza-tot-sal-a">Bs 0,00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ERRORES / ADVERTENCIAS
+     ══════════════════════════════════════════════════════════ -->
+<div id="balanza-errores-card" class="card oculto" style="margin-top: var(--espacio-md);">
+  <h3 style="margin-bottom: 12px;">⚠️ Diagnóstico</h3>
+  <div id="balanza-errores-contenido"></div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+  .balanza-cuadra {
+    background: #d1fae5;
+    border-left: 4px solid #10b981;
+    padding: 12px 16px;
+    border-radius: 6px;
+    color: #065f46;
+  }
+  .balanza-nocuadra {
+    background: #fee2e2;
+    border-left: 4px solid #ef4444;
+    padding: 12px 16px;
+    border-radius: 6px;
+    color: #7f1d1d;
+  }
+  .balanza-cuadra-linea {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .balanza-cuadra-linea:last-child { margin-bottom: 0; }
+  .balanza-etiqueta { font-weight: 600; min-width: 220px; }
+  .balanza-valor { font-family: monospace; }
+  .balanza-estado {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .balanza-estado.ok { background: #10b981; color: white; }
+  .balanza-estado.error { background: #ef4444; color: white; }
+  .balanza-error-item {
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+  }
+  .balanza-error-item.error { background: #fee2e2; color: #7f1d1d; }
+  .balanza-error-item.advertencia { background: #fef3c7; color: #78350f; }
+  @media print {
+    #balanza-periodo, #balanza-btn-calcular, #balanza-btn-imprimir { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+
+<script src="js/vistas/balanza-vista.js"></script>

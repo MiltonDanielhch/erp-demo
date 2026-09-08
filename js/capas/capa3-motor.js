@@ -711,6 +711,210 @@ class MotorContable {
     };
   }
 
+    /**
+   * Calcula la Balanza de Comprobación completa con detalle por cuenta.
+   * Incluye movimientos Y saldos (a diferencia de calcularBalanzaComprobacion
+   * que solo da los totales).
+   *
+   * @param {string} [periodo] - Formato "AAAA-MM"
+   * @returns {Object} { cuentas, totales, verificacion, errores }
+   */
+  calcularBalanza(periodo) {
+    const mayor = this._leerMayor();
+    const cuentas = [];
+
+    let totMovDebe = 0, totMovHaber = 0;
+    let totSaldoD = 0, totSaldoA = 0;
+
+    mayor.forEach(registro => {
+      const naturaleza = registro.naturaleza || 'deudora';
+
+      // Calcular movimientos del período (o todos si no hay período)
+      let movDebe = 0, movHaber = 0;
+      (registro.movimientos || []).forEach(m => {
+        const periodoMov = (m.fecha || '').slice(0, 7);
+        if (!periodo || periodoMov === periodo) {
+          movDebe += m.debe;
+          movHaber += m.haber;
+        }
+      });
+
+      movDebe = window.BOLIVIA.redondear2(movDebe);
+      movHaber = window.BOLIVIA.redondear2(movHaber);
+
+      // Calcular saldo según naturaleza
+      let saldo = 0;
+      if (naturaleza === 'deudora') {
+        saldo = movDebe - movHaber;
+      } else {
+        saldo = movHaber - movDebe;
+      }
+      saldo = window.BOLIVIA.redondear2(saldo);
+
+      // Clasificar en Deudor o Acreedor según naturaleza
+      let saldoDeudor = 0, saldoAcreedor = 0;
+      if (saldo >= 0) {
+        if (naturaleza === 'deudora') saldoDeudor = saldo;
+        else saldoAcreedor = saldo;
+      } else {
+        // Saldo "al revés" (ej: Bancos en descubierto)
+        if (naturaleza === 'deudora') saldoAcreedor = -saldo;
+        else saldoDeudor = -saldo;
+      }
+
+      cuentas.push({
+        cuentaCodigo: registro.cuentaCodigo,
+        cuentaNombre: registro.cuentaNombre,
+        naturaleza,
+        movimientoDebe: movDebe,
+        movimientoHaber: movHaber,
+        saldoDeudor,
+        saldoAcreedor
+      });
+
+      totMovDebe += movDebe;
+      totMovHaber += movHaber;
+      totSaldoD += saldoDeudor;
+      totSaldoA += saldoAcreedor;
+    });
+
+    // Ordenar por código
+    cuentas.sort((a, b) => a.cuentaCodigo.localeCompare(b.cuentaCodigo));
+
+    const totales = {
+      movimientoDebe: window.BOLIVIA.redondear2(totMovDebe),
+      movimientoHaber: window.BOLIVIA.redondear2(totMovHaber),
+      saldoDeudor: window.BOLIVIA.redondear2(totSaldoD),
+      saldoAcreedor: window.BOLIVIA.redondear2(totSaldoA)
+    };
+
+    return {
+      periodo: periodo || 'TODOS',
+      cuentas,
+      totales,
+      verificacion: this.verificarCuadratura(totales),
+      errores: this.detectarErroresComunes(periodo),
+      generadoEn: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Verifica la cuadratura de la Balanza.
+   * Compara:
+   * - Σ Movimientos Debe vs Σ Movimientos Haber
+   * - Σ Saldos Deudores vs Σ Saldos Acreedores
+   *
+   * @param {Object} totales
+   * @returns {Object}
+   */
+  verificarCuadratura(totales) {
+    const difMovimientos = window.BOLIVIA.redondear2(
+      totales.movimientoDebe - totales.movimientoHaber
+    );
+    const difSaldos = window.BOLIVIA.redondear2(
+      totales.saldoDeudor - totales.saldoAcreedor
+    );
+
+    return {
+      movimientosCuadran: Math.abs(difMovimientos) <= 0.01,
+      diferenciaMovimientos: difMovimientos,
+      saldosCuadran: Math.abs(difSaldos) <= 0.01,
+      diferenciaSaldos: difSaldos,
+      cuadraTotalmente:
+        Math.abs(difMovimientos) <= 0.01 &&
+        Math.abs(difSaldos) <= 0.01,
+        explicacion: this._explicarCuadratura(difMovimientos, difSaldos)
+    };
+  }
+
+  /**
+   * Detecta errores comunes en los asientos de un período.
+   *
+   * @param {string} [periodo]
+   * @returns {Array} Lista de advertencias/errores
+   */
+  detectarErroresComunes(periodo) {
+    const errores = [];
+    const asientos = this.obtenerAsientosContabilizados({
+      periodoContable: periodo,
+      incluirAnulados: false
+    });
+
+    asientos.forEach(a => {
+      // 1. Asiento con una sola línea (grave)
+      if (!a.lineas || a.lineas.length < 2) {
+        errores.push({
+          nivel: 'error',
+          asientoId: a.id,
+          asientoNumero: a.numero,
+          mensaje: `Asiento con menos de 2 líneas (tiene ${a.lineas?.length || 0})`
+        });
+      }
+
+      // 2. Asiento desbalanceado (Debe ≠ Haber)
+      const dif = Math.abs((a.totalDebe || 0) - (a.totalHaber || 0));
+      if (dif > 0.01) {
+        errores.push({
+          nivel: 'error',
+          asientoId: a.id,
+          asientoNumero: a.numero,
+          mensaje: `Asiento desbalanceado: diferencia de ${dif.toFixed(2)}`
+        });
+      }
+    });
+
+    // 3. Cuentas con saldo "al revés" (naturaleza invertida)
+    const mayor = this._leerMayor();
+    mayor.forEach(registro => {
+      const naturaleza = registro.naturaleza || 'deudora';
+      const saldo = registro.saldo || 0;
+
+      // Saldo negativo en cuenta de naturaleza deudora → posible descubierto
+      if (naturaleza === 'deudora' && saldo < -0.01) {
+        // Bancos es una excepción común (descubiertos bancarios)
+        if (registro.cuentaCodigo !== '1.1.02' && registro.cuentaCodigo !== '1.1.03') {
+          errores.push({
+            nivel: 'advertencia',
+            cuentaCodigo: registro.cuentaCodigo,
+            cuentaNombre: registro.cuentaNombre,
+            mensaje: `Saldo acreedor (${saldo.toFixed(2)}) en cuenta de naturaleza deudora`
+          });
+        }
+      }
+    });
+
+    return errores;
+  }
+
+  /**
+   * Explica las posibles causas de un descuadre en la Balanza.
+   * @private
+   */
+  _explicarCuadratura(difMovimientos, difSaldos) {
+    const mensajes = [];
+
+    if (Math.abs(difMovimientos) > 0.01) {
+      mensajes.push(
+        `Movimientos descuadrados por ${difMovimientos.toFixed(2)}. ` +
+        `Posibles causas: asiento sin contrapartida, error de digitación, ` +
+        `o asiento de ajuste pendiente.`
+      );
+    }
+
+    if (Math.abs(difSaldos) > 0.01) {
+      mensajes.push(
+        `Saldos descuadrados por ${difSaldos.toFixed(2)}. ` +
+        `Revisar cálculos de saldos o asientos mal clasificados.`
+      );
+    }
+
+    if (mensajes.length === 0) {
+      return 'La balanza cuadra correctamente. ✓';
+    }
+
+    return mensajes.join(' ');
+  }
+
     // ════════════════════════════════════════════════════════════
   // CONSULTAS ESPECÍFICAS DEL LIBRO DIARIO
   // ════════════════════════════════════════════════════════════
