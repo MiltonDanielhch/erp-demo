@@ -188,18 +188,18 @@ const asiento = {
 ## Tareas de la Fase 3.2
 
 ```text
-[ ] Crear js/config/estructura-asiento.js
+[x] Crear js/config/estructura-asiento.js
     → Exportar función crearAsiento(datos): construye un asiento completo.
     → Exportar función crearLinea(cuentaCodigo, debe, haber, descripcion).
     → Exportar constantes: TIPOS_ASIENTO, ESTADOS_ASIENTO.
 
-[ ] Implementar la generación de números de asiento
+[x] Implementar la generación de números de asiento
     → Formato: "AD-AAAA-MM-NNN" (AD = Asiento Diario)
     → Ejemplo: "AD-2026-09-001", "AD-2026-09-002"
     → Para ajustes: "AJ-AAAA-MM-NNN" (AJ = Asiento de Ajuste)
     → Para cierre: "CI-AAAA-NNN" (CI = Asiento de Cierre)
 
-[ ] Implementar validación de estructura
+[x] Implementar validación de estructura
     → Función validarEstructuraAsiento(asiento):
       - Verifica que tenga al menos 2 líneas.
       - Verifica que totalDebe === totalHaber.
@@ -212,7 +212,7 @@ const asiento = {
       cuenta válida, fecha dentro del período contable abierto. 
       Devuelve objeto { valido: boolean, errores: string[] }."
 
-[ ] Crear docs/aprendizaje/10-estructura-asiento.md
+[x] Crear docs/aprendizaje/10-estructura-asiento.md
     → Documentar la estructura del asiento con ejemplos.
     → Explicar por qué cada campo es necesario.
     → Mostrar un asiento válido y uno inválido (con errores marcados).
@@ -265,12 +265,12 @@ js/capas/capa3-motor.js
 ## Tareas de la Fase 3.3
 
 ```text
-[ ] Crear js/capas/capa3-motor.js
+[x] Crear js/capas/capa3-motor.js
     → Clase MotorContable con todos los métodos listados arriba.
     → Por ahora, algunos métodos pueden ser stubs (se completan 
       en fases posteriores).
 
-[ ] Implementar procesarAsientosPendientes()
+[x] Implementar procesarAsientosPendientes()
     → Lee la colección "asientosPendientes" de localStorage.
     → Para cada asiento:
       1. Validar estructura (validarAsiento).
@@ -285,12 +285,12 @@ js/capas/capa3-motor.js
       con el motivo específico. Devuelve resumen de procesados 
       y rechazados."
 
-[ ] Implementar registrarAsiento(asiento)
+[x] Implementar registrarAsiento(asiento)
     → Punto de entrada para asientos manuales (contador).
     → Valida, registra en diario, actualiza mayor.
     → Devuelve el asiento procesado con su número asignado.
 
-[ ] Implementar validarAsiento(asiento)
+[x] Implementar validarAsiento(asiento)
     → Verifica todas las reglas de la Fase 3.2.
     → Verifica que las cuentas existan en el plan de cuentas.
     → Verifica que la naturaleza de la cuenta sea coherente 
@@ -302,7 +302,7 @@ js/capas/capa3-motor.js
       ingresos aumentan por Haber), fecha en período abierto. 
       Devuelve { valido, errores[], advertencias[] }."
 
-[ ] Exponer el motor al objeto window
+[x] Exponer el motor al objeto window
     → En app.js: window.MotorContable = new MotorContable()
     → Esto permite que las vistas HTML usen el motor directamente.
 ```

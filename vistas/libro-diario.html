@@ -1,17 +1,252 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Libro Diario
-     Capa 3: Motor Contable
+     Registro cronológico de todos los asientos contables
      ══════════════════════════════════════════════════════════ -->
 
 <h2 class="contenido-titulo">📖 Libro Diario</h2>
-<p class="contenido-subtitulo">Registro cronológico de asientos contables</p>
+<p class="contenido-subtitulo">
+  Registro cronológico de todos los asientos contables — la bitácora de la empresa
+</p>
 
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      📖 Libro Diario — Se implementará en el <strong>Módulo 3</strong>.<br>
-      Aquí verás todos los asientos contables en orden cronológico,<br>
-      con sus líneas de Debe y Haber verificadas (partida doble).
-    </p>
+<!-- ══════════════════════════════════════════════════════════
+     FILTROS
+     ══════════════════════════════════════════════════════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+      <label class="form-label">Período Contable</label>
+      <select id="diario-periodo" class="form-select">
+        <option value="">Todos los períodos</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+      <label class="form-label">Tipo de Asiento</label>
+      <select id="diario-tipo" class="form-select">
+        <option value="">Todos</option>
+        <option value="COMPRA">Compra</option>
+        <option value="VENTA">Venta</option>
+        <option value="COSTO_VENTA">Costo de Venta</option>
+        <option value="PAGO_PROVEEDOR">Pago a Proveedor</option>
+        <option value="COBRO_CLIENTE">Cobro a Cliente</option>
+        <option value="NOMINA">Nómina</option>
+        <option value="AJUSTE">Ajuste</option>
+        <option value="CIERRE">Cierre</option>
+        <option value="MANUAL">Manual</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+      <label class="form-label">Cuenta</label>
+      <select id="diario-cuenta" class="form-select">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <input type="checkbox" id="diario-incluir-anulados">
+      <label for="diario-incluir-anulados" style="margin: 0;">Incluir anulados</label>
+    </div>
+    <button id="diario-btn-filtrar" class="btn btn-primary">🔍 Filtrar</button>
+    <button id="diario-btn-imprimir" class="btn btn-outline">🖨️ Imprimir</button>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     RESUMEN DEL PERÍODO
+     ══════════════════════════════════════════════════════════ -->
+<div class="card" id="diario-resumen-card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--espacio-md);">
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.9rem;">Asientos</div>
+      <div style="font-size: 1.5rem; font-weight: bold;" id="diario-resumen-cantidad">0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.9rem;">Total Debe</div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-exito);" id="diario-resumen-debe">Bs 0,00</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.9rem;">Total Haber</div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-error);" id="diario-resumen-haber">Bs 0,00</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.9rem;">Estado</div>
+      <div style="font-size: 1.5rem; font-weight: bold;" id="diario-resumen-estado">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     LIBRO DIARIO (lista de asientos)
+     ══════════════════════════════════════════════════════════ -->
+<div id="diario-contenido">
+  <!-- Los asientos se renderizan dinámicamente aquí -->
+  <div class="card" style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+    <p>📖 Seleccione un período y haga clic en "Filtrar" para ver el Libro Diario</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: ANULAR ASIENTO
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-anular-asiento" class="oculto"
+     style="position: fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+  <div style="background: var(--color-fondo,#fff); border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.3); width:90%; max-width:500px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid var(--color-borde,#ddd);">
+      <h3 style="margin:0;">⚠️ Anular Asiento</h3>
+      <button id="anular-btn-cerrar" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+    <div style="padding:16px;">
+      <p>Se creará un <strong>asiento de reversa</strong> que anula el asiento original sin eliminarlo (trazabilidad completa).</p>
+      <p style="margin: 12px 0; padding: 12px; background: var(--color-fondo-claro,#f5f5f5); border-radius: 6px;">
+        <strong>Asiento:</strong> <span id="anular-numero">-</span><br>
+        <strong>Fecha:</strong> <span id="anular-fecha">-</span><br>
+        <strong>Concepto:</strong> <span id="anular-concepto">-</span>
+      </p>
+      <input type="hidden" id="anular-asiento-id">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Motivo de anulación <span class="requerido">*</span></label>
+        <textarea id="anular-motivo" class="form-input" rows="3" required
+                  placeholder="Explique por qué se anula el asiento..."></textarea>
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn btn-ghost" id="anular-btn-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="anular-btn-confirmar">⚠️ Anular Asiento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+  /* ── Estilos del Libro Diario (formato libro contable) ── */
+  .diario-asiento {
+    background: #fff;
+    border: 1px solid var(--color-borde, #ddd);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .diario-asiento.anulado {
+    opacity: 0.6;
+    background: #f9f9f9;
+    position: relative;
+  }
+  .diario-asiento.anulado::before {
+    content: 'ANULADO';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    font-size: 4rem;
+    font-weight: bold;
+    color: rgba(220, 53, 69, 0.2);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .diario-cabecera {
+    background: var(--color-fondo-claro, #f5f5f5);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-borde, #ddd);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .diario-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .diario-info .meta {
+    color: var(--texto-secundario, #666);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+  .diario-concepto {
+    padding: 10px 16px;
+    background: #fafafa;
+    font-style: italic;
+    color: #444;
+    border-bottom: 1px solid var(--color-borde, #ddd);
+  }
+  .diario-lineas {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .diario-lineas th {
+    background: #fafafa;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    border-bottom: 1px solid var(--color-borde);
+  }
+  .diario-lineas td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .diario-lineas tr.cuenta-deudora {
+    color: #333;
+  }
+  .diario-lineas tr.cuenta-acreedora {
+    color: #555;
+    padding-left: 24px;
+  }
+  .diario-lineas .col-cuenta {
+    width: 50%;
+  }
+  .diario-lineas .col-monto {
+    width: 25%;
+    text-align: right;
+    font-family: monospace;
+  }
+  .diario-lineas .cuenta-acreedora .col-cuenta {
+    padding-left: 32px;
+  }
+  .diario-lineas tfoot td {
+    padding: 10px 12px;
+    font-weight: bold;
+    background: var(--color-fondo-claro);
+    border-top: 2px solid var(--color-borde);
+    font-family: monospace;
+  }
+  .diario-acciones {
+    padding: 8px 16px;
+    background: #fafafa;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    border-top: 1px solid var(--color-borde);
+  }
+  .badge-tipo {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #3b82f6;
+    color: white;
+  }
+  .badge-tipo.COMPRA { background: #f59e0b; }
+  .badge-tipo.VENTA { background: #10b981; }
+  .badge-tipo.COSTO_VENTA { background: #8b5cf6; }
+  .badge-tipo.PAGO_PROVEEDOR { background: #ef4444; }
+  .badge-tipo.COBRO_CLIENTE { background: #06b6d4; }
+  .badge-tipo.AJUSTE { background: #6366f1; }
+  .badge-tipo.CIERRE { background: #374151; }
+  .badge-tipo.MANUAL { background: #64748b; }
+
+  @media print {
+    .card, #diario-resumen-card { box-shadow: none; border: 1px solid #ccc; }
+    .diario-acciones, #diario-periodo, #diario-tipo, #diario-cuenta,
+    #diario-btn-filtrar, #diario-btn-imprimir, #diario-incluir-anulados { display: none !important; }
+    .diario-asiento { page-break-inside: avoid; }
+  }
+</style>
+
+<script src="js/vistas/libro-diario-vista.js"></script>

@@ -551,6 +551,108 @@ class MotorContable {
     };
   }
 
+    // ════════════════════════════════════════════════════════════
+  // CONSULTAS ESPECÍFICAS DEL LIBRO DIARIO
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * Obtiene el Libro Diario con filtros avanzados.
+   * Es el "diario personal" de la empresa: todo en orden cronológico.
+   *
+   * @param {Object} [filtros]
+   * @param {string} [filtros.fechaDesde] - AAAA-MM-DD
+   * @param {string} [filtros.fechaHasta] - AAAA-MM-DD
+   * @param {string} [filtros.tipo] - COMPRA, VENTA, NOMINA, AJUSTE, etc.
+   * @param {string} [filtros.cuentaCodigo] - Filtrar asientos que afectan esta cuenta
+   * @param {boolean} [filtros.incluirAnulados=false]
+   * @returns {Array} Asientos ordenados cronológicamente
+   */
+  obtenerDiario(filtros = {}) {
+    let asientos = this.obtenerAsientosContabilizados({
+      incluirAnulados: filtros.incluirAnulados === true
+    });
+
+    if (filtros.fechaDesde) {
+      asientos = asientos.filter(a => a.fecha >= filtros.fechaDesde);
+    }
+    if (filtros.fechaHasta) {
+      asientos = asientos.filter(a => a.fecha <= filtros.fechaHasta);
+    }
+    if (filtros.tipo) {
+      asientos = asientos.filter(a => a.tipo === filtros.tipo);
+    }
+    if (filtros.cuentaCodigo) {
+      asientos = asientos.filter(a =>
+        a.lineas.some(l => l.cuentaCodigo === filtros.cuentaCodigo)
+      );
+    }
+
+    // Ordenar por fecha ascendente, luego por número ascendente
+    return asientos.sort((a, b) => {
+      const cmpFecha = a.fecha.localeCompare(b.fecha);
+      if (cmpFecha !== 0) return cmpFecha;
+      return (a.numero || '').localeCompare(b.numero || '');
+    });
+  }
+
+  /**
+   * Obtiene todos los asientos de un período contable con resumen.
+   *
+   * @param {string} periodo - Formato "AAAA-MM"
+   * @returns {Object} { asientos, resumen }
+   */
+  obtenerDiarioPorPeriodo(periodo) {
+    const asientos = this.obtenerDiario({}).filter(a => a.periodoContable === periodo);
+
+    let totalDebe = 0;
+    let totalHaber = 0;
+
+    asientos.forEach(a => {
+      totalDebe += a.totalDebe || 0;
+      totalHaber += a.totalHaber || 0;
+    });
+
+    return {
+      periodo,
+      asientos,
+      resumen: {
+        cantidadAsientos: asientos.length,
+        totalDebe: window.BOLIVIA.redondear2(totalDebe),
+        totalHaber: window.BOLIVIA.redondear2(totalHaber),
+        cuadra: Math.abs(totalDebe - totalHaber) <= 0.01
+      }
+    };
+  }
+
+  /**
+   * Busca el asiento vinculado a un documento fuente de Capa 1.
+   * Para trazabilidad: desde documento fuente → asiento contable.
+   *
+   * @param {string} documentoFuenteId
+   * @returns {Object|null}
+   */
+  obtenerDiarioPorDocumento(documentoFuenteId) {
+    if (!documentoFuenteId) return null;
+
+    const asientos = this.almacenamiento.obtener(this.COL_CONTABILIZADOS) || [];
+    return asientos.find(a => a.documentoFuenteId === documentoFuenteId) || null;
+  }
+
+  /**
+   * Obtiene la lista de períodos que tienen asientos en el Diario.
+   * Útil para poblar selectores de período.
+   *
+   * @returns {Array<string>} Períodos en formato "AAAA-MM", ordenados desc
+   */
+  obtenerPeriodosConDiario() {
+    const asientos = this.obtenerAsientosContabilizados({ incluirAnulados: true });
+    const periodos = new Set();
+    asientos.forEach(a => {
+      if (a.periodoContable) periodos.add(a.periodoContable);
+    });
+    return Array.from(periodos).sort((a, b) => b.localeCompare(a));
+  }
+
   // ════════════════════════════════════════════════════════════
   // MÉTODOS PRIVADOS
   // ════════════════════════════════════════════════════════════

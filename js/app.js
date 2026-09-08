@@ -309,6 +309,15 @@ function iniciarERP() {
   console.log('   window.motorContable.calcularBalanzaComprobacion()');
   console.log('   window.motorContable.crearAsientoManual({...})');
   console.log('   window.motorContable.anularAsiento(id, motivo)');
+  console.log('   📌 MOTOR CONTABLE:');
+  console.log('   window.motorContable.procesarAsientosPendientes()');
+  console.log('   window.motorContable.obtenerLibroMayor()');
+  console.log('   window.motorContable.calcularBalanzaComprobacion()');
+  console.log('   window.motorContable.crearAsientoManual({...})');
+  console.log('   window.motorContable.anularAsiento(id, motivo)');
+  console.log('   window.motorContable.obtenerDiario({tipo, cuentaCodigo})');
+  console.log('   window.motorContable.obtenerDiarioPorPeriodo("2026-09")');
+  console.log('   window.motorContable.obtenerDiarioPorDocumento(docId)');
 }
 
 // ──────────────────────────────────────────────────────────────
