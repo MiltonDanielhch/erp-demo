@@ -401,10 +401,10 @@ Fecha       │ Tipo    │ Cantidad │ Costo Unit. │ Valor Total │ Saldo
 ## Tareas de la Fase 2.5
 
 ```text
-[ ] Crear js/modulos/inventario.js
+[x] Crear js/modulos/inventario.js
     → Clase ModuloInventario con métodos de kardex.
 
-[ ] Implementar registrarEntrada(productoId, cantidad, costoUnitario, referencia)
+[x] Implementar registrarEntrada(productoId, cantidad, costoUnitario, referencia)
     → Suma al stock actual.
     → Recalcula el costo promedio ponderado.
     → Registra el movimiento en el kardex.
@@ -415,28 +415,28 @@ Fecha       │ Tipo    │ Cantidad │ Costo Unit. │ Valor Total │ Saldo
       cantidadEntrada × costoEntrada) ÷ (stockAnterior + 
       cantidadEntrada). Guarda el movimiento en un array de kardex."
 
-[ ] Implementar registrarSalida(productoId, cantidad, referencia)
+[x] Implementar registrarSalida(productoId, cantidad, referencia)
     → Valida que haya stock suficiente.
     → Resta del stock actual.
     → Usa el costo promedio ponderado actual como costo de salida.
     → Registra el movimiento en el kardex.
     → Referencia: "VENTA_PED-2026-001" o "AJUSTE_INVENTARIO".
 
-[ ] Implementar obtenerKardex(productoId, fechaInicio, fechaFin)
+[x] Implementar obtenerKardex(productoId, fechaInicio, fechaFin)
     → Devuelve todos los movimientos de un producto en un rango.
     → Ordenado por fecha ascendente.
     → Incluye saldos acumulados después de cada movimiento.
 
-[ ] Implementar obtenerValorInventario()
+[x] Implementar obtenerValorInventario()
     → Suma el valor total de todo el inventario.
     → Para cada producto: stockActual × costoPromedio.
     → Devuelve el total en Bs.
 
-[ ] Implementar verificarStockBajo()
+[x] Implementar verificarStockBajo()
     → Devuelve lista de productos donde stockActual ≤ stockMinimo.
     → Para alertas en el dashboard.
 
-[ ] Conectar con compras.js y ventas.js
+[x] Conectar con compras.js y ventas.js
     → compras.js llama a registrarEntrada() al recibir mercancía.
     → ventas.js llama a registrarSalida() al despachar.
 ```

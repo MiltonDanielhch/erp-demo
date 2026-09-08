@@ -297,13 +297,28 @@ class ModuloVentas {
       return resultadoDoc;
     }
 
-    // Actualizar stock de productos
+    // Actualizar stock y kardex
     for (const item of productosDespachados) {
-      this.catalogoProductos.actualizarStock(
-        item.productoId,
-        -item.cantidadDespachada, // Negativo porque es salida
-        'VENTA'
-      );
+      if (window.moduloInventario) {
+        const resultadoKardex = window.moduloInventario.registrarSalida({
+          productoId: item.productoId,
+          cantidad: item.cantidadDespachada,
+          referencia: `VENTA_${pedido.numero}`,
+          motivo: 'VENTA',
+          observaciones: `Despacho de pedido ${pedido.numero}`
+        });
+
+        if (!resultadoKardex.exito) {
+          console.warn(`⚠️ Error en kardex: ${resultadoKardex.mensaje}`);
+        }
+      } else {
+        // Fallback: actualizar stock directamente
+        this.catalogoProductos.actualizarStock(
+          item.productoId,
+          -item.cantidadDespachada,
+          'VENTA'
+        );
+      }
     }
 
     // Actualizar cantidades despachadas en el pedido

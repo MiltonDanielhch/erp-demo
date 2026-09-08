@@ -365,20 +365,36 @@ class ModuloCompras {
       };
     }
 
-    // ── Actualizar stock en catálogo de productos ──
+    // ── Actualizar stock y kardex ──
     const erroresStock = [];
     for (const item of productosRecibidos) {
-      const resultado = this.catalogoProductos.actualizarStock(
-        item.productoId,
-        item.cantidadRecibida,
-        'COMPRA'
-      );
+      // Usar módulo de inventario si está disponible
+      if (window.moduloInventario) {
+        const resultadoKardex = window.moduloInventario.registrarEntrada({
+          productoId: item.productoId,
+          cantidad: item.cantidadRecibida,
+          costoUnitario: item.costoUnitario,
+          referencia: `COMPRA_${orden.numero}`,
+          motivo: 'COMPRA',
+          observaciones: `Recepción de orden ${orden.numero}`
+        });
 
-      if (!resultado.exito) {
-        erroresStock.push(`${item.nombre}: ${resultado.mensaje}`);
+        if (!resultadoKardex.exito) {
+          erroresStock.push(`${item.nombre}: ${resultadoKardex.mensaje}`);
+        }
       } else {
-        // Actualizar costo último del producto
-        this.catalogoProductos.actualizarCostoUltimo(item.productoId, item.costoUnitario);
+        // Fallback: actualizar stock directamente
+        const resultado = this.catalogoProductos.actualizarStock(
+          item.productoId,
+          item.cantidadRecibida,
+          'COMPRA'
+        );
+
+        if (!resultado.exito) {
+          erroresStock.push(`${item.nombre}: ${resultado.mensaje}`);
+        } else {
+          this.catalogoProductos.actualizarCostoUltimo(item.productoId, item.costoUnitario);
+        }
       }
     }
 

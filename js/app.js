@@ -168,6 +168,13 @@ function iniciarERP() {
   );
   console.log('💼 Módulo de Ventas inicializado');
 
+    // ── Instanciar Módulo de Inventario ──────────────────────────
+  const moduloInventario = new ModuloInventario({
+    almacenamiento: almacenamiento,
+    catalogoProductos: catalogoProductos
+  });
+  console.log('📦 Módulo de Inventario (Kardex) inicializado.');
+
   // ── NUEVO: Cargar datos de ejemplo (pasando catálogos como parámetros) ──
   if (typeof cargarDatosEjemplo === 'function') {
     cargarDatosEjemplo({
@@ -198,11 +205,15 @@ function iniciarERP() {
   window.ERP.catalogoProductos = catalogoProductos;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
+  // ── Exponer al objeto window ─────────────────────────────────
+  window.moduloInventario = moduloInventario;
+  window.ERP.moduloInventario = moduloInventario;
+
 
   // En la sección donde expones los módulos (línea ~234)
   window.moduloVentas = moduloVentas;
   window.ERP.moduloVentas = moduloVentas;
-  
+
   // ── Exponer al objeto window ─────────────────────────────────
   window.PeriodosContables = PeriodosContables;
   window.ERP.periodosContables = PeriodosContables;
@@ -252,6 +263,13 @@ function iniciarERP() {
   console.log('   window.moduloCompras.registrarPago(cuentaId, {...})');
   console.log('   window.moduloCompras.obtenerCuentasPorPagar()');
   console.log('   window.moduloCompras.obtenerTotalPendiente()');
+  console.log('');
+  console.log('   📌 INVENTARIO:');
+  console.log('   window.moduloInventario.registrarEntrada({...})');
+  console.log('   window.moduloInventario.registrarSalida({...})');
+  console.log('   window.moduloInventario.obtenerKardex({productoId})');
+  console.log('   window.moduloInventario.obtenerValorInventario()');
+  console.log('   window.moduloInventario.verificarStockBajo()');
 }
 
 // ──────────────────────────────────────────────────────────────
