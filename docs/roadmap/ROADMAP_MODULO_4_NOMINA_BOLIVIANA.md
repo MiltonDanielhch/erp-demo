@@ -366,7 +366,7 @@ PROVISIÓN MENSUAL (para ambos):
 ## Tareas de la Fase 4.4
 
 ```text
-[ ] Implementar calcularAguinaldoNavidad(empleado, periodo)
+[x] Implementar calcularAguinaldoNavidad(empleado, periodo)
     → Calcula el promedio del total ganado de los últimos 3 meses.
     → Si el empleado trabajó menos de 1 año → proporcional.
     → Fórmula: (mes1 + mes2 + mes3) ÷ 3 × (meses trabajados ÷ 12).
@@ -378,26 +378,26 @@ PROVISIÓN MENSUAL (para ambos):
       trabajados ÷ 12). Incluye la provisión mensual: 1/12 del 
       estimado anual."
 
-[ ] Implementar calcularSegundoAguinaldo(empleado, periodo)
+[x] Implementar calcularSegundoAguinaldo(empleado, periodo)
     → Solo se ejecuta si el toggle "segundoAguinaldoActivado" es true.
     → Mismo cálculo que el aguinaldo de Navidad (1 mes adicional).
     → Si el toggle está desactivado → devuelve 0.
     → ⚠️ NO debe ser automático. RRHH lo activa manualmente.
 
-[ ] Implementar provisionAguinaldoMensual(empleado, periodo)
+[x] Implementar provisionAguinaldoMensual(empleado, periodo)
     → Calcula 1/12 del aguinaldo estimado anual.
     → Genera el asiento de provisión:
       Gasto de Aguinaldo / Aguinaldo por Pagar.
     → Si segundo aguinaldo activado → provisiona 2/12.
 
-[ ] Implementar pagarAguinaldo(empleado, periodo)
+[x] Implementar pagarAguinaldo(empleado, periodo)
     → Se ejecuta en diciembre (antes del día 20).
     → Calcula el monto final del aguinaldo.
     → Genera el asiento de pago:
       Aguinaldo por Pagar / Bancos.
     → Verifica que la provisión acumulada sea suficiente.
 
-[ ] Implementar toggleSegundoAguinaldo(activado)
+[x] Implementar toggleSegundoAguinaldo(activado)
     → Función que RRHH usa para activar/desactivar.
     → Guarda el estado en localStorage.
     → Si se activa en noviembre → provisiona retroactivo 

@@ -1,0 +1,128 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Bono de Antigüedad (DS 21060)
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">🎖️ Bono de Antigüedad</h2>
+<p class="contenido-subtitulo">
+  Decreto Supremo 21060 — Base: 3 × SMN (no el salario del empleado)
+</p>
+
+<!-- ═══════════ Resumen ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">SMN Vigente</div>
+      <div style="font-size: 1.3rem; font-weight: bold;" id="bono-smn">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Base (3 × SMN)</div>
+      <div style="font-size: 1.3rem; font-weight: bold;" id="bono-base">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Empleados con bono</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-exito);" id="bono-conBono">0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Empleados sin bono</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--texto-secundario);" id="bono-sinBono">0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total mensual</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-exito);" id="bono-totalMensual">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total anual</div>
+      <div style="font-size: 1.3rem; font-weight: bold;" id="bono-totalAnual">Bs 0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Controles ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <button id="bono-btn-provisionar" class="btn btn-primary">💾 Generar provisión mensual</button>
+    <button id="bono-btn-actualizar-smn" class="btn btn-outline">🔄 Actualizar SMN</button>
+    <button id="bono-btn-ver-historial" class="btn btn-ghost">📜 Historial SMN</button>
+  </div>
+</div>
+
+<!-- ═══════════ Tabla de bonos ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <h3 style="margin-bottom: 12px;">📋 Bonos por empleado</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>CI</th>
+          <th>Empleado</th>
+          <th>Antigüedad</th>
+          <th>Tramo</th>
+          <th class="texto-derecha">%</th>
+          <th class="texto-derecha">Bono mensual</th>
+        </tr>
+      </thead>
+      <tbody id="bono-tabla-body">
+        <tr><td colspan="6" style="text-align:center; padding:24px;">Sin empleados</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ Tabla de tramos ═══════════ -->
+<div class="card">
+  <h3 style="margin-bottom: 12px;">📊 Tabla de tramos (DS 21060)</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Años de servicio</th>
+          <th>Tramo</th>
+          <th class="texto-derecha">Porcentaje</th>
+          <th class="texto-derecha">Base (3 SMN)</th>
+          <th class="texto-derecha">Bono resultante</th>
+        </tr>
+      </thead>
+      <tbody id="bono-tabla-tramos">
+        <!-- Se genera dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ Modal: Actualizar SMN ═══════════ -->
+<div id="modal-smn" class="oculto"
+     style="position: fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+  <div style="background: var(--color-fondo,#fff); border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.3); width:90%; max-width:480px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid var(--color-borde,#ddd);">
+      <h3 style="margin:0;">🔄 Actualizar Salario Mínimo Nacional</h3>
+      <button id="modal-smn-cerrar" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+    <div style="padding: 16px;">
+      <p style="padding: 10px; background: var(--color-fondo-claro); border-radius: 6px; font-size: 0.9rem;">
+        <strong>SMN actual:</strong> <span id="smn-actual">Bs 0</span><br>
+        <strong>Base actual (3 SMN):</strong> <span id="base-actual">Bs 0</span>
+      </p>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Nuevo SMN (Bs) <span class="requerido">*</span></label>
+        <input type="number" id="smn-nuevo" class="form-input" step="0.01" min="0" placeholder="Ej: 2750">
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Motivo del cambio</label>
+        <input type="text" id="smn-motivo" class="form-input" placeholder="Ej: DS 5012 de mayo 2026">
+      </div>
+      <div id="smn-preview" style="padding: 10px; background: var(--color-fondo-claro); border-radius: 6px; font-size: 0.9rem; margin-bottom: 12px;">
+        <strong>Variación:</strong> <span id="smn-variacion">—</span><br>
+        <strong>Nueva base (3 SMN):</strong> <span id="smn-nueva-base">—</span>
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn btn-ghost" id="modal-smn-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="modal-smn-confirmar">💾 Actualizar SMN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<script src="js/vistas/bono-antiguedad-vista.js"></script>

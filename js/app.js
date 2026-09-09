@@ -36,6 +36,7 @@ const RUTAS_ERP = {
   'ventas': 'vistas/ventas.html',
   'inventario': 'vistas/inventario.html',
   'empleados': 'vistas/empleados.html',       // ← NUEVO Fase 4.2
+  'bono-antiguedad': 'vistas/bono-antiguedad.html',
   'nomina': 'vistas/nomina.html',
   'impuestos': 'vistas/impuestos.html',
 
@@ -179,6 +180,14 @@ function iniciarERP() {
   });
   console.log('🎄 Módulo de Provisiones inicializado (aguinaldo).');
 
+  // ── NUEVO Fase 4.5: Instanciar Módulo de Bono de Antigüedad ──
+  const moduloBonoAntiguedad = new ModuloBonoAntiguedad({
+    almacenamiento: almacenamiento,
+    catalogoEmpleados: catalogoEmpleados,
+    motorContable: motorContable
+  });
+  console.log('🎖️ Módulo de Bono de Antigüedad inicializado.');
+
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -241,6 +250,7 @@ function iniciarERP() {
   window.catalogoEmpleados = catalogoEmpleados;        // ← NUEVO Fase 4.2
   window.moduloNomina = moduloNomina;
   window.moduloProvisiones = moduloProvisiones;
+  window.moduloBonoAntiguedad = moduloBonoAntiguedad;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -252,6 +262,7 @@ function iniciarERP() {
   window.ERP.catalogoEmpleados = catalogoEmpleados;    // ← NUEVO Fase 4.2
   window.ERP.moduloNomina = moduloNomina;
   window.ERP.moduloProvisiones = moduloProvisiones;
+  window.ERP.moduloBonoAntiguedad = moduloBonoAntiguedad;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -374,6 +385,12 @@ function iniciarERP() {
   console.log('   window.moduloProvisiones.obtenerConfigSegundoAguinaldo()');
   console.log('   window.moduloProvisiones.obtenerProvisionesAcumuladas()');
   console.log('   window.moduloProvisiones.pagarAguinaldo("2026-12")');
+  console.log('   📌 BONO DE ANTIGÜEDAD (Módulo 4):');
+  console.log('   window.moduloBonoAntiguedad.calcularBonosTodos()');
+  console.log('   window.moduloBonoAntiguedad.generarAsientoProvisionMensual("2026-09")');
+  console.log('   window.moduloBonoAntiguedad.actualizarSMN(2750, "DS 5012")');
+  console.log('   window.moduloBonoAntiguedad.obtenerHistorialSMN()');
+  console.log('   window.moduloBonoAntiguedad.obtenerProvisionAcumulada()');
 }
 
 // ──────────────────────────────────────────────────────────────
