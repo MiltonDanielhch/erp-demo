@@ -163,12 +163,21 @@ function iniciarERP() {
   });
   console.log('👷 Catálogo de Empleados inicializado (RRHH).');
 
-  // ── NUEVO Fase 4.3: Instanciar Módulo de Nómina ──────────────
+   // ── NUEVO Fase 4.3: Instanciar Módulo de Nómina ──────────────
   const moduloNomina = new ModuloNomina({
     almacenamiento: almacenamiento,
     catalogoEmpleados: catalogoEmpleados
   });
   console.log('💼 Módulo de Nómina inicializado (Módulo 4).');
+
+  // ── NUEVO Fase 4.4: Instanciar Módulo de Provisiones ─────────
+  const moduloProvisiones = new ModuloProvisiones({
+    almacenamiento: almacenamiento,
+    catalogoEmpleados: catalogoEmpleados,
+    moduloNomina: moduloNomina,
+    motorContable: motorContable
+  });
+  console.log('🎄 Módulo de Provisiones inicializado (aguinaldo).');
 
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
@@ -231,6 +240,7 @@ function iniciarERP() {
   window.CatalogoProductos = catalogoProductos;
   window.catalogoEmpleados = catalogoEmpleados;        // ← NUEVO Fase 4.2
   window.moduloNomina = moduloNomina;
+  window.moduloProvisiones = moduloProvisiones;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -241,6 +251,7 @@ function iniciarERP() {
   window.ERP.catalogoProductos = catalogoProductos;
   window.ERP.catalogoEmpleados = catalogoEmpleados;    // ← NUEVO Fase 4.2
   window.ERP.moduloNomina = moduloNomina;
+  window.ERP.moduloProvisiones = moduloProvisiones;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -356,6 +367,13 @@ function iniciarERP() {
   console.log('   window.moduloNomina.calcularAportesPatronales(empleado, devengado)');
   console.log('   window.moduloNomina.generarPlanillaResumen("2026-09", datosExtras)');
   console.log('   window.moduloNomina.obtenerPlanillas()');
+  console.log('   📌 PROVISIONES (Módulo 4 — Aguinaldo):');
+  console.log('   window.moduloProvisiones.calcularAguinaldoNavidad(empleado, "2026-12")');
+  console.log('   window.moduloProvisiones.generarAsientoProvisionMensual("2026-09")');
+  console.log('   window.moduloProvisiones.toggleSegundoAguinaldo(true)');
+  console.log('   window.moduloProvisiones.obtenerConfigSegundoAguinaldo()');
+  console.log('   window.moduloProvisiones.obtenerProvisionesAcumuladas()');
+  console.log('   window.moduloProvisiones.pagarAguinaldo("2026-12")');
 }
 
 // ──────────────────────────────────────────────────────────────

@@ -264,16 +264,16 @@ Implementa el **cálculo de la planilla mensual** para todos los empleados activ
 ## Tareas de la Fase 4.3
 
 ```text
-[ ] Crear js/modulos/nomina.js
+[x] Crear js/modulos/nomina.js
     → Clase ModuloNomina con métodos de cálculo.
 
-[ ] Implementar calcularNominaMensual(periodo)
+[x] Implementar calcularNominaMensual(periodo)
     → Obtiene todos los empleados activos.
     → Para cada uno, llama a calcularDevengados() y calcularDeducciones().
     → Genera la planilla mensual.
     → Devuelve objeto con todos los cálculos.
 
-[ ] Implementar calcularDevengados(empleado)
+[x] Implementar calcularDevengados(empleado)
     → Salario base.
     → Horas extras (si aplica):
       - Diurnas: 100% recargo sobre hora normal.
@@ -291,7 +291,7 @@ Implementa el **cálculo de la planilla mensual** para todos los empleados activ
       antigüedad (porcentaje según años de servicio × 3 SMN). 
       Devuelve un objeto desglosado con cada concepto y el total."
 
-[ ] Implementar calcularDeducciones(empleado, totalDevengado)
+[x] Implementar calcularDeducciones(empleado, totalDevengado)
     → Aporte laboral AFP / Gestora: 10% del total devengado.
     → RC-IVA: 13% del total devengado, MENOS las facturas 
       de gastos personales presentadas por el empleado.
@@ -305,11 +305,11 @@ Implementa el **cálculo de la planilla mensual** para todos los empleados activ
       facturas cubren el 13%, el RC-IVA es 0. Devuelve objeto 
       desglosado."
 
-[ ] Implementar calcularNetoAPagar(totalDevengado, totalDeducciones)
+[x] Implementar calcularNetoAPagar(totalDevengado, totalDeducciones)
     → Neto = Total Devengado − Total Deducciones.
     → Redondear a 2 decimales.
 
-[ ] Implementar calcularAportesPatronales(empleado, totalDevengado)
+[x] Implementar calcularAportesPatronales(empleado, totalDevengado)
     → Salud (Gestora Pública): ~10% del total devengado.
     → AFP / Gestora largo plazo: ~10% del total devengado.
     → Seguro de Riesgo del Trabajo: según actividad (usar 2% por defecto).
@@ -317,7 +317,7 @@ Implementa el **cálculo de la planilla mensual** para todos los empleados activ
     → ⚠️ Los aportes patronales los paga la EMPRESA, no se 
       descuentan al empleado. Son un costo adicional.
 
-[ ] Implementar generarPlanillaResumen(periodo)
+[x] Implementar generarPlanillaResumen(periodo)
     → Tabla resumen de todos los empleados del período.
     → Columnas: Empleado, Devengado, Deducciones, Neto, Costo Empresa.
     → Fila de totales al final.
