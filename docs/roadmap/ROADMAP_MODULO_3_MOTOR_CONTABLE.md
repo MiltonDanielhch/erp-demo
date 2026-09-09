@@ -715,37 +715,37 @@ Construye las **pantallas** donde el usuario visualiza el Libro Diario, el Libro
 ## Tareas de la Fase 3.9
 
 ```text
-[ ] Crear vistas/libro-diario.html
+[x] Crear vistas/libro-diario.html
     → Tabla cronológica de todos los asientos.
     → Filtros: período contable, tipo de asiento.
     → Cada asiento expandible para ver sus líneas.
     → Búsqueda por concepto o número de asiento.
 
-[ ] Crear vistas/libro-mayor.html
+[x] Crear vistas/libro-mayor.html
     → Selector de cuenta (dropdown con todas las cuentas).
     → Tabla de movimientos de la cuenta seleccionada.
     → Saldo acumulado después de cada movimiento.
     → Filtros: período contable.
 
-[ ] Crear vistas/balanza-comprobacion.html
+[x] Crear vistas/balanza-comprobacion.html
     → Tabla con todas las cuentas y sus saldos.
     → Columnas: Cuenta, Mov. Debe, Mov. Haber, Saldo Deudor, Saldo Acreedor.
     → Fila de totales al final.
     → Indicador visual: ✓ verde si cuadra, ❌ rojo si no.
     → Botón "Generar Balanza" que llama a window.MotorContable.calcularBalanza().
 
-[ ] Crear vistas/asientos.html (registro manual)
+[x] Crear vistas/asientos.html (registro manual)
     → Formulario para registrar asientos manuales.
     → Selector de cuenta, monto Debe, monto Haber.
     → Validación en tiempo real: muestra si Debe = Haber.
     → Botón "Registrar" que llama a window.MotorContable.registrarAsiento().
 
-[ ] Crear js/vistas/motor-vista.js
+[x] Crear js/vistas/motor-vista.js
     → Lógica de las vistas del motor contable.
     → Manejar filtros, búsquedas, expansión de asientos.
     → Conectar con window.MotorContable.
 
-[ ] Conectar con el menú lateral
+[x] Conectar con el menú lateral
     → Agregar sección "📚 Motor Contable" con sub-enlaces:
       ├── Libro Diario
       ├── Libro Mayor
@@ -760,48 +760,48 @@ Construye las **pantallas** donde el usuario visualiza el Libro Diario, el Libro
 ## Checklist de humo (smoke test)
 
 ```text
-[ ] Smoke test #1: Procesar asientos pendientes del Módulo 2
+[x] Smoke test #1: Procesar asientos pendientes del Módulo 2
     → Ejecutar window.MotorContable.procesarAsientosPendientes()
     → Verificar que los asientos de compras/ventas del Módulo 2 
       se procesaron correctamente
     → Verificar que aparecieron en el Libro Diario
     → Verificar que el Libro Mayor se actualizó
 
-[ ] Smoke test #2: Verificar la partida doble
+[x] Smoke test #2: Verificar la partida doble
     → Registrar un asiento manual donde Debe ≠ Haber
     → Debe ser RECHAZADO con mensaje claro
     → Registrar un asiento manual donde Debe = Haber
     → Debe ser ACEPTADO y aparecer en el Diario
 
-[ ] Smoke test #3: Generar la Balanza de Comprobación
+[x] Smoke test #3: Generar la Balanza de Comprobación
     → Ejecutar window.MotorContable.calcularBalanza("2026-09")
     → Verificar que los totales de movimientos cuadran
     → Verificar que los saldos son coherentes
 
-[ ] Smoke test #4: Generar asientos de ajuste automáticos
+[x] Smoke test #4: Generar asientos de ajuste automáticos
     → Ejecutar window.MotorContable.generarAjustesAutomaticos("2026-09")
     → Verificar que se generaron: depreciación, provisión aguinaldo, 
       provisión bono antigüedad, provisión indemnización
     → Verificar que los asientos tienen número con prefijo "AJ-"
 
-[ ] Smoke test #5: Cerrar el ejercicio
+[x] Smoke test #5: Cerrar el ejercicio
     → Ejecutar window.MotorContable.cerrarEjercicio(2026)
     → Verificar que las cuentas de resultados quedaron en cero
     → Verificar que la utilidad se transfirió a Utilidades Retenidas
     → Verificar que las cuentas de balance mantienen sus saldos
 
-[ ] Smoke test #6: Trazabilidad completa
+[x] Smoke test #6: Trazabilidad completa
     → Desde un documento fuente (Capa 1), navegar hasta su asiento 
       (Capa 3) y luego hasta la cuenta en el Libro Mayor
     → Verificar que la cadena está completa: 
       Documento → Asiento → Cuenta en Mayor → Saldo en Balanza
 
-[ ] Smoke test #7: Persistencia
+[x] Smoke test #7: Persistencia
     → Recargar la página (F5)
     → El Libro Diario, Mayor y Balanza deben seguir cargando
     → Abrir DevTools → LocalStorage → verificar colecciones
 
-[ ] Commit de cierre del Módulo 3
+[x] Commit de cierre del Módulo 3
     → git add .
     → git commit -m "feat(modulo-3): Motor Contable completo
     
