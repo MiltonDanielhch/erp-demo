@@ -701,6 +701,353 @@ class ModuloImpuestos {
     };
   }
 
+    // ══════════════════════════════════════════════════════════
+  // IUE — IMPUESTO SOBRE LAS UTILIDADES (Form. 500)
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Obtiene la utilidad contable del ejercicio desde el Motor Contable.
+   *
+   * Consulta las cuentas de resultado (4.x ingresos, 5.x gastos)
+   * del Libro Mayor para calcular la utilidad del año.
+   *
+   * @param {number} anio
+   * @returns {Object} { exito, utilidadContable, detalle, errores }
+   */
+  obtenerUtilidadContable(anio) {
+    // Intentar obtener desde el Motor Contable si está disponible
+    if (!window.motorContable) {
+      return {
+        exito: false,
+        utilidadContable: 0,
+        detalle: null,
+        errores: ['Motor Contable no disponible. Ingrese la utilidad contable manualmente.']
+      };
+    }
+
+    try {
+      const mayor = window.motorContable.obtenerLibroMayor() || [];
+
+      let totalIngresos = 0;
+      let totalGastos = 0;
+      const detalleIngresos = [];
+      const detalleGastos = [];
+
+      mayor.forEach(cuenta => {
+        const codigo = cuenta.cuentaCodigo || '';
+        // Filtrar solo cuentas del año (esto es una simplificación;
+        // en producción se filtraría por movimientos del año)
+        if (codigo.startsWith('4.')) {
+          // Ingresos (naturaleza acreedora)
+          const saldo = cuenta.saldo || 0;
+          totalIngresos += saldo;
+          detalleIngresos.push({ codigo, nombre: cuenta.cuentaNombre, monto: saldo });
+        } else if (codigo.startsWith('5.')) {
+          // Gastos (naturaleza deudora)
+          const saldo = cuenta.saldo || 0;
+          totalGastos += saldo;
+          detalleGastos.push({ codigo, nombre: cuenta.cuentaNombre, monto: saldo });
+        }
+      });
+
+      const utilidadContable = this._r2(totalIngresos - totalGastos);
+
+      return {
+        exito: true,
+        utilidadContable,
+        totalIngresos: this._r2(totalIngresos),
+        totalGastos: this._r2(totalGastos),
+        detalle: { ingresos: detalleIngresos, gastos: detalleGastos },
+        errores: []
+      };
+    } catch (e) {
+      return {
+        exito: false,
+        utilidadContable: 0,
+        detalle: null,
+        errores: [`Error al consultar Motor Contable: ${e.message}`]
+      };
+    }
+  }
+
+  /**
+   * Aplica los ajustes fiscales a la utilidad contable.
+   *
+   * Ajustes típicos en Bolivia:
+   *   (+) Gastos no deducibles: multas, sanciones, donaciones no autorizadas
+   *   (-) Ingresos no gravables: intereses exentos, indemnizaciones
+   *
+   * @param {number} utilidadContable
+   * @param {Object} ajustes - { gastosNoDeducibles: [], ingresosNoGravables: [] }
+   * @returns {Object} { utilidadImponible, totalGastosNoDeducibles, totalIngresosNoGravables }
+   */
+  aplicarAjustesFiscales(utilidadContable, ajustes = {}) {
+    const gastosNoDeducibles = ajustes.gastosNoDeducibles || [];
+    const ingresosNoGravables = ajustes.ingresosNoGravables || [];
+
+    const totalGastosNoDeducibles = this._r2(
+      gastosNoDeducibles.reduce((sum, g) => sum + (Number(g.monto) || 0), 0)
+    );
+
+    const totalIngresosNoGravables = this._r2(
+      ingresosNoGravables.reduce((sum, i) => sum + (Number(i.monto) || 0), 0)
+    );
+
+    // Utilidad imponible = utilidad contable + gastos no deducibles - ingresos no gravables
+    const utilidadImponible = this._r2(
+      utilidadContable + totalGastosNoDeducibles - totalIngresosNoGravables
+    );
+
+    return {
+      utilidadImponible,
+      totalGastosNoDeducibles,
+      totalIngresosNoGravables,
+      detalle: {
+        gastosNoDeducibles,
+        ingresosNoGravables
+      }
+    };
+  }
+
+  /**
+   * Calcula el IUE (Impuesto sobre las Utilidades de las Empresas).
+   *
+   * Fórmula: IUE = 25% × Utilidad Imponible
+   * Si utilidad imponible ≤ 0 → IUE = 0
+   *
+   * @param {number} anio - Año de la gestión (ej: 2026)
+   * @param {Object} [opciones]
+   * @param {number} [opciones.utilidadContable] - Si no se pasa, se obtiene del Motor Contable
+   * @param {Object} [opciones.ajustes] - Ajustes fiscales manuales
+   * @returns {Object} Resultado completo del cálculo
+   */
+  calcularIUE(anio, opciones = {}) {
+    // 1. Obtener utilidad contable
+    let utilidadContable;
+    let fuenteUtilidad;
+
+    if (opciones.utilidadContable !== undefined) {
+      utilidadContable = Number(opciones.utilidadContable) || 0;
+      fuenteUtilidad = 'MANUAL';
+    } else {
+      const consulta = this.obtenerUtilidadContable(anio);
+      if (!consulta.exito) {
+        return {
+          exito: false,
+          errores: consulta.errores,
+          sugerencia: 'Pase la utilidad contable manualmente: calcularIUE(2026, { utilidadContable: 23500 })'
+        };
+      }
+      utilidadContable = consulta.utilidadContable;
+      fuenteUtilidad = 'MOTOR_CONTABLE';
+    }
+
+    // 2. Aplicar ajustes fiscales
+    const ajustes = opciones.ajustes || {};
+    const resultadoAjustes = this.aplicarAjustesFiscales(utilidadContable, ajustes);
+    const utilidadImponible = resultadoAjustes.utilidadImponible;
+
+    // 3. Calcular IUE (25% sobre utilidad imponible)
+    let iueDeterminado = 0;
+    if (utilidadImponible > 0) {
+      iueDeterminado = this._r2(utilidadImponible * 0.25);
+    }
+
+    // 4. Obtener IT acumulado del año (para compensación en Fase 5.6)
+    const itAcumulado = this.obtenerITAcumuladoAnual(anio);
+
+    // 5. Calcular fecha límite (120 días tras cierre)
+    const fechaLimite = this.calcularFechaLimiteIUE(anio);
+
+    const resultado = {
+      exito: true,
+      anio,
+      fechaCalculo: new Date().toISOString(),
+      fuenteUtilidad,
+
+      // Utilidad contable
+      utilidadContable,
+
+      // Ajustes fiscales
+      ajustes: {
+        gastosNoDeducibles: ajustes.gastosNoDeducibles || [],
+        ingresosNoGravables: ajustes.ingresosNoGravables || [],
+        totalGastosNoDeducibles: resultadoAjustes.totalGastosNoDeducibles,
+        totalIngresosNoGravables: resultadoAjustes.totalIngresosNoGravables
+      },
+
+      // Utilidad imponible
+      utilidadImponible,
+
+      // IUE determinado
+      tasaIUE: 0.25,
+      iueDeterminado,
+
+      // Compensación con IT (se completa en Fase 5.6)
+      itAcumulado,
+      iuePorPagarPreliminar: this._r2(Math.max(0, iueDeterminado - itAcumulado)),
+
+      // Fecha límite
+      fechaLimite,
+
+      // Advertencias
+      advertencias: []
+    };
+
+    // Advertencia si hay pérdida
+    if (utilidadImponible <= 0) {
+      resultado.advertencias.push('⚠️ Utilidad imponible ≤ 0: no se paga IUE este año. La pérdida se puede arrastrar a futuros ejercicios.');
+    }
+
+    // Advertencia si el IT supera el IUE (se pierde el exceso)
+    if (itAcumulado > iueDeterminado && iueDeterminado > 0) {
+      const exceso = this._r2(itAcumulado - iueDeterminado);
+      resultado.advertencias.push(`⚠️ El IT acumulado (${this._fmt(itAcumulado)}) supera el IUE determinado (${this._fmt(iueDeterminado)}). El exceso de ${this._fmt(exceso)} SE PIERDE.`);
+    }
+
+    console.log(`🧾 IUE ${anio}: utilidad imponible ${this._fmt(utilidadImponible)} → IUE ${this._fmt(iueDeterminado)}`);
+
+    return resultado;
+  }
+
+  /**
+   * Calcula la fecha límite para declarar el IUE.
+   *
+   * Regla boliviana: 120 días calendario después del cierre de gestión.
+   * Ejemplo: cierre 31/12/2026 → límite 30/04/2027.
+   *
+   * @param {number} anio - Año de la gestión
+   * @param {string} [fechaCierre] - Fecha de cierre (por defecto 31 de diciembre)
+   * @returns {string} Fecha "AAAA-MM-DD"
+   */
+  calcularFechaLimiteIUE(anio, fechaCierre = null) {
+    // Si periodosFiscales tiene el método, usarlo
+    if (this.periodosFiscales && typeof this.periodosFiscales.calcularFechaLimiteIUE === 'function') {
+      return this.periodosFiscales.calcularFechaLimiteIUE(anio);
+    }
+
+    // Fallback: calcular manualmente
+    const cierre = fechaCierre ? new Date(fechaCierre) : new Date(anio, 11, 31);
+    const limite = new Date(cierre);
+    limite.setDate(limite.getDate() + 120);
+    return limite.toISOString().split('T')[0];
+  }
+
+  /**
+   * Genera la estructura del Formulario 500 del SIN (IUE).
+   *
+   * ⚠️ En el prototipo solo se genera la estructura.
+   * En producción se enviaría electrónicamente al SIN.
+   *
+   * @param {number} anio
+   * @param {Object} [opciones] - Mismas opciones que calcularIUE
+   * @returns {Object} Estructura del Form. 500
+   */
+  generarFormulario500(anio, opciones = {}) {
+    const iue = this.calcularIUE(anio, opciones);
+
+    if (!iue.exito) {
+      return { exito: false, errores: iue.errores };
+    }
+
+    const nitEmpresa = (window.BOLIVIA && window.BOLIVIA.NIT_EMPRESA) || '000000000-0';
+
+    const formulario = {
+      // Datos del contribuyente
+      nit: nitEmpresa,
+      razonSocial: (window.BOLIVIA && window.BOLIVIA.RAZON_SOCIAL) || 'EMPRESA S.A.',
+      gestion: anio,
+      tipoFormulario: 'FORM_500',
+
+      // Fechas
+      fechaGeneracion: new Date().toISOString(),
+      fechaLimite: iue.fechaLimite,
+      cierreGestion: `${anio}-12-31`,
+
+      // Sección 1: Utilidad contable
+      utilidadContable: {
+        monto: iue.utilidadContable,
+        fuente: iue.fuenteUtilidad
+      },
+
+      // Sección 2: Ajustes fiscales
+      ajustesFiscales: {
+        gastosNoDeducibles: iue.ajustes.gastosNoDeducibles,
+        ingresosNoGravables: iue.ajustes.ingresosNoGravables,
+        totalGastosNoDeducibles: iue.ajustes.totalGastosNoDeducibles,
+        totalIngresosNoGravables: iue.ajustes.totalIngresosNoGravables
+      },
+
+      // Sección 3: Liquidación
+      liquidacion: {
+        utilidadImponible: iue.utilidadImponible,
+        tasaIUE: iue.tasaIUE,
+        iueDeterminado: iue.iueDeterminado,
+        itCompensado: Math.min(iue.itAcumulado, iue.iueDeterminado),
+        iuePorPagar: iue.iuePorPagarPreliminar
+      },
+
+      // Resultado final
+      resultado: {
+        aPagar: iue.iuePorPagarPreliminar,
+        itAcumulado: iue.itAcumulado,
+        presentacion: 'PENDIENTE'
+      },
+
+      // Advertencias
+      advertencias: iue.advertencias,
+
+      // Estado
+      estado: 'GENERADO',
+      declarado: false,
+      pagado: false
+    };
+
+    // Guardar el formulario en el período fiscal anual si existe
+    const periodoFiscal = this.periodosFiscales
+      ? this.periodosFiscales.obtenerPeriodo(String(anio))
+      : null;
+
+    if (periodoFiscal) {
+      this.periodosFiscales.actualizarPeriodo(String(anio), {
+        iue: {
+          utilidadContable: iue.utilidadContable,
+          utilidadImponible: iue.utilidadImponible,
+          iueDeterminado: iue.iueDeterminado,
+          itCompensado: formulario.liquidacion.itCompensado,
+          iuePorPagar: iue.iuePorPagarPreliminar,
+          formulario500: formulario
+        }
+      });
+    }
+
+    console.log(`📄 Form. 500 generado para gestión ${anio}`);
+    return { exito: true, formulario, iue };
+  }
+
+  /**
+   * Liquida el IUE del año: calcula y genera formulario.
+   * Método de conveniencia que combina calcularIUE + generarFormulario500.
+   *
+   * @param {number} anio
+   * @param {Object} [opciones]
+   * @returns {Object}
+   */
+  liquidarIUE(anio, opciones = {}) {
+    const resultado = this.generarFormulario500(anio, opciones);
+
+    if (!resultado.exito) {
+      return resultado;
+    }
+
+    return {
+      exito: true,
+      anio,
+      iueCalculado: resultado.iue,
+      formulario500: resultado.formulario
+    };
+  }
+
   // ══════════════════════════════════════════════════════════
   // UTILIDADES PRIVADAS
   // ══════════════════════════════════════════════════════════

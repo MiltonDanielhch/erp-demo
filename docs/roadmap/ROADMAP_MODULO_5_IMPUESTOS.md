@@ -391,7 +391,7 @@ COMPENSACIÓN CON IT (Art. 77 Ley 843):
 ## Tareas de la Fase 5.5
 
 ```text
-[ ] Implementar calcularIUE(año)
+[x] Implementar calcularIUE(año)
     → Obtiene la utilidad contable del cierre del ejercicio.
     → Aplica ajustes fiscales (gastos no deducibles, ingresos no gravables).
     → Calcula la utilidad imponible.
@@ -405,7 +405,7 @@ COMPENSACIÓN CON IT (Art. 77 Ley 843):
       imponible, y aplica el 25%. Si la utilidad imponible es 
       negativa o cero, el IUE es 0. Devuelve desglose completo."
 
-[ ] Implementar aplicarAjustesFiscales(utilidadContable, ajustes)
+[x] Implementar aplicarAjustesFiscales(utilidadContable, ajustes)
     → Suma gastos no deducibles (multas, donaciones no autorizadas).
     → Resta ingresos no gravables.
     → Devuelve la utilidad imponible ajustada.
@@ -413,13 +413,13 @@ COMPENSACIÓN CON IT (Art. 77 Ley 843):
       los ingresa). En un sistema productivo, se detectarían 
       automáticamente.
 
-[ ] Implementar generarFormulario500(año)
+[x] Implementar generarFormulario500(año)
     → Genera la estructura del Formulario 500 del SIN.
     → Incluye: utilidad contable, ajustes, utilidad imponible, 
       IUE determinado, IT compensado, IUE por pagar.
     → Devuelve un objeto con los campos del formulario.
 
-[ ] Implementar calcularFechaLimiteIUE(cierreGestion)
+[x] Implementar calcularFechaLimiteIUE(cierreGestion)
     → La fecha límite es 120 días después del cierre.
     → Ejemplo: cierre 31/12/2026 → límite 30/04/2027.
     → Devuelve la fecha límite.
