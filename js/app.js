@@ -205,6 +205,12 @@ function iniciarERP() {
   });
   console.log('🧾 Módulo de RC-IVA inicializado.');
 
+  // ── NUEVO Fase 5.2: Instanciar Períodos Fiscales ─────────────
+  const periodosFiscales = new PeriodosFiscales({
+    almacenamiento: almacenamiento
+  });
+  console.log('📅 Períodos Fiscales inicializado (Módulo 5).');
+
   // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
   const moduloAsientosNomina = new ModuloAsientosNomina({
     almacenamiento: almacenamiento,
@@ -283,7 +289,8 @@ function iniciarERP() {
   window.moduloLiquidaciones = moduloLiquidaciones;
   window.moduloLiquidaciones = moduloLiquidaciones;
   window.moduloRCIVA = moduloRCIVA;
-  window.moduloAsientosNomina = moduloAsientosNomina; 
+  window.periodosFiscales = periodosFiscales;
+  window.moduloAsientosNomina = moduloAsientosNomina;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -298,7 +305,8 @@ function iniciarERP() {
   window.ERP.moduloBonoAntiguedad = moduloBonoAntiguedad;
   window.ERP.moduloLiquidaciones = moduloLiquidaciones;
   window.ERP.moduloRCIVA = moduloRCIVA;
-  window.ERP.moduloAsientosNomina = moduloAsientosNomina; 
+  window.ERP.periodosFiscales = periodosFiscales;
+  window.ERP.moduloAsientosNomina = moduloAsientosNomina;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -442,6 +450,15 @@ function iniciarERP() {
   console.log('   window.moduloAsientosNomina.generarAsientosMensuales("2026-09")');
   console.log('   window.moduloAsientosNomina.generarAsientoPagoNomina("2026-09")');
   console.log('   window.moduloAsientosNomina.generarAsientoPagoAportesPatronales("2026-09")');
+  console.log('');
+  console.log('   📌 PERÍODOS FISCALES (Módulo 5):');
+  console.log('   window.periodosFiscales.crearPeriodo("2026-09")');
+  console.log('   window.periodosFiscales.obtenerPeriodo("2026-09")');
+  console.log('   window.periodosFiscales.obtenerPeriodosAbiertos()');
+  console.log('   window.periodosFiscales.calcularFechaVencimiento("123456789-5", "2026-09")');
+  console.log('   window.periodosFiscales.obtenerObligacionesPendientes()');
+  console.log('   window.periodosFiscales.generarAlertasVencimiento(7)');
+  console.log('   window.periodosFiscales.generarPeriodosAnio(2026)');
 }
 
 // ──────────────────────────────────────────────────────────────

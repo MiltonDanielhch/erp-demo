@@ -84,7 +84,7 @@ Ejemplo: NIT 123456789-1 (dígito 1) → vence el 10 del mes siguiente
 ## Tareas de la Fase 5.1
 
 ```text
-[ ] Crear docs/aprendizaje/17-impuestos-bolivianos-explicados.md
+[x] Crear docs/aprendizaje/17-impuestos-bolivianos-explicados.md
     → Explicación teórica de cada impuesto (máximo 3 páginas).
     → Incluir: IVA, IT, IUE, RC-IVA, IUE-BE.
     → Explicar la base imponible de cada uno.
@@ -96,7 +96,7 @@ Ejemplo: NIT 123456789-1 (dígito 1) → vence el 10 del mes siguiente
       palabras. Incluye la particularidad del IVA incluido en el 
       precio (Art. 5 Ley 843)."
 
-[ ] Crear docs/aprendizaje/18-calendario-tributario.md
+[x] Crear docs/aprendizaje/18-calendario-tributario.md
     → Tabla de vencimientos según último dígito del NIT.
     → Explicar cómo calcular la fecha de vencimiento.
     → Incluir los plazos del IUE (120 días tras cierre).
@@ -107,7 +107,7 @@ Ejemplo: NIT 123456789-1 (dígito 1) → vence el 10 del mes siguiente
       de gestión), segundo aguinaldo (20 de diciembre), 
       envío de Estados Financieros (Form. 605)."
 
-[ ] Crear docs/aprendizaje/19-compensacion-it-iue.md
+[x] Crear docs/aprendizaje/19-compensacion-it-iue.md
     → Explicar el Art. 77 de la Ley 843.
     → Mostrar ejemplos numéricos de compensación.
     → 🧠 Mini-Prompt para IA: "Explica la compensación del IT 
