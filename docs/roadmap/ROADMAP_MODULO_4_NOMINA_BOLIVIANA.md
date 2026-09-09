@@ -659,11 +659,11 @@ RC-IVA a pagar: 828.75 − 805.31 = Bs 23.44
 ## Tareas de la Fase 4.7
 
 ```text
-[ ] Implementar calcularRCIVA(empleado, totalDevengado)
+[x] Implementar calcularRCIVA(empleado, totalDevengado)
     → Calcula el 13% del total devengado.
     → Devuelve el monto teórico del RC-IVA.
 
-[ ] Implementar registrarFacturasGastosPersonales(empleadoId, facturas)
+[x] Implementar registrarFacturasGastosPersonales(empleadoId, facturas)
     → Registra las facturas que el empleado presenta para compensar.
     → Valida que cada factura tenga NIT y CUF válidos.
     → Calcula el IVA de cada factura (monto − monto/1.13).
@@ -675,18 +675,18 @@ RC-IVA a pagar: 828.75 − 805.31 = Bs 23.44
       Valida que el NIT y CUF de cada factura sean válidos. 
       Devuelve el IVA total acumulable para compensación."
 
-[ ] Implementar calcularRCIVAPagar(empleado, totalDevengado)
+[x] Implementar calcularRCIVAPagar(empleado, totalDevengado)
     → Calcula el RC-IVA teórico (13% del devengado).
     → Resta el IVA acumulado de las facturas presentadas.
     → Si el resultado es negativo → RC-IVA = 0 (no se devuelve).
     → Devuelve { rcIVATeorico, ivaFacturas, rcIVAPagar }.
 
-[ ] Implementar resetearFacturasMensuales(empleadoId)
+[x] Implementar resetearFacturasMensuales(empleadoId)
     → Al inicio de cada mes, se reinicia el acumulado de facturas.
     → Las facturas del mes anterior no se arrastran.
     → Genera un log de las facturas usadas el mes anterior.
 
-[ ] Crear vista parcial en nomina.html
+[x] Crear vista parcial en nomina.html
     → Sección "Facturas de Gastos Personales" por empleado.
     → Formulario para agregar facturas (NIT, CUF, monto).
     → Muestra el IVA extraído de cada factura.
@@ -743,24 +743,24 @@ ASIENTO DE LIQUIDACIÓN POR RETIRO:
 ## Tareas de la Fase 4.8
 
 ```text
-[ ] Implementar generarAsientoNomina(planilla)
+[x] Implementar generarAsientoNomina(planilla)
     → Genera el asiento de la planilla mensual.
     → Debe: Gastos de Nómina (total devengados).
     → Haber: Aportes patronales, RC-IVA, Nómina por Pagar.
     → Verifica que Debe = Haber.
 
-[ ] Implementar generarAsientoPagoNomina(planilla)
+[x] Implementar generarAsientoPagoNomina(planilla)
     → Genera el asiento de pago:
       Nómina por Pagar / Bancos.
     → Se ejecuta cuando tesorería paga la planilla.
 
-[ ] Implementar generarAsientoLiquidacion(empleado, liquidacion)
+[x] Implementar generarAsientoLiquidacion(empleado, liquidacion)
     → Genera el asiento de liquidación por retiro.
     → Debe: Indemnización, Desahucio, Aguinaldo proporcional.
     → Haber: Bancos.
     → Verifica que las provisiones acumuladas sean suficientes.
 
-[ ] Conectar con el Motor Contable (Módulo 3)
+[x] Conectar con el Motor Contable (Módulo 3)
     → Los asientos generados se guardan en "asientosPendientes".
     → El Motor Contable los procesa y valida la partida doble.
     → Verificar que los asientos aparecen en el Libro Diario.
@@ -776,7 +776,7 @@ Construye las **pantallas** donde el usuario gestiona la nómina: planilla mensu
 ## Tareas de la Fase 4.9
 
 ```text
-[ ] Crear vistas/nomina.html
+[x] Crear vistas/nomina.html
     → Secciones:
       ├── <h1> Nómina y Recursos Humanos
       ├── <div class="tabs">
@@ -788,7 +788,7 @@ Construye las **pantallas** donde el usuario gestiona la nómina: planilla mensu
       ├── <div id="contenido-tab">
       └── <table> para listar registros
 
-[ ] Crear js/vistas/nomina-vista.js
+[x] Crear js/vistas/nomina-vista.js
     → Lógica de la vista de nómina.
     → Manejar cambio de tabs.
     → Formulario de planilla mensual (botón "Calcular Nómina").
@@ -797,25 +797,25 @@ Construye las **pantallas** donde el usuario gestiona la nómina: planilla mensu
     → Formulario de facturas de gastos personales.
     → Formulario de liquidación por retiro.
 
-[ ] Implementar la vista de planilla mensual
+[x] Implementar la vista de planilla mensual
     → Botón "Calcular Nómina del Mes".
     → Tabla con todos los empleados: Devengado, Deducciones, Neto.
     → Fila de totales al final.
     → Botón "Generar Asientos" que crea los asientos contables.
 
-[ ] Implementar la vista de provisiones
+[x] Implementar la vista de provisiones
     → Tabla por empleado: Aguinaldo acumulado, Bono acumulado, 
       Indemnización acumulada.
     → Totales de la empresa.
     → Alerta si algún empleado tiene provisión insuficiente.
 
-[ ] Implementar la vista de liquidación
+[x] Implementar la vista de liquidación
     → Formulario: seleccionar empleado, motivo de retiro, fecha.
     → Botón "Calcular Liquidación".
     → Muestra el desglose: indemnización, desahucio, aguinaldo.
     → Botón "Registrar Retiro" que genera los asientos.
 
-[ ] Conectar con el menú lateral
+[x] Conectar con el menú lateral
     → Agregar enlace "👥 Nómina" en index.html.
     → Verificar que el enrutador carga vistas/nomina.html.
 ```
@@ -827,51 +827,51 @@ Construye las **pantallas** donde el usuario gestiona la nómina: planilla mensu
 ## Checklist de humo (smoke test)
 
 ```text
-[ ] Smoke test #1: Calcular la planilla mensual
+[x] Smoke test #1: Calcular la planilla mensual
     → Ejecutar window.ModuloNomina.calcularNominaMensual("2026-09")
     → Verificar que todos los empleados activos aparecen
     → Verificar que los devengados incluyen salario + bono antigüedad
     → Verificar que las deducciones incluyen AFP 10% + RC-IVA
 
-[ ] Smoke test #2: Verificar el bono de antigüedad
+[x] Smoke test #2: Verificar el bono de antigüedad
     → Empleado con 6 años de antigüedad → bono = 11% × 3 SMN
     → Empleado con 1 año de antigüedad → bono = 0
     → Dos empleados con distinta salario pero misma antigüedad 
       → mismo bono
 
-[ ] Smoke test #3: Verificar la provisión de aguinaldo
+[x] Smoke test #3: Verificar la provisión de aguinaldo
     → Ejecutar la provisión mensual
     → Verificar que se acumula 1/12 del estimado
     → Verificar que el asiento contable se generó
 
-[ ] Smoke test #4: Verificar el segundo aguinaldo condicional
+[x] Smoke test #4: Verificar el segundo aguinaldo condicional
     → Con toggle desactivado → provisión es solo 1/12
     → Activar el toggle → provisión pasa a 2/12
     → Desactivar → vuelve a 1/12
 
-[ ] Smoke test #5: Calcular indemnización en renuncia
+[x] Smoke test #5: Calcular indemnización en renuncia
     → Registrar retiro con motivo "RENUNCIA"
     → Verificar que la indemnización se calcula 
       (NO debe ser 0 por ser renuncia)
     → Verificar que el desahucio es 0 (no aplica en renuncia)
 
-[ ] Smoke test #6: Calcular liquidación con despido sin preaviso
+[x] Smoke test #6: Calcular liquidación con despido sin preaviso
     → Registrar retiro con motivo "DESPIDO" y preaviso = false
     → Verificar que se calcula indemnización + desahucio (3 meses)
     → Verificar que el total es la suma de ambos
 
-[ ] Smoke test #7: Compensar RC-IVA con facturas
+[x] Smoke test #7: Compensar RC-IVA con facturas
     → Registrar facturas de gastos personales para un empleado
     → Verificar que el IVA de las facturas se extrae correctamente
     → Verificar que el RC-IVA a pagar disminuye
     → Si las facturas cubren el 13% → RC-IVA = 0
 
-[ ] Smoke test #8: Persistencia
+[x] Smoke test #8: Persistencia
     → Recargar la página (F5)
     → La planilla, provisiones y liquidaciones deben seguir ahí
     → Abrir DevTools → LocalStorage → verificar colecciones
 
-[ ] Commit de cierre del Módulo 4
+[x] Commit de cierre del Módulo 4
     → git add .
     → git commit -m "feat(modulo-4): Nómina Boliviana completa
     
