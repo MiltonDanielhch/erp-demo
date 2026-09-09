@@ -550,12 +550,12 @@ RC-IVA COMO RETENCIÓN (proveedores):
 ## Tareas de la Fase 5.7
 
 ```text
-[ ] Implementar calcularRCIVAIndependiente(ingresos, gastos)
+[x] Implementar calcularRCIVAIndependiente(ingresos, gastos)
     → Calcula el 13% de los ingresos del profesional independiente.
     → Compensa con facturas de gastos vinculados.
     → Devuelve { rcIVATeorico, gastosCompensables, rcIVAPagar }.
 
-[ ] Implementar calcularRetencionRCIVA(montoPago, tipoProveedor)
+[x] Implementar calcularRetencionRCIVA(montoPago, tipoProveedor)
     → Si el proveedor es sujeto de retención → retiene 13%.
     → Si el proveedor emite factura válida → no retiene.
     → Devuelve { montoPago, retencionRCIVA, netoAPagar }.
@@ -565,7 +565,7 @@ RC-IVA COMO RETENCIÓN (proveedores):
       especial. Si el proveedor emite factura válida con NIT y CUF, 
       no se retiene. Devuelve el monto retenido y el neto a pagar."
 
-[ ] Implementar generarFormulario110(periodo)
+[x] Implementar generarFormulario110(periodo)
     → Genera la estructura del Formulario 110 del SIN.
     → Incluye: retenciones de RC-IVA a empleados y proveedores.
     → Devuelve un objeto con los campos del formulario.

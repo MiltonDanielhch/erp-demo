@@ -1325,6 +1325,428 @@ class ModuloImpuestos {
     return desglose;
   }
 
+    // ══════════════════════════════════════════════════════════
+  // RC-IVA — RÉGIMEN COMPLEMENTARIO AL IVA
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Calcula el RC-IVA para profesionales independientes (desde 2023).
+   *
+   * Desde 2023, los profesionales independientes (abogados, contadores,
+   * consultores, etc.) son contribuyentes DIRECTOS del RC-IVA, no
+   * dependen de un agente de retención.
+   *
+   * Fórmula:
+   *   RC-IVA teórico = ingresos × 13%
+   *   Compensación = IVA de facturas de gastos vinculados
+   *   RC-IVA a pagar = max(0, teórico - compensación)
+   *
+   * @param {number} ingresos - Ingresos brutos del período
+   * @param {Array} gastos - Facturas de gastos vinculados
+   * @returns {Object}
+   */
+  calcularRCIVAIndependiente(ingresos, gastos = []) {
+    const ingresosNum = Number(ingresos) || 0;
+    const rcIVATeorico = this._r2(ingresosNum * this.PORCENTAJE_IVA);
+
+    // Calcular IVA de las facturas de gastos
+    let totalGastosCompensables = 0;
+    let totalIVAFacturas = 0;
+    const detalleGastos = [];
+
+    gastos.forEach(g => {
+      const monto = Number(g.monto) || 0;
+      const neto = this._r2(monto / 1.13);
+      const iva = this._r2(monto - neto);
+
+      // Validar que la factura tenga NIT y CUF válidos
+      const nit = (g.nitEmisor || g.nit || '').trim();
+      const cuf = (g.cuf || '').trim();
+      const valida = nit && cuf && cuf.length >= 10;
+
+      if (valida) {
+        totalGastosCompensables += monto;
+        totalIVAFacturas += iva;
+      }
+
+      detalleGastos.push({
+        numero: g.numeroFactura || g.numero || 'S/N',
+        proveedor: g.proveedor || g.descripcion || '—',
+        monto,
+        iva,
+        nit,
+        cuf,
+        valida,
+        motivo: valida ? 'OK' : 'Sin NIT/CUF válido'
+      });
+    });
+
+    const compensacion = this._r2(totalIVAFacturas);
+    const rcIVAPagar = this._r2(Math.max(0, rcIVATeorico - compensacion));
+    const porcentajeCompensado = rcIVATeorico > 0
+      ? this._r2((Math.min(rcIVATeorico, compensacion) / rcIVATeorico) * 100)
+      : 0;
+
+    return {
+      exito: true,
+      ingresos: this._r2(ingresosNum),
+      rcIVATeorico,
+      gastosCompensables: this._r2(totalGastosCompensables),
+      ivAFacturas: compensacion,
+      cantidadFacturas: gastos.length,
+      facturasAprovechables: detalleGastos.filter(g => g.valida).length,
+      facturasNoAprovechables: detalleGastos.filter(g => !g.valida).length,
+      compensacion,
+      rcIVAPagar,
+      porcentajeCompensado,
+      detalleGastos
+    };
+  }
+
+  /**
+   * Calcula la retención de RC-IVA a un proveedor.
+   *
+   * Regla boliviana:
+   *   - Si el proveedor NO emite factura válida → retención 13%
+   *   - Si el proveedor está en régimen especial (RTS, STI, RAU) → retención 13%
+   *   - Si el proveedor emite factura válida con NIT+CUF → NO retención
+   *
+   * @param {number} montoPago - Monto bruto del pago
+   * @param {Object} [opciones]
+   * @param {boolean} [opciones.emiteFacturaValida] - Si emite factura con NIT+CUF
+   * @param {string} [opciones.regimenProveedor] - Régimen del proveedor (RG, RTS, STI, RAU)
+   * @param {boolean} [opciones.esSujetoRCIVA] - Si es sujeto del RC-IVA
+   * @returns {Object}
+   */
+  calcularRetencionRCIVA(montoPago, opciones = {}) {
+    const monto = Number(montoPago) || 0;
+
+    // Determinar si aplica retención
+    const emiteFacturaValida = opciones.emiteFacturaValida === true;
+    const regimen = (opciones.regimenProveedor || 'RG').toUpperCase();
+    const esSujetoRCIVA = opciones.esSujetoRCIVA === true;
+
+    // Regímenes especiales que NO emiten crédito fiscal → aplica retención
+    const regimenesConRetencion = ['RTS', 'STI', 'RAU', 'SIETE-RG'];
+    const regimenEspecial = regimenesConRetencion.includes(regimen);
+
+    let retiene = false;
+    let motivo = '';
+
+    if (!emiteFacturaValida) {
+      retiene = true;
+      motivo = 'Proveedor sin factura válida (sin NIT/CUF)';
+    } else if (regimenEspecial) {
+      retiene = true;
+      motivo = `Proveedor en régimen especial (${regimen})`;
+    } else if (esSujetoRCIVA) {
+      retiene = true;
+      motivo = 'Proveedor sujeto pasivo del RC-IVA';
+    } else {
+      motivo = 'Proveedor con factura válida en Régimen General';
+    }
+
+    const retencionRCIVA = retiene ? this._r2(monto * this.PORCENTAJE_IVA) : 0;
+    const netoAPagar = this._r2(monto - retencionRCIVA);
+
+    return {
+      exito: true,
+      montoPago: monto,
+      emiteFacturaValida,
+      regimenProveedor: regimen,
+      esSujetoRCIVA,
+      retiene,
+      motivo,
+      retencionRCIVA,
+      netoAPagar
+    };
+  }
+
+  /**
+   * Calcula la retención de IT (3%) a un proveedor.
+   *
+   * Regla boliviana: se retiene IT cuando:
+   *   - El proveedor es persona natural no inscrita
+   *   - Servicios profesionales sin factura
+   *   - Alquileres a personas naturales
+   *
+   * @param {number} montoPago - Monto bruto del pago
+   * @param {Object} [opciones]
+   * @param {boolean} [opciones.aplicaRetencionIT]
+   * @returns {Object}
+   */
+  calcularRetencionIT(montoPago, opciones = {}) {
+    const monto = Number(montoPago) || 0;
+    const aplica = opciones.aplicaRetencionIT === true;
+
+    const retencionIT = aplica ? this._r2(monto * 0.03) : 0;
+    const netoAPagar = this._r2(monto - retencionIT);
+
+    return {
+      exito: true,
+      montoPago: monto,
+      aplicaRetencionIT: aplica,
+      retencionIT,
+      netoAPagar,
+      motivo: aplica
+        ? 'Proveedor sujeto a retención de IT (persona natural / sin inscripción)'
+        : 'No aplica retención de IT'
+    };
+  }
+
+  /**
+   * Calcula las retenciones combinadas (RC-IVA + IT) a un proveedor.
+   *
+   * @param {number} montoPago
+   * @param {Object} opciones - Opciones combinadas para RC-IVA e IT
+   * @returns {Object}
+   */
+  calcularRetencionesCombinadas(montoPago, opciones = {}) {
+    const rcIVA = this.calcularRetencionRCIVA(montoPago, opciones);
+    const it = this.calcularRetencionIT(montoPago, opciones);
+
+    const totalRetenido = this._r2(rcIVA.retencionRCIVA + it.retencionIT);
+    const netoAPagar = this._r2(montoPago - totalRetenido);
+
+    return {
+      exito: true,
+      montoPago,
+      retencionRCIVA: rcIVA.retencionRCIVA,
+      retencionIT: it.retencionIT,
+      totalRetenido,
+      netoAPagar,
+      motivoRCIVA: rcIVA.motivo,
+      motivoIT: it.motivo,
+      retieneRCIVA: rcIVA.retiene,
+      retieneIT: it.aplicaRetencionIT
+    };
+  }
+
+  /**
+   * Registra una retención practicada a un proveedor.
+   *
+   * @param {Object} datos - Datos de la retención
+   * @returns {Object}
+   */
+  registrarRetencionProveedor(datos) {
+    const calculo = this.calcularRetencionesCombinadas(
+      datos.montoPago,
+      {
+        emiteFacturaValida: datos.emiteFacturaValida,
+        regimenProveedor: datos.regimenProveedor,
+        esSujetoRCIVA: datos.esSujetoRCIVA,
+        aplicaRetencionIT: datos.aplicaRetencionIT
+      }
+    );
+
+    const retencion = {
+      id: 'ret-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 6),
+      tipoRetencion: 'PROVEEDOR',
+      fecha: datos.fecha || new Date().toISOString().split('T')[0],
+      periodo: (datos.fecha || new Date().toISOString()).slice(0, 7),
+      proveedorId: datos.proveedorId || null,
+      proveedorNombre: datos.proveedorNombre || 'Proveedor externo',
+      proveedorNIT: datos.proveedorNIT || '',
+      montoPago: datos.montoPago,
+      retencionRCIVA: calculo.retencionRCIVA,
+      retencionIT: calculo.retencionIT,
+      totalRetenido: calculo.totalRetenido,
+      netoAPagar: calculo.netoAPagar,
+      motivoRCIVA: calculo.motivoRCIVA,
+      motivoIT: calculo.motivoIT,
+      creadaEn: new Date().toISOString()
+    };
+
+    // Guardar en colección de retenciones
+    const COLLECCION = 'retenciones_proveedores';
+    if (!this.almacenamiento.obtener(COLLECCION)) {
+      this.almacenamiento.guardar(COLLECCION, []);
+    }
+    this.almacenamiento.guardar(COLLECCION, retencion);
+
+    console.log(`📋 Retención registrada: ${retencion.proveedorNombre} — Total retenido ${this._fmt(retencion.totalRetenido)}`);
+
+    return { exito: true, retencion, calculo };
+  }
+
+  /**
+   * Obtiene las retenciones de RC-IVA a empleados del período.
+   *
+   * Integra con el Módulo 4 (Nómina) para obtener el RC-IVA retenido
+   * a cada empleado como parte de su planilla.
+   *
+   * @param {string} periodo - Formato "AAAA-MM"
+   * @returns {Object}
+   */
+  obtenerRetencionesEmpleados(periodo) {
+    if (!window.moduloNomina) {
+      return { exito: false, errores: ['Módulo de Nómina no disponible'] };
+    }
+
+    const nomina = window.moduloNomina.calcularNominaMensual(periodo);
+    if (!nomina.exito) {
+      return { exito: false, errores: nomina.errores };
+    }
+
+    let totalRetenido = 0;
+    const detalle = [];
+
+    nomina.planilla.forEach(linea => {
+      const rcIVA = linea.deducciones?.rcIVA?.aPagar || 0;
+      if (rcIVA > 0) {
+        totalRetenido += rcIVA;
+        detalle.push({
+          empleadoId: linea.empleadoId,
+          empleadoNombre: linea.empleadoNombre,
+          empleadoCI: linea.empleadoCI,
+          totalDevengado: linea.devengados.totalDevengado,
+          rcIVATeorico: this._r2(linea.devengados.totalDevengado * this.PORCENTAJE_IVA),
+          rcIVACompensado: this._r2((linea.devengados.totalDevengado * this.PORCENTAJE_IVA) - rcIVA),
+          rcIVAaPagar: rcIVA
+        });
+      }
+    });
+
+    return {
+      exito: true,
+      periodo,
+      totalRetenido: this._r2(totalRetenido),
+      cantidadEmpleados: detalle.length,
+      detalle
+    };
+  }
+
+  /**
+   * Obtiene las retenciones a proveedores del período.
+   *
+   * @param {string} periodo
+   * @returns {Object}
+   */
+  obtenerRetencionesProveedores(periodo) {
+    const COLLECCION = 'retenciones_proveedores';
+    const todas = this.almacenamiento.obtener(COLLECCION) || [];
+    const delPeriodo = todas.filter(r => r.periodo === periodo);
+
+    let totalRCIVA = 0;
+    let totalIT = 0;
+
+    delPeriodo.forEach(r => {
+      totalRCIVA += r.retencionRCIVA || 0;
+      totalIT += r.retencionIT || 0;
+    });
+
+    return {
+      exito: true,
+      periodo,
+      totalRCIVA: this._r2(totalRCIVA),
+      totalIT: this._r2(totalIT),
+      totalRetenido: this._r2(totalRCIVA + totalIT),
+      cantidad: delPeriodo.length,
+      detalle: delPeriodo
+    };
+  }
+
+  /**
+   * Genera la estructura del Formulario 110 del SIN (Retenciones).
+   *
+   * El Form. 110 es mensual e incluye:
+   *   - Retenciones de RC-IVA a empleados
+   *   - Retenciones de RC-IVA a proveedores
+   *   - Retenciones de IT a proveedores
+   *
+   * @param {string} periodo
+   * @returns {Object}
+   */
+  generarFormulario110(periodo) {
+    const retEmpleados = this.obtenerRetencionesEmpleados(periodo);
+    const retProveedores = this.obtenerRetencionesProveedores(periodo);
+
+    if (!retEmpleados.exito) {
+      return { exito: false, errores: retEmpleados.errores };
+    }
+
+    const nitEmpresa = (window.BOLIVIA && window.BOLIVIA.NIT_EMPRESA) || '000000000-0';
+    const [anio, mes] = periodo.split('-').map(Number);
+    const fechaVencimiento = this.periodosFiscales
+      ? this.periodosFiscales.calcularFechaVencimiento(nitEmpresa, periodo)
+      : null;
+
+    // Total RC-IVA retenido = empleados + proveedores
+    const totalRCIVARetenido = this._r2(
+      (retEmpleados.totalRetenido || 0) + (retProveedores.totalRCIVA || 0)
+    );
+    const totalITRetenido = retProveedores.totalIT || 0;
+    const totalRetenido = this._r2(totalRCIVARetenido + totalITRetenido);
+
+    const formulario = {
+      // Datos del contribuyente
+      nit: nitEmpresa,
+      razonSocial: (window.BOLIVIA && window.BOLIVIA.RAZON_SOCIAL) || 'EMPRESA S.A.',
+      periodoFiscal: periodo,
+      gestion: anio,
+      mes,
+      tipoFormulario: 'FORM_110',
+
+      // Fechas
+      fechaGeneracion: new Date().toISOString(),
+      fechaVencimiento,
+
+      // Sección 1: Retenciones de RC-IVA a empleados
+      rcIVAEmpleados: {
+        cantidadEmpleados: retEmpleados.cantidadEmpleados,
+        totalRetenido: retEmpleados.totalRetenido,
+        detalle: retEmpleados.detalle
+      },
+
+      // Sección 2: Retenciones de RC-IVA a proveedores
+      rcIVAProveedores: {
+        cantidadProveedores: retProveedores.cantidad,
+        totalRetenido: retProveedores.totalRCIVA,
+        detalle: retProveedores.detalle.filter(d => d.retencionRCIVA > 0)
+      },
+
+      // Sección 3: Retenciones de IT a proveedores
+      itProveedores: {
+        cantidadProveedores: retProveedores.detalle.filter(d => d.retencionIT > 0).length,
+        totalRetenido: retProveedores.totalIT,
+        detalle: retProveedores.detalle.filter(d => d.retencionIT > 0)
+      },
+
+      // Liquidación final
+      liquidacion: {
+        totalRCIVARetenido,
+        totalITRetenido,
+        totalRetenido
+      },
+
+      // Resultado
+      resultado: {
+        aPagar: totalRetenido,
+        presentacion: 'PENDIENTE'
+      },
+
+      estado: 'GENERADO',
+      declarado: false,
+      pagado: false
+    };
+
+    // Guardar en período fiscal
+    const periodoFiscal = this.periodosFiscales ? this.periodosFiscales.obtenerPeriodo(periodo) : null;
+    if (periodoFiscal) {
+      this.periodosFiscales.actualizarPeriodo(periodo, {
+        rcIVA: {
+          retencionesEmpleados: retEmpleados.totalRetenido,
+          retencionesProveedores: retProveedores.totalRCIVA + retProveedores.totalIT,
+          totalRetenido,
+          formulario110: formulario
+        }
+      });
+    }
+
+    console.log(`📄 Form. 110 generado para ${periodo}: ${this._fmt(totalRetenido)} retenidos`);
+    return { exito: true, formulario, retenciones: { empleados: retEmpleados, proveedores: retProveedores } };
+  }
+
   // ══════════════════════════════════════════════════════════
   // UTILIDADES PRIVADAS
   // ══════════════════════════════════════════════════════════
