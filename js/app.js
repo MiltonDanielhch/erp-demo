@@ -211,6 +211,14 @@ function iniciarERP() {
   });
   console.log('📅 Períodos Fiscales inicializado (Módulo 5).');
 
+    // ── NUEVO Fase 5.3: Instanciar Módulo de Impuestos ───────────
+  const moduloImpuestos = new ModuloImpuestos({
+    almacenamiento: almacenamiento,
+    capaDocumentos: capaDocumentos,
+    periodosFiscales: periodosFiscales
+  });
+  console.log('🧾 Módulo de Impuestos inicializado (Módulo 5).');
+
   // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
   const moduloAsientosNomina = new ModuloAsientosNomina({
     almacenamiento: almacenamiento,
@@ -290,6 +298,7 @@ function iniciarERP() {
   window.moduloLiquidaciones = moduloLiquidaciones;
   window.moduloRCIVA = moduloRCIVA;
   window.periodosFiscales = periodosFiscales;
+  window.moduloImpuestos = moduloImpuestos;
   window.moduloAsientosNomina = moduloAsientosNomina;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
@@ -306,6 +315,7 @@ function iniciarERP() {
   window.ERP.moduloLiquidaciones = moduloLiquidaciones;
   window.ERP.moduloRCIVA = moduloRCIVA;
   window.ERP.periodosFiscales = periodosFiscales;
+  window.ERP.moduloImpuestos = moduloImpuestos;
   window.ERP.moduloAsientosNomina = moduloAsientosNomina;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
@@ -459,6 +469,13 @@ function iniciarERP() {
   console.log('   window.periodosFiscales.obtenerObligacionesPendientes()');
   console.log('   window.periodosFiscales.generarAlertasVencimiento(7)');
   console.log('   window.periodosFiscales.generarPeriodosAnio(2026)');
+  console.log('');
+  console.log('   📌 IMPUESTOS (Módulo 5):');
+  console.log('   window.moduloImpuestos.calcularIVADebito("2026-09")');
+  console.log('   window.moduloImpuestos.calcularIVACredito("2026-09")');
+  console.log('   window.moduloImpuestos.conciliarIVA("2026-09")');
+  console.log('   window.moduloImpuestos.generarFormulario200("2026-09")');
+  console.log('   window.moduloImpuestos.obtenerSaldoIVAFavor()');
 }
 
 // ──────────────────────────────────────────────────────────────

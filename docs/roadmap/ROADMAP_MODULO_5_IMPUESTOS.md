@@ -177,14 +177,14 @@ const periodoFiscal = {
 ## Tareas de la Fase 5.2
 
 ```text
-[ ] Crear js/config/periodos-fiscales.js
+[x] Crear js/config/periodos-fiscales.js
     → Clase PeriodosFiscales con métodos de gestión.
     → crearPeriodo(periodo): crea un nuevo período fiscal.
     → obtenerPeriodo(periodo): obtiene un período específico.
     → cerrarPeriodo(periodo): marca como CERRADO.
     → obtenerPeriodosAbiertos(): lista períodos pendientes.
 
-[ ] Implementar calcularFechaVencimiento(nit, periodo)
+[x] Implementar calcularFechaVencimiento(nit, periodo)
     → Extrae el último dígito del NIT.
     → Calcula el día de vencimiento (10 + dígito - 1).
     → Si dígito es 0 → día 19.
@@ -196,13 +196,13 @@ const periodoFiscal = {
       2026-09, NIT terminado en 1 → vence el 10/10/2026. 
       NIT terminado en 0 → vence el 19/10/2026."
 
-[ ] Implementar obtenerObligacionesPendientes()
+[x] Implementar obtenerObligacionesPendientes()
     → Recorre todos los períodos fiscales.
     → Devuelve los que tienen impuestos por declarar o pagar.
     → Ordenado por fecha de vencimiento ascendente.
     → Para el dashboard: "Próximos vencimientos".
 
-[ ] Implementar generarAlertasVencimiento(diasAntes)
+[x] Implementar generarAlertasVencimiento(diasAntes)
     → Genera alertas para vencimientos próximos.
     → Ejemplo: "Form. 200 de septiembre vence en 3 días".
     → Se muestra en el dashboard y en la vista de impuestos.
@@ -247,13 +247,13 @@ RESULTADO:
 ## Tareas de la Fase 5.3
 
 ```text
-[ ] Implementar calcularIVADebito(periodo)
+[x] Implementar calcularIVADebito(periodo)
     → Recorre todas las ventas del período.
     → Para cada venta: calcula el IVA débito (total - total/1.13).
     → Suma todos los IVA débito.
     → Devuelve { totalVentas, totalIVADebito, detalle[] }.
 
-[ ] Implementar calcularIVACredito(periodo)
+[x] Implementar calcularIVACredito(periodo)
     → Recorre todas las compras del período.
     → Para cada compra: calcula el IVA crédito (total - total/1.13).
     → Suma todos los IVA crédito.
@@ -261,7 +261,7 @@ RESULTADO:
     → ⚠️ No incluye facturas de proveedores con NIT inválido.
     → Devuelve { totalCompras, totalIVACredito, detalle[] }.
 
-[ ] Implementar conciliarIVA(periodo)
+[x] Implementar conciliarIVA(periodo)
     → Calcula IVA débito y crédito.
     → Si débito > crédito → IVA por pagar = débito - crédito.
     → Si crédito > débito → saldo a favor = crédito - débito.
@@ -274,7 +274,7 @@ RESULTADO:
       → hay saldo a favor que se arrastra al mes siguiente. 
       Devuelve objeto con el resultado y el desglose."
 
-[ ] Implementar generarFormulario200(periodo)
+[x] Implementar generarFormulario200(periodo)
     → Genera la estructura del Formulario 200 del SIN.
     → Incluye: ventas netas, IVA débito, compras netas, IVA crédito, 
       IVA por pagar o saldo a favor.
@@ -282,7 +282,7 @@ RESULTADO:
     → ⚠️ En el prototipo, solo se genera la estructura. 
       El envío real al SIN se haría en un sistema productivo.
 
-[ ] Implementar obtenerSaldoIVAFavor()
+[x] Implementar obtenerSaldoIVAFavor()
     → Devuelve el saldo a favor acumulado de meses anteriores.
     → Se usa para compensar en el mes actual.
     → Si hay saldo a favor → se resta del IVA por pagar.
@@ -320,7 +320,7 @@ IT = 3% × 16,950 = Bs 508.50
 ## Tareas de la Fase 5.4
 
 ```text
-[ ] Implementar calcularIT(periodo)
+[x] Implementar calcularIT(periodo)
     → Recorre todas las ventas del período.
     → Suma los ingresos brutos (montos totales, sin descontar IVA).
     → Calcula: IT = ingresos brutos × 3%.
@@ -332,17 +332,17 @@ IT = 3% × 16,950 = Bs 508.50
       del IT por pagar y el acumulado del año para compensar 
       contra el IUE."
 
-[ ] Implementar acumularITAnual(periodo, itPagado)
+[x] Implementar acumularITAnual(periodo, itPagado)
     → Suma el IT pagado en el período al acumulado anual.
     → Este acumulado se usará para compensar el IUE.
     → Guarda en el período fiscal: itPagadoAcumulado.
 
-[ ] Implementar generarFormulario400(periodo)
+[x] Implementar generarFormulario400(periodo)
     → Genera la estructura del Formulario 400 del SIN.
     → Incluye: ingresos brutos, IT por pagar.
     → Devuelve un objeto con los campos del formulario.
 
-[ ] Implementar obtenerITAcumuladoAnual(año)
+[x] Implementar obtenerITAcumuladoAnual(año)
     → Suma el IT pagado en todos los meses del año.
     → Este dato es clave para la compensación IT-IUE (Fase 5.6).
 ```
