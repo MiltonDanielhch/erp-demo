@@ -1048,6 +1048,283 @@ class ModuloImpuestos {
     };
   }
 
+    // ══════════════════════════════════════════════════════════
+  // COMPENSACIÓN IT vs IUE — Art. 77 Ley 843
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Compensa el IT pagado durante el año contra el IUE determinado.
+   *
+   * Art. 77 Ley 843:
+   *   - El IT pagado mes a mes (3% sobre ingresos brutos) se acumula.
+   *   - Al cierre del año, se descuenta del IUE determinado (25%).
+   *   - Si IT < IUE → se paga la diferencia.
+   *   - Si IT ≥ IUE → IUE = 0. El EXCESO SE PIERDE.
+   *     No se devuelve, no se arrastra, no se compensa con otros impuestos.
+   *
+   * @param {number} anio - Año de la gestión
+   * @param {Object} [opcionesIUE] - Opciones para calcularIUE (utilidadContable, ajustes)
+   * @returns {Object} Resultado completo de la compensación
+   */
+  compensarITcontraIUE(anio, opcionesIUE = {}) {
+    // 1. Obtener IUE determinado
+    const iue = this.calcularIUE(anio, opcionesIUE);
+    if (!iue.exito) {
+      return { exito: false, errores: iue.errores };
+    }
+
+    // 2. Obtener IT acumulado del año
+    const itAcumulado = this.obtenerITAcumuladoAnual(anio);
+
+    // 3. Obtener desglose mensual del IT
+    const desgloseMensualIT = this._obtenerDesgloseMensualIT(anio);
+
+    // 4. Aplicar compensación (Art. 77 Ley 843)
+    const iueDeterminado = iue.iueDeterminado;
+    let itCompensado = 0;
+    let iuePorPagar = 0;
+    let excesoIT = 0;
+    let caso = '';
+
+    if (iueDeterminado <= 0) {
+      // Sin IUE (pérdida) → todo el IT se pierde
+      itCompensado = 0;
+      iuePorPagar = 0;
+      excesoIT = itAcumulado;
+      caso = 'PERDIDA';
+    } else if (itAcumulado < iueDeterminado) {
+      // Caso 1: IT < IUE → paga la diferencia
+      itCompensado = itAcumulado;
+      iuePorPagar = this._r2(iueDeterminado - itAcumulado);
+      excesoIT = 0;
+      caso = 'IT_MENOR';
+    } else if (Math.abs(itAcumulado - iueDeterminado) < 0.01) {
+      // Caso 2: IT = IUE → no paga nada
+      itCompensado = iueDeterminado;
+      iuePorPagar = 0;
+      excesoIT = 0;
+      caso = 'IT_IGUAL';
+    } else {
+      // Caso 3: IT > IUE → IUE = 0, exceso se pierde
+      itCompensado = iueDeterminado;
+      iuePorPagar = 0;
+      excesoIT = this._r2(itAcumulado - iueDeterminado);
+      caso = 'IT_MAYOR';
+    }
+
+    // 5. Generar advertencias
+    const advertencias = [];
+
+    if (caso === 'IT_MAYOR') {
+      advertencias.push(
+        `⚠️ EXCESO DE IT: El IT pagado (${this._fmt(itAcumulado)}) supera el IUE ` +
+        `(${this._fmt(iueDeterminado)}) en ${this._fmt(excesoIT)}. ` +
+        `Este exceso NO se devuelve ni se arrastra. SE PIERDE. (Art. 77 Ley 843)`
+      );
+    }
+
+    if (caso === 'PERDIDA' && itAcumulado > 0) {
+      advertencias.push(
+        `⚠️ PÉRDIDA FISCAL: La empresa tiene pérdida en la gestión ${anio}. ` +
+        `Todo el IT pagado (${this._fmt(itAcumulado)}) se pierde porque no hay IUE contra el cual compensar.`
+      );
+    }
+
+    if (caso === 'IT_IGUAL') {
+      advertencias.push(
+        `✅ COMPENSACIÓN PERFECTA: El IT pagado (${this._fmt(itAcumulado)}) cubre ` +
+        `exactamente el IUE determinado (${this._fmt(iueDeterminado)}). No hay pago adicional.`
+      );
+    }
+
+    if (caso === 'IT_MENOR') {
+      advertencias.push(
+        `📋 COMPENSACIÓN PARCIAL: El IT pagado (${this._fmt(itAcumulado)}) se descuenta del IUE ` +
+        `(${this._fmt(iueDeterminado)}). Queda por pagar: ${this._fmt(iuePorPagar)}.`
+      );
+    }
+
+    // 6. Resultado
+    const resultado = {
+      exito: true,
+      anio,
+      fechaCalculo: new Date().toISOString(),
+      caso,
+
+      // Datos del IUE
+      utilidadContable: iue.utilidadContable,
+      utilidadImponible: iue.utilidadImponible,
+      iueDeterminado,
+
+      // Datos del IT
+      itAcumulado,
+      desgloseMensualIT,
+
+      // Resultado de la compensación
+      itCompensado,
+      iuePorPagar,
+      excesoIT,
+
+      // Fecha límite de presentación
+      fechaLimite: iue.fechaLimite,
+
+      // Advertencias y recomendaciones
+      advertencias,
+
+      // Resumen ejecutivo
+      resumen: this._generarResumenCompensacion(caso, {
+        itAcumulado, iueDeterminado, itCompensado, iuePorPagar, excesoIT
+      })
+    };
+
+    console.log(`🏛️ Compensación IT-IUE ${anio}: ${caso} → IUE a pagar: ${this._fmt(iuePorPagar)}${excesoIT > 0 ? ` | Exceso IT perdido: ${this._fmt(excesoIT)}` : ''}`);
+
+    return resultado;
+  }
+
+  /**
+   * Genera una advertencia de planificación tributaria.
+   *
+   * Se usa DURANTE el año para alertar al contador cuando
+   * el IT acumulado está cerca de superar el IUE estimado.
+   *
+   * @param {number} anio
+   * @param {number} iueEstimado - IUE estimado para el año
+   * @returns {Object}
+   */
+  generarAdvertenciaPlanificacion(anio, iueEstimado) {
+    const itAcumulado = this.obtenerITAcumuladoAnual(anio);
+    const diferencia = this._r2(iueEstimado - itAcumulado);
+    const porcentajeIT = iueEstimado > 0
+      ? this._r2((itAcumulado / iueEstimado) * 100)
+      : 0;
+
+    // Determinar el mes actual
+    const hoy = new Date();
+    const mesActual = hoy.getMonth() + 1;  // 1-12
+    const mesesRestantes = 12 - mesActual;
+
+    // Proyección: IT mensual promedio × meses restantes
+    const itMensualPromedio = mesActual > 0 ? this._r2(itAcumulado / mesActual) : 0;
+    const itProyectadoAnual = this._r2(itAcumulado + (itMensualPromedio * mesesRestantes));
+
+    let nivel, mensaje, recomendacion;
+
+    if (itAcumulado >= iueEstimado) {
+      nivel = 'CRITICO';
+      mensaje = `🚨 El IT acumulado (${this._fmt(itAcumulado)}) YA SUPERA el IUE estimado (${this._fmt(iueEstimado)}).`;
+      recomendacion = `Cada boliviano adicional de IT que se pague SE PIERDE. Revisar estrategia de facturación para el resto del año.`;
+    } else if (porcentajeIT >= 80) {
+      nivel = 'ALTO';
+      mensaje = `⚠️ El IT acumulado (${this._fmt(itAcumulado)}) alcanza el ${porcentajeIT}% del IUE estimado (${this._fmt(iueEstimado)}).`;
+      recomendacion = `Queda margen de ${this._fmt(diferencia)} antes de que el IT supere el IUE. Monitorear de cerca.`;
+    } else if (itProyectadoAnual > iueEstimado) {
+      nivel = 'MEDIO';
+      mensaje = `⚡ Proyección anual: el IT podría alcanzar ${this._fmt(itProyectadoAnual)} al cierre, superando el IUE estimado.`;
+      recomendacion = `IT promedio mensual: ${this._fmt(itMensualPromedio)}. Si el ritmo continúa, habrá exceso de ${this._fmt(this._r2(itProyectadoAnual - iueEstimado))}.`;
+    } else {
+      nivel = 'BAJO';
+      mensaje = `✅ IT acumulado (${this._fmt(itAcumulado)}) está al ${porcentajeIT}% del IUE estimado.`;
+      recomendacion = `Margen holgado de ${this._fmt(diferencia)}. Situación tributaria saludable.`;
+    }
+
+    return {
+      anio,
+      nivel,
+      mensaje,
+      recomendacion,
+      datos: {
+        itAcumulado,
+        iueEstimado,
+        diferencia,
+        porcentajeIT,
+        itMensualPromedio,
+        itProyectadoAnual,
+        mesesRestantes
+      }
+    };
+  }
+
+  /**
+   * Genera el resumen ejecutivo de la compensación para el contador.
+   * @private
+   */
+  _generarResumenCompensacion(caso, datos) {
+    const { itAcumulado, iueDeterminado, itCompensado, iuePorPagar, excesoIT } = datos;
+
+    const lineas = [
+      `══════════════════════════════════════════`,
+      `COMPENSACIÓN IT vs IUE — Art. 77 Ley 843`,
+      `══════════════════════════════════════════`,
+      ``,
+      `IUE Determinado (25%):      ${this._fmt(iueDeterminado).padStart(15)}`,
+      `(-) IT Pagado en el año:    ${this._fmt(itAcumulado).padStart(15)}`,
+      `──────────────────────────────────────────`,
+    ];
+
+    switch (caso) {
+      case 'IT_MENOR':
+        lineas.push(
+          `IUE POR PAGAR:              ${this._fmt(iuePorPagar).padStart(15)}`,
+          ``,
+          `✅ Se compensó ${this._fmt(itCompensado)} de IT contra el IUE.`,
+          `📋 Queda por pagar: ${this._fmt(iuePorPagar)}.`
+        );
+        break;
+      case 'IT_IGUAL':
+        lineas.push(
+          `IUE POR PAGAR:              ${this._fmt(0).padStart(15)}`,
+          ``,
+          `✅ Compensación perfecta. No hay monto adicional a pagar.`
+        );
+        break;
+      case 'IT_MAYOR':
+        lineas.push(
+          `IUE POR PAGAR:              ${this._fmt(0).padStart(15)}`,
+          `EXCESO DE IT:               ${this._fmt(excesoIT).padStart(15)} → SE PIERDE`,
+          ``,
+          `⚠️ El exceso de ${this._fmt(excesoIT)} NO se devuelve.`,
+          `⚠️ NO se arrastra al siguiente año.`,
+          `⚠️ NO se compensa con otros impuestos.`,
+          `📋 Planificar mejor el IT para la próxima gestión.`
+        );
+        break;
+      case 'PERDIDA':
+        lineas.push(
+          `IUE POR PAGAR:              ${this._fmt(0).padStart(15)}`,
+          `IT PERDIDO:                 ${this._fmt(itAcumulado).padStart(15)} → SE PIERDE`,
+          ``,
+          `⚠️ Empresa en pérdida. No hay IUE contra el cual compensar.`,
+          `⚠️ Todo el IT pagado durante el año se pierde.`
+        );
+        break;
+    }
+
+    return lineas.join('\n');
+  }
+
+  /**
+   * Obtiene el desglose mensual del IT pagado en el año.
+   * @private
+   */
+  _obtenerDesgloseMensualIT(anio) {
+    const desglose = [];
+    const periodos = this.periodosFiscales ? this.periodosFiscales.obtenerTodos() : [];
+
+    for (let mes = 1; mes <= 12; mes++) {
+      const periodoStr = `${anio}-${String(mes).padStart(2, '0')}`;
+      const periodo = periodos.find(p => p.periodo === periodoStr);
+
+      desglose.push({
+        mes,
+        periodo: periodoStr,
+        itPagado: periodo ? (periodo.it.itPorPagar || 0) : 0
+      });
+    }
+
+    return desglose;
+  }
+
   // ══════════════════════════════════════════════════════════
   // UTILIDADES PRIVADAS
   // ══════════════════════════════════════════════════════════

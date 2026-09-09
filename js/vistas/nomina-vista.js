@@ -70,22 +70,42 @@ window.NominaVista = {
   configurarEventListeners() {
     // Tabs
     this.elementos.tabs.forEach(tab => {
-      tab.addEventListener('click', (e) => this.cambiarTab(e.target.dataset.tab));
+      if (tab) tab.addEventListener('click', (e) => this.cambiarTab(e.target.dataset.tab));
     });
 
     // Tab Planilla
-    this.elementos.btnCalcular.addEventListener('click', () => this.calcularPlanilla());
-    this.elementos.btnGenerarAsientos.addEventListener('click', () => this.generarAsientosDesdePlanilla());
+    if (this.elementos.btnCalcular) {
+      this.elementos.btnCalcular.addEventListener('click', () => this.calcularPlanilla());
+    }
+    if (this.elementos.btnGenerarAsientos) {
+      this.elementos.btnGenerarAsientos.addEventListener('click', () => this.generarAsientosDesdePlanilla());
+    }
 
     // Tab Provisiones
-    this.elementos.toggleSegundo.addEventListener('change', () => this.toggleSegundoAguinaldo());
+    if (this.elementos.toggleSegundo) {
+      this.elementos.toggleSegundo.addEventListener('change', () => this.toggleSegundoAguinaldo());
+    }
 
     // Tab Liquidaciones
-    this.elementos.btnLiqCalcular.addEventListener('click', () => this.calcularLiquidacion());
-    this.elementos.btnLiqRegistrar.addEventListener('click', () => this.registrarRetiro());
+    if (this.elementos.btnLiqCalcular) {
+      this.elementos.btnLiqCalcular.addEventListener('click', () => this.calcularLiquidacion());
+    }
+    if (this.elementos.btnLiqRegistrar) {
+      this.elementos.btnLiqRegistrar.addEventListener('click', () => this.registrarRetiro());
+    }
 
     // Tab Asientos
-    this.elementos.btnAsientosGenerar.addEventListener('click', () => this.generarAsientosConsolidados());
+    if (this.elementos.btnAsientosGenerar) {
+      this.elementos.btnAsientosGenerar.addEventListener('click', () => this.generarAsientosConsolidados());
+    }
+
+    // Log de advertencia si falta algún elemento crítico
+    const faltantes = Object.entries(this.elementos)
+      .filter(([k, v]) => v === null && k !== 'tabs' && k !== 'tabContents')
+      .map(([k]) => k);
+    if (faltantes.length > 0) {
+      console.warn(`⚠️ Elementos faltantes en NominaVista: ${faltantes.join(', ')}`);
+    }
   },
 
   // ══════════════════════════════════════════════════════════
@@ -338,7 +358,7 @@ window.NominaVista = {
         </div>
         <div style="font-size: 0.9rem; color: var(--texto-secundario);">${this._escapeHTML(a.concepto)}</div>
         <div style="font-size: 0.9rem; margin-top: 4px;">
-          Debe: <strong>${window.utilidades.formatearBs(a.totalDebe)}</strong> | 
+          Debe: <strong>${window.utilidades.formatearBs(a.totalDebe)}</strong> |
           Haber: <strong>${window.utilidades.formatearBs(a.totalHaber)}</strong>
         </div>
       </div>

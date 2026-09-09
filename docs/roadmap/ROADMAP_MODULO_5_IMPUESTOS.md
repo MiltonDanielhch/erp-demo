@@ -478,7 +478,7 @@ COMPENSACIÓN:
 ## Tareas de la Fase 5.6
 
 ```text
-[ ] Implementar compensarITcontraIUE(año)
+[x] Implementar compensarITcontraIUE(año)
     → Obtiene el IT acumulado del año (de la Fase 5.4).
     → Obtiene el IUE determinado (de la Fase 5.5).
     → Si IT < IUE → IUE por pagar = IUE - IT.
@@ -492,14 +492,14 @@ COMPENSACIÓN:
       es 0 y el exceso se pierde (no se devuelve). Devuelve 
       desglose completo con advertencias."
 
-[ ] Implementar generarAdvertenciaPlanificacion(año)
+[x] Implementar generarAdvertenciaPlanificacion(año)
     → Si el IT acumulado está cerca de superar el IUE estimado,
       genera una advertencia.
     → Ejemplo: "IT acumulado: Bs 4,200. IUE estimado: Bs 4,500. 
       Si el IT supera el IUE, el exceso se pierde."
     → Para ayudar al contador a planificar.
 
-[ ] Crear docs/aprendizaje/20-compensacion-it-iue-ejemplos.md
+[x] Crear docs/aprendizaje/20-compensacion-it-iue-ejemplos.md
     → 3 ejemplos numéricos completos:
       1. IT < IUE (paga diferencia).
       2. IT = IUE (no paga nada).
