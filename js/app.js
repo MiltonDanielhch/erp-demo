@@ -188,6 +188,15 @@ function iniciarERP() {
   });
   console.log('🎖️ Módulo de Bono de Antigüedad inicializado.');
 
+  // ── NUEVO Fase 4.6: Instanciar Módulo de Liquidaciones ───────
+  const moduloLiquidaciones = new ModuloLiquidaciones({
+    almacenamiento: almacenamiento,
+    catalogoEmpleados: catalogoEmpleados,
+    moduloNomina: moduloNomina,
+    motorContable: motorContable
+  });
+  console.log('⚖️ Módulo de Liquidaciones inicializado.');
+
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -251,6 +260,7 @@ function iniciarERP() {
   window.moduloNomina = moduloNomina;
   window.moduloProvisiones = moduloProvisiones;
   window.moduloBonoAntiguedad = moduloBonoAntiguedad;
+  window.moduloLiquidaciones = moduloLiquidaciones;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -263,6 +273,7 @@ function iniciarERP() {
   window.ERP.moduloNomina = moduloNomina;
   window.ERP.moduloProvisiones = moduloProvisiones;
   window.ERP.moduloBonoAntiguedad = moduloBonoAntiguedad;
+  window.ERP.moduloLiquidaciones = moduloLiquidaciones;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -391,6 +402,12 @@ function iniciarERP() {
   console.log('   window.moduloBonoAntiguedad.actualizarSMN(2750, "DS 5012")');
   console.log('   window.moduloBonoAntiguedad.obtenerHistorialSMN()');
   console.log('   window.moduloBonoAntiguedad.obtenerProvisionAcumulada()');
+  console.log('   📌 LIQUIDACIONES (Módulo 4 — Indemnización):');
+  console.log('   window.moduloLiquidaciones.calcularIndemnizacion(empleado)');
+  console.log('   window.moduloLiquidaciones.calcularDesahucio(empleado, false)');
+  console.log('   window.moduloLiquidaciones.calcularLiquidacion(empleado, "RENUNCIA")');
+  console.log('   window.moduloLiquidaciones.registrarRetiro(empleadoId, "DESPIDO", {tienePreaviso: false})');
+  console.log('   window.moduloLiquidaciones.generarAsientoProvisionMensual("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────
