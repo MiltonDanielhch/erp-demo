@@ -35,6 +35,7 @@ const RUTAS_ERP = {
   'compras': 'vistas/compras.html',
   'ventas': 'vistas/ventas.html',
   'inventario': 'vistas/inventario.html',
+  'empleados': 'vistas/empleados.html',       // ← NUEVO Fase 4.2
   'nomina': 'vistas/nomina.html',
   'impuestos': 'vistas/impuestos.html',
 
@@ -156,6 +157,12 @@ function iniciarERP() {
   const catalogoProductos = new CatalogoProductos();
   console.log('👥 Catálogos maestros inicializados (Clientes, Proveedores, Productos).');
 
+  // ── NUEVO Fase 4.2: Instanciar Catálogo de Empleados ─────────
+  const catalogoEmpleados = new CatalogoEmpleados({
+    almacenamiento: almacenamiento
+  });
+  console.log('👷 Catálogo de Empleados inicializado (RRHH).');
+
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -215,6 +222,7 @@ function iniciarERP() {
   window.CatalogoClientes = catalogoClientes;
   window.CatalogoProveedores = catalogoProveedores;
   window.CatalogoProductos = catalogoProductos;
+  window.catalogoEmpleados = catalogoEmpleados;        // ← NUEVO Fase 4.2
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -223,6 +231,7 @@ function iniciarERP() {
   window.ERP.catalogoClientes = catalogoClientes;
   window.ERP.catalogoProveedores = catalogoProveedores;
   window.ERP.catalogoProductos = catalogoProductos;
+  window.ERP.catalogoEmpleados = catalogoEmpleados;    // ← NUEVO Fase 4.2
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -308,30 +317,28 @@ function iniciarERP() {
   console.log('   📌 MOTOR CONTABLE (Capa 3):');
   console.log('   window.motorContable.procesarAsientosPendientes()');
   console.log('   window.motorContable.obtenerLibroMayor()');
-  console.log('   window.motorContable.calcularBalanzaComprobacion()');
-  console.log('   window.motorContable.crearAsientoManual({...})');
-  console.log('   window.motorContable.anularAsiento(id, motivo)');
-  console.log('   📌 MOTOR CONTABLE:');
-  console.log('   window.motorContable.procesarAsientosPendientes()');
-  console.log('   window.motorContable.obtenerLibroMayor()');
-  console.log('   window.motorContable.calcularBalanzaComprobacion()');
+  console.log('   window.motorContable.calcularBalanza("2026-09")');
   console.log('   window.motorContable.crearAsientoManual({...})');
   console.log('   window.motorContable.anularAsiento(id, motivo)');
   console.log('   window.motorContable.obtenerDiario({tipo, cuentaCodigo})');
   console.log('   window.motorContable.obtenerDiarioPorPeriodo("2026-09")');
   console.log('   window.motorContable.obtenerDiarioPorDocumento(docId)');
-
   console.log('   window.motorContable.obtenerMayorPorCuenta("1.1.06")');
   console.log('   window.motorContable.obtenerMovimientosDeCuenta("1.1.06", "2026-09")');
   console.log('   window.motorContable.obtenerSaldosDeCuentas("2026-09")');
   console.log('   window.motorContable.calcularSaldoInicial("1.1.06", "2026-09")');
-
-  console.log('   window.motorContable.calcularBalanza("2026-09")');
   console.log('   window.motorContable.verificarCuadratura(totales)');
   console.log('   window.motorContable.detectarErroresComunes("2026-09")');
-
   console.log('   window.motorContable.cerrarEjercicio("2026-09")');
   console.log('   window.motorContable.simularCierreEjercicio("2026-09")');
+  console.log('');
+  console.log('   📌 EMPLEADOS (RRHH — Módulo 4):');
+  console.log('   window.catalogoEmpleados.obtenerActivos()');
+  console.log('   window.catalogoEmpleados.crear({ci, nombres, apellidos, salarioBase, fechaIngreso})');
+  console.log('   window.catalogoEmpleados.retirar(id, "RENUNCIA")');
+  console.log('   window.catalogoEmpleados.contar()');
+  console.log('   window.TablaBonoAntiguedad.calcularBono(6)');
+  console.log('   window.TablaBonoAntiguedad.obtenerTablaConMontos()');
 }
 
 // ──────────────────────────────────────────────────────────────

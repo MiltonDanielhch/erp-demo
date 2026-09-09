@@ -1,0 +1,214 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Catálogo de Empleados (RRHH)
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">👥 Catálogo de Empleados</h2>
+<p class="contenido-subtitulo">
+  Gestión del personal activo y retirado — Ley General del Trabajo
+</p>
+
+<!-- ═══════════ Resumen ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Activos</div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-exito);" id="emp-count-activos">0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Retirados</div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--texto-secundario);" id="emp-count-retirados">0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total</div>
+      <div style="font-size: 1.5rem; font-weight: bold;" id="emp-count-total">0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">SMN vigente</div>
+      <div style="font-size: 1.2rem; font-weight: bold;" id="emp-smn">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Base bono (3 SMN)</div>
+      <div style="font-size: 1.2rem; font-weight: bold;" id="emp-base-bono">Bs 0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Controles ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <div class="form-group" style="margin: 0; flex: 2; min-width: 200px;">
+      <label class="form-label">🔍 Buscar</label>
+      <input type="text" id="emp-buscar" class="form-input"
+             placeholder="Nombre, CI o cargo...">
+    </div>
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+      <label class="form-label">Estado</label>
+      <select id="emp-filtro-estado" class="form-select">
+        <option value="ACTIVO">Activos</option>
+        <option value="RETIRADO">Retirados</option>
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <button id="emp-btn-nuevo" class="btn btn-primary">➕ Nuevo Empleado</button>
+  </div>
+</div>
+
+<!-- ═══════════ Tabla ═══════════ -->
+<div class="card">
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>CI</th>
+          <th>Nombre Completo</th>
+          <th>Cargo</th>
+          <th class="texto-derecha">Salario</th>
+          <th>Antigüedad</th>
+          <th class="texto-derecha">Bono</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="emp-tabla-body">
+        <tr><td colspan="8" style="text-align:center; padding:24px;">Sin empleados</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ Modal Nuevo/Editar Empleado ═══════════ -->
+<div id="modal-empleado" class="oculto"
+     style="position: fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+  <div style="background: var(--color-fondo,#fff); border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.3); width:92%; max-width:720px; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid var(--color-borde,#ddd);">
+      <h3 style="margin:0;" id="modal-empleado-titulo">➕ Nuevo Empleado</h3>
+      <button id="modal-empleado-cerrar" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+    <form id="form-empleado" style="padding: 16px;">
+      <input type="hidden" id="emp-id">
+
+      <h4 style="margin: 0 0 8px;">📋 Datos personales</h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Cédula de Identidad <span class="requerido">*</span></label>
+          <input type="text" id="emp-ci" class="form-input" required placeholder="12345678">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">NIT (para RC-IVA)</label>
+          <input type="text" id="emp-nit" class="form-input" placeholder="123456789-1">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Nombres <span class="requerido">*</span></label>
+          <input type="text" id="emp-nombres" class="form-input" required>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Apellidos <span class="requerido">*</span></label>
+          <input type="text" id="emp-apellidos" class="form-input" required>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Fecha de Nacimiento</label>
+          <input type="date" id="emp-fechaNacimiento" class="form-input">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Género</label>
+          <select id="emp-genero" class="form-select">
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMENINO">Femenino</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Estado Civil</label>
+          <select id="emp-estadoCivil" class="form-select">
+            <option value="SOLTERO">Soltero/a</option>
+            <option value="CASADO">Casado/a</option>
+            <option value="DIVORCIADO">Divorciado/a</option>
+            <option value="VIUDO">Viudo/a</option>
+          </select>
+        </div>
+      </div>
+
+      <h4 style="margin: 0 0 8px;">💼 Datos laborales</h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Fecha de Ingreso <span class="requerido">*</span></label>
+          <input type="date" id="emp-fechaIngreso" class="form-input" required>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Cargo</label>
+          <input type="text" id="emp-cargo" class="form-input" placeholder="Vendedor Senior">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Departamento</label>
+          <input type="text" id="emp-departamento" class="form-input" placeholder="VENTAS">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Tipo de Contrato</label>
+          <select id="emp-tipoContrato" class="form-select">
+            <option value="INDEFINIDO">Indefinido</option>
+            <option value="PLAZO_FIJO">Plazo Fijo</option>
+            <option value="CONSULTORIA">Consultoría</option>
+            <option value="EVENTUAL">Eventual</option>
+            <option value="APRENDIZAJE">Aprendizaje</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Salario Base (Bs) <span class="requerido">*</span></label>
+          <input type="number" id="emp-salarioBase" class="form-input" step="0.01" min="0" required placeholder="5000">
+        </div>
+      </div>
+
+      <!-- Previsualización de bono (dinámico) -->
+      <div id="emp-preview-bono" style="padding: 10px; background: var(--color-fondo-claro); border-radius: 6px; margin-bottom: 16px; font-size: 0.9rem;">
+        <strong>🎖️ Bono de antigüedad:</strong> <span id="emp-preview-texto">—</span>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button type="button" class="btn btn-ghost" id="modal-empleado-cancelar">Cancelar</button>
+        <button type="submit" class="btn btn-primary">💾 Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ Modal de Retiro ═══════════ -->
+<div id="modal-retiro" class="oculto"
+     style="position: fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+  <div style="background: var(--color-fondo,#fff); border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.3); width:90%; max-width:480px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid var(--color-borde,#ddd);">
+      <h3 style="margin:0;">🚪 Registrar Retiro</h3>
+      <button id="modal-retiro-cerrar" style="background:none; border:none; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+    <div style="padding: 16px;">
+      <p style="margin-bottom: 12px;">Se marcará al empleado como <strong>RETIRADO</strong>. Esto habilitará el cálculo de liquidación en la Fase 4.6.</p>
+      <p style="padding: 10px; background: var(--color-fondo-claro); border-radius: 6px;">
+        <strong id="retiro-empleado-nombre">—</strong><br>
+        <small id="retiro-empleado-datos">—</small>
+      </p>
+      <input type="hidden" id="retiro-empleado-id">
+      <div class="form-group">
+        <label class="form-label">Motivo de retiro <span class="requerido">*</span></label>
+        <select id="retiro-motivo" class="form-select">
+          <option value="RENUNCIA">Renuncia voluntaria (DS 28699)</option>
+          <option value="DESPIDO">Despido sin preaviso</option>
+          <option value="DESPIDO_JUSTA_CAUSA">Despido con justa causa</option>
+          <option value="MUTUO_ACUERDO">Mutuo acuerdo</option>
+          <option value="JUBILACION">Jubilación</option>
+          <option value="FALLECIMIENTO">Fallecimiento</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha de retiro</label>
+        <input type="date" id="retiro-fecha" class="form-input">
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn btn-ghost" id="modal-retiro-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="modal-retiro-confirmar">🚪 Confirmar Retiro</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<script src="js/vistas/empleados-vista.js"></script>
