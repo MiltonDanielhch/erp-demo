@@ -205,6 +205,18 @@ function iniciarERP() {
   });
   console.log('🧾 Módulo de RC-IVA inicializado.');
 
+  // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
+  const moduloAsientosNomina = new ModuloAsientosNomina({
+    almacenamiento: almacenamiento,
+    moduloNomina: moduloNomina,
+    moduloProvisiones: moduloProvisiones,
+    moduloBonoAntiguedad: moduloBonoAntiguedad,
+    moduloLiquidaciones: moduloLiquidaciones,
+    catalogoEmpleados: catalogoEmpleados,
+    motorContable: motorContable
+  });
+  console.log('📒 Módulo de Asientos de Nómina inicializado.');
+
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -271,6 +283,7 @@ function iniciarERP() {
   window.moduloLiquidaciones = moduloLiquidaciones;
   window.moduloLiquidaciones = moduloLiquidaciones;
   window.moduloRCIVA = moduloRCIVA;
+  window.moduloAsientosNomina = moduloAsientosNomina; 
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -285,6 +298,7 @@ function iniciarERP() {
   window.ERP.moduloBonoAntiguedad = moduloBonoAntiguedad;
   window.ERP.moduloLiquidaciones = moduloLiquidaciones;
   window.ERP.moduloRCIVA = moduloRCIVA;
+  window.ERP.moduloAsientosNomina = moduloAsientosNomina; 
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -424,6 +438,10 @@ function iniciarERP() {
   console.log('   window.moduloRCIVA.obtenerFacturasPorEmpleado(empleadoId, "2026-09")');
   console.log('   window.moduloRCIVA.calcularRCIVAPagar(empleadoId, totalDevengado, "2026-09")');
   console.log('   window.moduloRCIVA.obtenerResumenPeriodo("2026-09")');
+  console.log('   📌 ASIENTOS DE NÓMINA (Módulo 4):');
+  console.log('   window.moduloAsientosNomina.generarAsientosMensuales("2026-09")');
+  console.log('   window.moduloAsientosNomina.generarAsientoPagoNomina("2026-09")');
+  console.log('   window.moduloAsientosNomina.generarAsientoPagoAportesPatronales("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────
