@@ -1,0 +1,136 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: RC-IVA con facturas de gastos personales
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">🧾 RC-IVA con facturas</h2>
+<p class="contenido-subtitulo">
+  Compensación del 13% con facturas de gastos personales (Ley 843)
+</p>
+
+<!-- ═══════════ Selector de período ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+    <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+      <label class="form-label">Período</label>
+      <input type="month" id="rciva-periodo" class="form-input">
+    </div>
+    <button id="rciva-btn-ver-resumen" class="btn btn-primary">📊 Ver resumen</button>
+  </div>
+</div>
+
+<!-- ═══════════ Resumen del período ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">RC-IVA teórico</div>
+      <div style="font-size: 1.3rem; font-weight: bold;" id="rciva-total-teorico">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">IVA de facturas</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-exito);" id="rciva-total-facturas">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">Compensado</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-exito);" id="rciva-total-compensado">Bs 0</div>
+    </div>
+    <div>
+      <div style="color: var(--texto-secundario); font-size: 0.85rem;">A pagar</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-error);" id="rciva-total-pagar">Bs 0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tabla de empleados ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <h3 style="margin-bottom: 12px;">📋 RC-IVA por empleado</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>CI</th>
+          <th>Empleado</th>
+          <th class="texto-derecha">Devengado</th>
+          <th class="texto-derecha">RC-IVA teórico</th>
+          <th class="texto-derecha"># Facturas</th>
+          <th class="texto-derecha">IVA facturas</th>
+          <th class="texto-derecha">A pagar</th>
+          <th>% Compensado</th>
+        </tr>
+      </thead>
+      <tbody id="rciva-tabla-body">
+        <tr><td colspan="8" style="text-align:center; padding:24px;">Seleccione un período</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ Formulario de nueva factura ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <h3 style="margin-bottom: 12px;">➕ Registrar nueva factura</h3>
+  <form id="form-factura">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Empleado <span class="requerido">*</span></label>
+        <select id="factura-empleado" class="form-select" required></select>
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Número de factura <span class="requerido">*</span></label>
+        <input type="text" id="factura-numero" class="form-input" required placeholder="123456">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">NIT del emisor <span class="requerido">*</span></label>
+        <input type="text" id="factura-nit" class="form-input" required placeholder="123456789-1">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">CUF <span class="requerido">*</span></label>
+        <input type="text" id="factura-cuf" class="form-input" required placeholder="Código Único de Factura">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Monto (Bs) <span class="requerido">*</span></label>
+        <input type="number" id="factura-monto" class="form-input" step="0.01" min="0" required placeholder="2000">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Fecha <span class="requerido">*</span></label>
+        <input type="date" id="factura-fecha" class="form-input" required>
+      </div>
+      <div class="form-group" style="margin: 0; grid-column: span 2;">
+        <label class="form-label">Descripción</label>
+        <input type="text" id="factura-descripcion" class="form-input" placeholder="Alquiler, supermercado, farmacia...">
+      </div>
+    </div>
+    <div id="factura-preview-iva" style="padding: 10px; background: var(--color-fondo-claro); border-radius: 6px; font-size: 0.9rem; margin-bottom: 12px;">
+      <strong>IVA de la factura:</strong> <span id="factura-iva-calculado">Bs 0</span>
+    </div>
+    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+      <button type="submit" class="btn btn-primary">💾 Registrar factura</button>
+    </div>
+  </form>
+</div>
+
+<!-- ═══════════ Facturas del empleado seleccionado ═══════════ -->
+<div class="card">
+  <h3 style="margin-bottom: 12px;">📄 Facturas registradas</h3>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Número</th>
+          <th>NIT</th>
+          <th class="texto-derecha">Monto</th>
+          <th class="texto-derecha">IVA</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="rciva-facturas-body">
+        <tr><td colspan="7" style="text-align:center; padding:24px;">Sin facturas</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<script src="js/vistas/rc-iva-vista.js"></script>

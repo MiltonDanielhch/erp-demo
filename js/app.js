@@ -37,6 +37,7 @@ const RUTAS_ERP = {
   'inventario': 'vistas/inventario.html',
   'empleados': 'vistas/empleados.html',       // ← NUEVO Fase 4.2
   'bono-antiguedad': 'vistas/bono-antiguedad.html',
+  'rc-iva': 'vistas/rc-iva.html',
   'nomina': 'vistas/nomina.html',
   'impuestos': 'vistas/impuestos.html',
 
@@ -197,6 +198,13 @@ function iniciarERP() {
   });
   console.log('⚖️ Módulo de Liquidaciones inicializado.');
 
+  // ── NUEVO Fase 4.7: Instanciar Módulo de RC-IVA ──────────────
+  const moduloRCIVA = new ModuloRCIVA({
+    almacenamiento: almacenamiento,
+    catalogoEmpleados: catalogoEmpleados
+  });
+  console.log('🧾 Módulo de RC-IVA inicializado.');
+
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -261,6 +269,8 @@ function iniciarERP() {
   window.moduloProvisiones = moduloProvisiones;
   window.moduloBonoAntiguedad = moduloBonoAntiguedad;
   window.moduloLiquidaciones = moduloLiquidaciones;
+  window.moduloLiquidaciones = moduloLiquidaciones;
+  window.moduloRCIVA = moduloRCIVA;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -274,6 +284,7 @@ function iniciarERP() {
   window.ERP.moduloProvisiones = moduloProvisiones;
   window.ERP.moduloBonoAntiguedad = moduloBonoAntiguedad;
   window.ERP.moduloLiquidaciones = moduloLiquidaciones;
+  window.ERP.moduloRCIVA = moduloRCIVA;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -408,6 +419,11 @@ function iniciarERP() {
   console.log('   window.moduloLiquidaciones.calcularLiquidacion(empleado, "RENUNCIA")');
   console.log('   window.moduloLiquidaciones.registrarRetiro(empleadoId, "DESPIDO", {tienePreaviso: false})');
   console.log('   window.moduloLiquidaciones.generarAsientoProvisionMensual("2026-09")');
+  console.log('   📌 RC-IVA (Módulo 4 — Facturas):');
+  console.log('   window.moduloRCIVA.registrarFactura({empleadoId, numeroFactura, nitEmisor, cuf, monto, fecha})');
+  console.log('   window.moduloRCIVA.obtenerFacturasPorEmpleado(empleadoId, "2026-09")');
+  console.log('   window.moduloRCIVA.calcularRCIVAPagar(empleadoId, totalDevengado, "2026-09")');
+  console.log('   window.moduloRCIVA.obtenerResumenPeriodo("2026-09")');
 }
 
 // ──────────────────────────────────────────────────────────────

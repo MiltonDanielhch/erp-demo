@@ -444,21 +444,21 @@ PASO 4: Calcular el bono
 ## Tareas de la Fase 4.5
 
 ```text
-[ ] Implementar calcularBonoAntiguedad(empleado)
+[x] Implementar calcularBonoAntiguedad(empleado)
     → Obtiene la antigüedad del empleado.
     → Busca el porcentaje en la tabla (Fase 4.2).
     → Calcula: porcentaje × (3 × SMN vigente).
     → Si antigüedad < 2 años → bono = 0.
     → Devuelve { porcentaje, base, montoBono }.
 
-[ ] Implementar provisionBonoAntiguedadMensual(empleado)
+[x] Implementar provisionBonoAntiguedadMensual(empleado)
     → El bono se paga mensualmente con el salario.
     → Pero la empresa debe provisionar su costo.
     → Genera el asiento de provisión:
       Gasto de Bono de Antigüedad / Bono por Pagar.
     → Este asiento ya se genera en Módulo 3, aquí se calcula el monto.
 
-[ ] Implementar actualizarSMN(nuevoSMN)
+[x] Implementar actualizarSMN(nuevoSMN)
     → Función para actualizar el Salario Mínimo Nacional.
     → Cuando el Gobierno cambia el SMN (generalmente en mayo),
       todos los bonos de antigüedad se recalculan.
@@ -470,7 +470,7 @@ PASO 4: Calcular el bono
       (porque la base es 3 × SMN). Incluye validación de que 
       el nuevo SMN sea mayor al anterior."
 
-[ ] Crear docs/aprendizaje/15-bono-antiguedad-explicado.md
+[x] Crear docs/aprendizaje/15-bono-antiguedad-explicado.md
     → Explicar con ejemplos numéricos.
     → Mostrar por qué la base es 3 SMN y no el salario real.
     → Incluir la tabla de porcentajes por tramos.
@@ -548,7 +548,7 @@ Empleado despedido sin preaviso de 90 días:
 ## Tareas de la Fase 4.6
 
 ```text
-[ ] Implementar calcularIndemnizacion(empleado)
+[x] Implementar calcularIndemnizacion(empleado)
     → Calcula el promedio del total ganado de los últimos 3 meses.
     → Calcula la antigüedad en años (con fracción).
     → Indemnización = promedio × antigüedad.
@@ -563,12 +563,12 @@ Empleado despedido sin preaviso de 90 días:
       voluntaria (DS 28699), no solo a despido. Devuelve objeto 
       desglosado."
 
-[ ] Implementar calcularDesahucio(empleado, tienePreaviso)
+[x] Implementar calcularDesahucio(empleado, tienePreaviso)
     → Si tienePreaviso es false → desahucio = 3 × salario mensual.
     → Si tienePreaviso es true → desahucio = 0.
     → Es adicional a la indemnización.
 
-[ ] Implementar calcularLiquidacion(empleado, motivoRetiro)
+[x] Implementar calcularLiquidacion(empleado, motivoRetiro)
     → Calcula todo lo que se le debe pagar al retiro:
       - Salario pendiente del mes.
       - Vacaciones no gozadas.
@@ -584,13 +584,13 @@ Empleado despedido sin preaviso de 90 días:
       y aguinaldo proporcional del año en curso. Devuelve desglose 
       completo con cada concepto y el total."
 
-[ ] Implementar provisionIndemnizacionMensual(empleado)
+[x] Implementar provisionIndemnizacionMensual(empleado)
     → Calcula 1/12 de la indemnización acumulada.
     → Genera el asiento de provisión:
       Gasto de Indemnización / Indemnización por Pagar.
     → Se acumula mes a mes durante toda la relación laboral.
 
-[ ] Implementar registrarRetiro(empleadoId, motivoRetiro, fechaRetiro)
+[x] Implementar registrarRetiro(empleadoId, motivoRetiro, fechaRetiro)
     → Marca al empleado como RETIRADO.
     → Calcula la liquidación completa.
     → Genera los asientos contables de la liquidación.
@@ -598,7 +598,7 @@ Empleado despedido sin preaviso de 90 días:
     → ⚠️ En TODOS los motivos (excepto jubilación) se paga 
       indemnización si antigüedad > 90 días.
 
-[ ] Crear docs/aprendizaje/16-indemnizacion-boliviana.md
+[x] Crear docs/aprendizaje/16-indemnizacion-boliviana.md
     → Explicar la particularidad de la indemnización en renuncia.
     → Incluir referencias legales (DS 28699, Tribunal Constitucional).
     → Mostrar ejemplos numéricos de renuncia vs. despido.
