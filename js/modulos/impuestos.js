@@ -32,7 +32,10 @@ class ModuloImpuestos {
     this.KEY_SALDO_FAVOR = 'iva_saldo_favor_acumulado';
 
     // Porcentaje IVA
-    this.PORCENTAJE_IVA = (window.BOLIVIA && window.BOLIVIA.IVA_PORCENTAJE) || 0.13;
+    // Normalizar porcentaje: si es > 1, dividirlo entre 100
+    // (acepta tanto 13 como 0.13)
+    const ivaRaw = (window.BOLIVIA && window.BOLIVIA.IVA_PORCENTAJE) || 0.13;
+    this.PORCENTAJE_IVA = ivaRaw > 1 ? ivaRaw / 100 : ivaRaw;
 
     // Inicializar saldo a favor si no existe
     if (!localStorage.getItem(this.KEY_SALDO_FAVOR)) {
@@ -1745,6 +1748,259 @@ class ModuloImpuestos {
 
     console.log(`📄 Form. 110 generado para ${periodo}: ${this._fmt(totalRetenido)} retenidos`);
     return { exito: true, formulario, retenciones: { empleados: retEmpleados, proveedores: retProveedores } };
+  }
+
+    // ══════════════════════════════════════════════════════════
+  // RETENCIONES: MÉTODO UNIFICADO + ASIENTOS CONTABLES
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Registra una retención completa con asiento contable y comprobante.
+   *
+   * Genera:
+   *   1. La retención calculada (RC-IVA + IT si aplica)
+   *   2. El comprobante de retención (documento fuente)
+   *   3. El asiento contable:
+   *        Gasto (monto total)           Bs X (Debe)
+   *            Retención RC-IVA por Pagar (2.1.16)  Bs Y (Haber)
+   *            Retención IT por Pagar (2.1.17)      Bs Z (Haber)
+   *            Bancos (1.1.02)                      Bs (X-Y-Z) (Haber)
+   *
+   * @param {Object} datos - Datos de la retención
+   * @returns {Object}
+   */
+  registrarRetencion(datos) {
+    const calculo = this.calcularRetencionesCombinadas(
+      datos.montoPago,
+      {
+        emiteFacturaValida: datos.emiteFacturaValida,
+        regimenProveedor: datos.regimenProveedor,
+        esSujetoRCIVA: datos.esSujetoRCIVA,
+        aplicaRetencionIT: datos.aplicaRetencionIT
+      }
+    );
+
+    if (!calculo.exito) {
+      return { exito: false, errores: ['Error al calcular retenciones'] };
+    }
+
+    const fecha = datos.fecha || new Date().toISOString().split('T')[0];
+    const periodo = fecha.slice(0, 7);
+
+    // 1. Generar el comprobante de retención (documento fuente)
+    const comprobante = {
+      id: 'comp-ret-' + Date.now().toString(36),
+      tipoDocumento: 'COMPROBANTE_RETENCION',
+      numeroComprobante: this._generarNumeroComprobante(),
+      fecha,
+      periodo,
+      proveedorNombre: datos.proveedorNombre || 'Sin nombre',
+      proveedorNIT: datos.proveedorNIT || '',
+      concepto: datos.concepto || 'Servicios profesionales',
+      montoPago: datos.montoPago,
+      retencionRCIVA: calculo.retencionRCIVA,
+      retencionIT: calculo.retencionIT,
+      totalRetenido: calculo.totalRetenido,
+      netoAPagar: calculo.netoAPagar,
+      creadoEn: new Date().toISOString()
+    };
+
+    // 2. Generar asiento contable
+    let asiento = null;
+    if (window.motorContable && calculo.totalRetenido > 0) {
+      const lineas = [
+        {
+          cuentaCodigo: '5.3.07',
+          cuentaNombre: 'Gastos por Servicios Profesionales',
+          debe: calculo.montoPago,
+          haber: 0
+        }
+      ];
+
+      if (calculo.retencionRCIVA > 0) {
+        lineas.push({
+          cuentaCodigo: '2.1.18',
+          cuentaNombre: 'Retención RC-IVA por Pagar',
+          debe: 0,
+          haber: calculo.retencionRCIVA
+        });
+      }
+
+      if (calculo.retencionIT > 0) {
+        lineas.push({
+          cuentaCodigo: '2.1.19',
+          cuentaNombre: 'Retención IT por Pagar',
+          debe: 0,
+          haber: calculo.retencionIT
+        });
+      }
+
+      lineas.push({
+        cuentaCodigo: '1.1.02',
+        cuentaNombre: 'Bancos',
+        debe: 0,
+        haber: calculo.netoAPagar
+      });
+
+      const resultadoAsiento = window.motorContable.crearAsientoManual({
+        fecha,
+        concepto: `Retención a ${comprobante.proveedorNombre} — ${comprobante.numeroComprobante}`,
+        lineas
+      });
+
+      if (resultadoAsiento.exito) {
+        asiento = resultadoAsiento.asiento;
+        comprobante.asientoId = asiento.id;
+        comprobante.asientoNumero = asiento.numero;
+      }
+    }
+
+    // 3. Guardar comprobante en colección
+    const COLLECCION = 'comprobantes_retencion';
+    if (!this.almacenamiento.obtener(COLLECCION)) {
+      this.almacenamiento.guardar(COLLECCION, []);
+    }
+    this.almacenamiento.guardar(COLLECCION, comprobante);
+
+    // 4. Registrar también como retención de proveedor (compatibilidad Fase 5.7)
+    this.registrarRetencionProveedor({
+      montoPago: datos.montoPago,
+      proveedorNombre: datos.proveedorNombre,
+      proveedorNIT: datos.proveedorNIT,
+      emiteFacturaValida: datos.emiteFacturaValida,
+      regimenProveedor: datos.regimenProveedor,
+      esSujetoRCIVA: datos.esSujetoRCIVA,
+      aplicaRetencionIT: datos.aplicaRetencionIT,
+      fecha
+    });
+
+    console.log(`📄 Retención registrada: ${comprobante.numeroComprobante} — RC-IVA ${this._fmt(calculo.retencionRCIVA)} + IT ${this._fmt(calculo.retencionIT)}`);
+
+    return {
+      exito: true,
+      comprobante,
+      asiento,
+      calculo
+    };
+  }
+
+  /**
+   * Obtiene TODAS las retenciones del período (empleados + proveedores).
+   * Método unificado para el Form. 110.
+   *
+   * @param {string} periodo
+   * @returns {Object}
+   */
+  obtenerRetencionesDelPeriodo(periodo) {
+    const empleados = this.obtenerRetencionesEmpleados(periodo);
+    const proveedores = this.obtenerRetencionesProveedores(periodo);
+
+    const totalRCIVA = this._r2(
+      (empleados.totalRetenido || 0) + (proveedores.totalRCIVA || 0)
+    );
+    const totalIT = proveedores.totalIT || 0;
+    const totalRetenido = this._r2(totalRCIVA + totalIT);
+
+    return {
+      exito: true,
+      periodo,
+      rcIVAEmpleados: empleados.totalRetenido || 0,
+      rcIVAProveedores: proveedores.totalRCIVA || 0,
+      totalRCIVA,
+      totalIT,
+      totalRetenido,
+      cantidadEmpleados: empleados.cantidadEmpleados || 0,
+      cantidadProveedores: proveedores.cantidad || 0,
+      detalleEmpleados: empleados.detalle || [],
+      detalleProveedores: proveedores.detalle || []
+    };
+  }
+
+  /**
+   * Genera el asiento de pago de retenciones al SIN.
+   *
+   * Asiento:
+   *   Retención RC-IVA por Pagar (2.1.16)   Bs X (Debe)
+   *   Retención IT por Pagar (2.1.17)       Bs Y (Debe)
+   *       Bancos (1.1.02)                           Bs (X+Y) (Haber)
+   *
+   * @param {string} periodo
+   * @returns {Object}
+   */
+  generarAsientoPagoRetenciones(periodo) {
+    const retenciones = this.obtenerRetencionesDelPeriodo(periodo);
+
+    if (retenciones.totalRetenido === 0) {
+      return { exito: false, errores: ['No hay retenciones que pagar en el período'] };
+    }
+
+    const lineas = [];
+
+    if (retenciones.totalRCIVA > 0) {
+      lineas.push({
+        cuentaCodigo: '2.1.16',
+        cuentaNombre: 'Retención RC-IVA por Pagar',
+        debe: retenciones.totalRCIVA,
+        haber: 0
+      });
+    }
+
+    if (retenciones.totalIT > 0) {
+      lineas.push({
+        cuentaCodigo: '2.1.17',
+        cuentaNombre: 'Retención IT por Pagar',
+        debe: retenciones.totalIT,
+        haber: 0
+      });
+    }
+
+    lineas.push({
+      cuentaCodigo: '1.1.02',
+      cuentaNombre: 'Bancos',
+      debe: 0,
+      haber: retenciones.totalRetenido
+    });
+
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: new Date().toISOString().split('T')[0],
+      concepto: `Pago retenciones al SIN — Período ${periodo}`,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`💸 Asiento de pago de retenciones generado: ${resultado.asiento.numero}`);
+
+    return {
+      exito: true,
+      asiento: resultado.asiento,
+      periodo,
+      totalPagado: retenciones.totalRetenido,
+      desglose: {
+        rcIVA: retenciones.totalRCIVA,
+        it: retenciones.totalIT
+      }
+    };
+  }
+
+  /**
+   * Genera número correlativo para comprobantes de retención.
+   * @private
+   */
+  _generarNumeroComprobante() {
+    const COLLECCION = 'comprobantes_retencion';
+    const todos = this.almacenamiento.obtener(COLLECCION) || [];
+    const año = new Date().getFullYear();
+    const correlativo = todos.filter(c =>
+      c.numeroComprobante && c.numeroComprobante.startsWith(`CRET-${año}`)
+    ).length + 1;
+    return `CRET-${año}-${String(correlativo).padStart(4, '0')}`;
   }
 
   // ══════════════════════════════════════════════════════════

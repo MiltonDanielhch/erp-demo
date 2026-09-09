@@ -309,6 +309,20 @@ const PLAN_CUENTAS = {
             naturaleza: 'acreedora',
             tipo: 'pasivo_corriente',
             descripcion: 'Porción de corto plazo de préstamos bancarios'
+          },
+          '2.1.18': {
+            codigo: '2.1.18',
+            nombre: 'Retención RC-IVA por Pagar (Proveedores)',
+            naturaleza: 'acreedora',
+            tipo: 'pasivo_corriente',
+            descripcion: 'RC-IVA retenido a proveedores del régimen complementario'
+          },
+          '2.1.19': {
+            codigo: '2.1.19',
+            nombre: 'Retención IT por Pagar (Proveedores)',
+            naturaleza: 'acreedora',
+            tipo: 'pasivo_corriente',
+            descripcion: 'IT retenido a proveedores no inscritos'
           }
         }
       },
@@ -621,6 +635,13 @@ const PLAN_CUENTAS = {
             nombre: 'Gastos de Auditoría',
             naturaleza: 'deudora',
             tipo: 'gasto_operativo'
+          },
+          '5.3.07': {
+            codigo: '5.3.07',
+            nombre: 'Gastos por Servicios Profesionales',
+            naturaleza: 'deudora',
+            tipo: 'gasto_operativo',
+            descripcion: 'Honorarios profesionales (abogados, contadores, consultores)'
           }
         }
       },
