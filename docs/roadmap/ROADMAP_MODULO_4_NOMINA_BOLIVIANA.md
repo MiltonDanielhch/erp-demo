@@ -188,7 +188,7 @@ Ejemplo: 6 años → 11% × 7,500 = Bs 825.00
 ## Tareas de la Fase 4.2
 
 ```text
-[ ] Crear js/config/tabla-bono-antiguedad.js
+[x] Crear js/config/tabla-bono-antiguedad.js
     → Exportar constante TABLA_BONO_ANTIGUEDAD con los tramos.
     → Función obtenerPorcentajeBono(aniosServicio): devuelve el %.
     → Función calcularBonoAntiguedad(aniosServicio, smnVigente): 
@@ -202,7 +202,7 @@ Ejemplo: 6 años → 11% × 7,500 = Bs 825.00
       NO el salario del empleado. Incluye una función JS que 
       calcule el bono dado años de servicio y SMN vigente."
 
-[ ] Crear js/modulos/catalogo-empleados.js
+[x] Crear js/modulos/catalogo-empleados.js
     → Clase CatalogoEmpleados con métodos CRUD.
     → crear(datos): valida y guarda un nuevo empleado.
     → obtenerTodos(filtros): lista empleados activos/inactivos.
@@ -212,18 +212,18 @@ Ejemplo: 6 años → 11% × 7,500 = Bs 825.00
     → actualizar(id, datos): modifica un registro.
     → retirar(id, motivo, fechaRetiro): marca como RETIRADO.
 
-[ ] Implementar calcularAntiguedad(empleado)
+[x] Implementar calcularAntiguedad(empleado)
     → Calcula años y meses desde fechaIngreso hasta hoy.
     → Devuelve { anios, meses, dias }.
     → Este dato alimenta el bono de antigüedad y la indemnización.
 
-[ ] Implementar validarEmpleado(datos)
+[x] Implementar validarEmpleado(datos)
     → CI válido y único.
     → Salario base > 0.
     → Fecha de ingreso no futura.
     → Si tiene fecha de retiro, debe ser posterior al ingreso.
 
-[ ] Crear vistas/empleados.html
+[x] Crear vistas/empleados.html
     → Formulario para agregar/editar empleados.
     → Tabla con lista de empleados activos.
     → Búsqueda por nombre o CI.

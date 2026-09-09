@@ -163,6 +163,13 @@ function iniciarERP() {
   });
   console.log('👷 Catálogo de Empleados inicializado (RRHH).');
 
+  // ── NUEVO Fase 4.3: Instanciar Módulo de Nómina ──────────────
+  const moduloNomina = new ModuloNomina({
+    almacenamiento: almacenamiento,
+    catalogoEmpleados: catalogoEmpleados
+  });
+  console.log('💼 Módulo de Nómina inicializado (Módulo 4).');
+
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -223,6 +230,7 @@ function iniciarERP() {
   window.CatalogoProveedores = catalogoProveedores;
   window.CatalogoProductos = catalogoProductos;
   window.catalogoEmpleados = catalogoEmpleados;        // ← NUEVO Fase 4.2
+  window.moduloNomina = moduloNomina;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -232,6 +240,7 @@ function iniciarERP() {
   window.ERP.catalogoProveedores = catalogoProveedores;
   window.ERP.catalogoProductos = catalogoProductos;
   window.ERP.catalogoEmpleados = catalogoEmpleados;    // ← NUEVO Fase 4.2
+  window.ERP.moduloNomina = moduloNomina;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
   // ── Exponer al objeto window ─────────────────────────────────
@@ -339,6 +348,14 @@ function iniciarERP() {
   console.log('   window.catalogoEmpleados.contar()');
   console.log('   window.TablaBonoAntiguedad.calcularBono(6)');
   console.log('   window.TablaBonoAntiguedad.obtenerTablaConMontos()');
+  console.log('');
+  console.log('   📌 NÓMINA (Módulo 4):');
+  console.log('   window.moduloNomina.calcularNominaMensual("2026-09")');
+  console.log('   window.moduloNomina.calcularDevengados(empleado, extras)');
+  console.log('   window.moduloNomina.calcularDeducciones(empleado, devengado, facturas)');
+  console.log('   window.moduloNomina.calcularAportesPatronales(empleado, devengado)');
+  console.log('   window.moduloNomina.generarPlanillaResumen("2026-09", datosExtras)');
+  console.log('   window.moduloNomina.obtenerPlanillas()');
 }
 
 // ──────────────────────────────────────────────────────────────
