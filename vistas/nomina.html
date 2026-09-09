@@ -1,26 +1,233 @@
 <!-- ══════════════════════════════════════════════════════════
-     VISTA: Nómina y Recursos Humanos
-     Capa 2: Módulos Operativos
+     VISTA: Nómina y Recursos Humanos (unificada)
      ══════════════════════════════════════════════════════════ -->
 
-<h2 class="contenido-titulo">👥 Nómina y Recursos Humanos</h2>
-<p class="contenido-subtitulo">Nómina boliviana: aguinaldo, bono antigüedad, indemnización, RC-IVA</p>
+<h2 class="contenido-titulo">💼 Nómina y Recursos Humanos</h2>
+<p class="contenido-subtitulo">
+  Gestión integral de nómina boliviana (LGT, DS 21060, DS 28699, Ley 843)
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Planilla Mensual</button>
-  <button class="tab">Empleados</button>
-  <button class="tab">Provisiones</button>
-  <button class="tab">Facturas RC-IVA</button>
-  <button class="tab">Liquidaciones</button>
+<!-- ═══════════ Tabs ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div class="tabs" style="display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 2px solid var(--color-borde); padding-bottom: 8px;">
+    <button class="btn btn-tab activo" data-tab="planilla">📋 Planilla Mensual</button>
+    <button class="btn btn-tab" data-tab="provisiones">💰 Provisiones</button>
+    <button class="btn btn-tab" data-tab="rc-iva">🧾 RC-IVA</button>
+    <button class="btn btn-tab" data-tab="liquidaciones">⚖️ Liquidaciones</button>
+    <button class="btn btn-tab" data-tab="asientos">📒 Asientos Contables</button>
+  </div>
 </div>
 
-<div id="contenido-modulo">
+<!-- ═══════════ Tab: Planilla Mensual ═══════════ -->
+<div id="tab-planilla" class="tab-content">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="nomina-periodo" class="form-input">
+      </div>
+      <button id="nomina-btn-calcular" class="btn btn-primary">📊 Calcular Planilla</button>
+      <button id="nomina-btn-generar-asientos" class="btn btn-success">📒 Generar Asientos</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Empleados</div>
+        <div style="font-size: 1.5rem; font-weight: bold;" id="nomina-cantidad">0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total Devengado</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="nomina-total-devengado">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total Deducciones</div>
+        <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-error);" id="nomina-total-deducciones">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total Neto</div>
+        <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-exito);" id="nomina-total-neto">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Aportes Patronales</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="nomina-total-patronal">Bs 0</div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      👥 Módulo de Nómina — Se implementará en el <strong>Módulo 4</strong>.<br>
-      Aquí podrás calcular la planilla mensual, provisiones de aguinaldo,<br>
-      bono de antigüedad (3 SMN), indemnización (aplica a renuncia),<br>
-      y compensación del RC-IVA con facturas.
+    <h3 style="margin-bottom: 12px;">📋 Detalle por empleado</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>CI</th>
+            <th>Empleado</th>
+            <th>Cargo</th>
+            <th class="texto-derecha">Salario</th>
+            <th class="texto-derecha">Bono</th>
+            <th class="texto-derecha">Devengado</th>
+            <th class="texto-derecha">AFP</th>
+            <th class="texto-derecha">RC-IVA</th>
+            <th class="texto-derecha">Neto</th>
+          </tr>
+        </thead>
+        <tbody id="nomina-tabla-body">
+          <tr><td colspan="9" style="text-align:center; padding:24px;">Seleccione un período y calcule la planilla</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Provisiones ═══════════ -->
+<div id="tab-provisiones" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h3 style="margin-bottom: 12px;">💰 Provisiones acumuladas (Libro Mayor)</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+      <div style="padding: 12px; background: var(--color-fondo-claro); border-radius: 6px;">
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Aguinaldo Navidad (2.1.11)</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="prov-aguinaldo">Bs 0</div>
+      </div>
+      <div style="padding: 12px; background: var(--color-fondo-claro); border-radius: 6px;">
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Segundo Aguinaldo (2.1.12)</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="prov-segundo">Bs 0</div>
+      </div>
+      <div style="padding: 12px; background: var(--color-fondo-claro); border-radius: 6px;">
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Bono Antigüedad (2.1.13)</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="prov-bono">Bs 0</div>
+      </div>
+      <div style="padding: 12px; background: var(--color-fondo-claro); border-radius: 6px;">
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Indemnización (2.1.14)</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="prov-indemnizacion">Bs 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">🎄 Segundo Aguinaldo "Esfuerzo por Bolivia" (DS 1802)</h3>
+    <p style="margin-bottom: 12px; color: var(--texto-secundario);">
+      Solo se activa cuando el Gobierno confirma que el PIB creció más del 4.5% (INE).
+    </p>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <input type="checkbox" id="prov-toggle-segundo" style="width: 20px; height: 20px;">
+        <span>Segundo aguinaldo activado para el año actual</span>
+      </label>
+      <span id="prov-estado-toggle" style="font-weight: bold;">DESACTIVADO</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: RC-IVA ═══════════ -->
+<div id="tab-rc-iva" class="tab-content oculto">
+  <div class="card">
+    <p style="text-align: center; padding: 24px;">
+      La gestión de RC-IVA con facturas tiene su propia vista dedicada.<br>
+      <a href="#/rc-iva" class="btn btn-primary" style="margin-top: 12px;">🧾 Ir a RC-IVA con facturas</a>
     </p>
   </div>
 </div>
+
+<!-- ═══════════ Tab: Liquidaciones ═══════════ -->
+<div id="tab-liquidaciones" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h3 style="margin-bottom: 12px;">⚖️ Liquidación por retiro</h3>
+    <form id="form-liquidacion">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Empleado <span class="requerido">*</span></label>
+          <select id="liq-empleado" class="form-select" required></select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Motivo de retiro <span class="requerido">*</span></label>
+          <select id="liq-motivo" class="form-select" required>
+            <option value="RENUNCIA">Renuncia voluntaria (DS 28699)</option>
+            <option value="DESPIDO">Despido sin preaviso</option>
+            <option value="DESPIDO_JUSTA_CAUSA">Despido con justa causa</option>
+            <option value="MUTUO_ACUERDO">Mutuo acuerdo</option>
+            <option value="JUBILACION">Jubilación</option>
+            <option value="FALLECIMIENTO">Fallecimiento</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Fecha de retiro</label>
+          <input type="date" id="liq-fecha" class="form-input">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Preaviso (90 días)</label>
+          <select id="liq-preaviso" class="form-select">
+            <option value="true">Sí (con preaviso)</option>
+            <option value="false">No (sin preaviso)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="liq-btn-calcular" class="btn btn-outline">📊 Calcular liquidación</button>
+    </form>
+  </div>
+
+  <div id="liq-resultado" class="card oculto">
+    <h3 style="margin-bottom: 12px;">📋 Desglose de liquidación</h3>
+    <div id="liq-desglose"></div>
+    <button id="liq-btn-registrar" class="btn btn-danger" style="margin-top: 12px;">🚪 Registrar retiro y generar asiento</button>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Asientos Contables ═══════════ -->
+<div id="tab-asientos" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h3 style="margin-bottom: 12px;">📒 Asientos contables de nómina</h3>
+    <p style="margin-bottom: 12px; color: var(--texto-secundario);">
+      Genera los 5 asientos consolidados de nómina para el período seleccionado.
+    </p>
+    <div style="display: flex; gap: 12px; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="asientos-periodo" class="form-input">
+      </div>
+      <button id="asientos-btn-generar" class="btn btn-success">📒 Generar todos los asientos</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">📊 Resumen de asientos generados</h3>
+    <div id="asientos-resumen">
+      <p style="text-align: center; padding: 24px; color: var(--texto-secundario);">
+        No se han generado asientos aún
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+.btn-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-tab:hover {
+  background: var(--color-fondo-claro);
+}
+.btn-tab.activo {
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script src="js/vistas/nomina-vista.js"></script>
