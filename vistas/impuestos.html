@@ -1,27 +1,390 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Impuestos y Cumplimiento Fiscal
-     Capa 2: Módulos Operativos
      ══════════════════════════════════════════════════════════ -->
 
 <h2 class="contenido-titulo">🧾 Impuestos y Cumplimiento Fiscal</h2>
-<p class="contenido-subtitulo">IVA (13%), IT (3%), IUE (25%), RC-IVA, compensación Art. 77</p>
+<p class="contenido-subtitulo">
+  Liquidación y gestión de los impuestos bolivianos (Ley 843)
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Liquidación IVA</button>
-  <button class="tab">Liquidación IT</button>
-  <button class="tab">Liquidación IUE</button>
-  <button class="tab">Compensación IT-IUE</button>
-  <button class="tab">Retenciones</button>
-  <button class="tab">Regímenes</button>
-</div>
-
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      🧾 Módulo de Impuestos — Se implementará en el <strong>Módulo 5</strong>.<br>
-      Aquí podrás conciliar el IVA (Form. 200), calcular el IT (Form. 400),<br>
-      liquidar el IUE (Form. 500), y compensar el IT contra el IUE<br>
-      según el Art. 77 de la Ley 843.
-    </p>
+<!-- ═══════════ Tabs ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div class="tabs" style="display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 2px solid var(--color-borde); padding-bottom: 8px;">
+    <button class="btn btn-tab activo" data-tab="iva">📋 IVA (Form. 200)</button>
+    <button class="btn btn-tab" data-tab="it">💰 IT (Form. 400)</button>
+    <button class="btn btn-tab" data-tab="iue">📊 IUE (Form. 500)</button>
+    <button class="btn btn-tab" data-tab="compensacion">⚖️ Compensación IT-IUE</button>
+    <button class="btn btn-tab" data-tab="retenciones">📝 Retenciones (Form. 110)</button>
+    <button class="btn btn-tab" data-tab="regimenes">🏛️ Regímenes Tributarios</button>
+    <button class="btn btn-tab" data-tab="calendario">📅 Calendario</button>
   </div>
 </div>
+
+<!-- ═══════════ Tab: IVA ═══════════ -->
+<div id="tab-iva" class="tab-content">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="iva-periodo" class="form-input">
+      </div>
+      <button id="iva-btn-calcular" class="btn btn-primary">📊 Conciliar IVA</button>
+      <button id="iva-btn-form200" class="btn btn-success">📄 Generar Form. 200</button>
+      <button id="iva-btn-asiento" class="btn btn-outline">📒 Generar Asiento</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IVA Débito Fiscal</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iva-debito">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IVA Crédito Fiscal</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iva-credito">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Saldo Favor Anterior</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iva-saldo-anterior">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IVA a Pagar</div>
+        <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-error);" id="iva-a-pagar">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Saldo a Favor Nuevo</div>
+        <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-exito);" id="iva-saldo-nuevo">Bs 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">📋 Desglose de Ventas (Débito Fiscal)</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Factura</th>
+            <th>Cliente</th>
+            <th class="texto-derecha">Monto</th>
+            <th class="texto-derecha">Neto</th>
+            <th class="texto-derecha">IVA</th>
+          </tr>
+        </thead>
+        <tbody id="iva-tabla-ventas">
+          <tr><td colspan="6" style="text-align:center; padding:24px;">Presione "Conciliar IVA" para ver datos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: IT ═══════════ -->
+<div id="tab-it" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="it-periodo" class="form-input">
+      </div>
+      <button id="it-btn-calcular" class="btn btn-primary">📊 Calcular IT</button>
+      <button id="it-btn-form400" class="btn btn-success">📄 Generar Form. 400</button>
+      <button id="it-btn-asiento" class="btn btn-outline">📒 Generar Asiento</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Ingresos Brutos</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="it-ingresos">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IT (3%)</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="it-monto">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IT Acumulado Anual</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="it-acumulado">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Facturas</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="it-facturas">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">📋 Desglose por factura</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Factura</th>
+            <th>Cliente</th>
+            <th class="texto-derecha">Monto Bruto</th>
+            <th class="texto-derecha">IT (3%)</th>
+          </tr>
+        </thead>
+        <tbody id="it-tabla-detalle">
+          <tr><td colspan="5" style="text-align:center; padding:24px;">Presione "Calcular IT" para ver datos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: IUE ═══════════ -->
+<div id="tab-iue" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espadio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Gestión</label>
+        <input type="number" id="iue-anio" class="form-input" value="2026" min="2000" max="2100">
+      </div>
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">Utilidad contable</label>
+        <input type="number" id="iue-utilidad" class="form-input" value="0" step="0.01">
+      </div>
+      <button id="iue-btn-calcular" class="btn btn-primary">📊 Calcular IUE</button>
+      <button id="iue-btn-form500" class="btn btn-success">📄 Generar Form. 500</button>
+      <button id="iue-btn-asiento" class="btn btn-outline">📒 Generar Asiento</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h4 style="margin-bottom: 12px;">Ajustes fiscales</h4>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div>
+        <label class="form-label">Gastos no deducibles (suma)</label>
+        <input type="number" id="iue-gastos-no-ded" class="form-input" value="0" step="0.01">
+        <small>Multas, sanciones, donaciones no autorizadas</small>
+      </div>
+      <div>
+        <label class="form-label">Ingresos no gravables (resta)</label>
+        <input type="number" id="iue-ingresos-no-grav" class="form-input" value="0" step="0.01">
+        <small>Intereses exentos, indemnizaciones</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Utilidad contable</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iue-utilidad-contable">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Utilidad imponible</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iue-utilidad-imp">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IUE Determinado (25%)</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iue-determinado">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IT Acumulado</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="iue-it-acum">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Fecha límite</div>
+        <div style="font-size: 1.1rem; font-weight: bold;" id="iue-fecha-limite">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="iue-advertencias" class="card" style="display: none;"></div>
+</div>
+
+<!-- ═══════════ Tab: Compensación IT-IUE ═══════════ -->
+<div id="tab-compensacion" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <h3>⚖️ Compensación IT vs IUE — Art. 77 Ley 843</h3>
+    <p style="color: var(--texto-secundario);">
+      El IT pagado mes a mes se descuenta del IUE anual. Si el IT supera el IUE, el exceso se pierde.
+    </p>
+    <div style="display: flex; gap: 12px; align-items: flex-end; margin-top: 12px;">
+      <div class="form-group" style="margin: 0; flex: 1;">
+        <label class="form-label">Gestión</label>
+        <input type="number" id="comp-anio" class="form-input" value="2026">
+      </div>
+      <button id="comp-btn-compensar" class="btn btn-primary">⚖️ Compensar</button>
+    </div>
+  </div>
+
+  <div id="comp-desglose-mensual" class="card" style="margin-bottom: var(--espacio-md);">
+    <h4 style="margin-bottom: 12px;">📅 IT pagado mes a mes</h4>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th class="texto-derecha">IT Pagado</th>
+            <th class="texto-derecha">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="comp-tabla-mensual">
+          <tr><td colspan="3" style="text-align:center; padding:24px;">Presione "Compensar" para ver datos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="comp-resultado" class="card" style="display: none;"></div>
+</div>
+
+<!-- ═══════════ Tab: Retenciones ═══════════ -->
+<div id="tab-retenciones" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="ret-periodo" class="form-input">
+      </div>
+      <button id="ret-btn-form110" class="btn btn-success">📄 Generar Form. 110</button>
+      <button id="ret-btn-pago" class="btn btn-outline">💸 Registrar Pago</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">RC-IVA Empleados</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="ret-rciva-empleados">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">RC-IVA Proveedores</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="ret-rciva-proveedores">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">IT Proveedores</div>
+        <div style="font-size: 1.3rem; font-weight: bold;" id="ret-it-proveedores">Bs 0</div>
+      </div>
+      <div>
+        <div style="color: var(--texto-secundario); font-size: 0.85rem;">Total Retenido</div>
+        <div style="font-size: 1.3rem; font-weight: bold; color: var(--color-error);" id="ret-total">Bs 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">📋 Retenciones a proveedores</h3>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th class="texto-derecha">Monto</th>
+            <th class="texto-derecha">RC-IVA</th>
+            <th class="texto-derecha">IT</th>
+            <th class="texto-derecha">Neto</th>
+          </tr>
+        </thead>
+        <tbody id="ret-tabla-proveedores">
+          <tr><td colspan="6" style="text-align:center; padding:24px;">Sin retenciones registradas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Regímenes Tributarios ═══════════ -->
+<div id="tab-regimenes" class="tab-content oculto">
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">🏛️ Regímenes tributarios del SIN</h3>
+    <p style="margin-bottom: 12px; color: var(--texto-secundario);">
+      Bolivia tiene 5 regímenes tributarios. Solo el Régimen General (RG) emite crédito fiscal para el IVA.
+    </p>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Impuestos</th>
+            <th>Crédito Fiscal</th>
+            <th>Límite Ingresos</th>
+          </tr>
+        </thead>
+        <tbody id="reg-tabla">
+          <tr><td colspan="6" style="text-align:center; padding:24px;">Cargando regímenes...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Calendario de Vencimientos ═══════════ -->
+<div id="tab-calendario" class="tab-content oculto">
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">📅 Próximos vencimientos tributarios</h3>
+    <p style="margin-bottom: 12px; color: var(--texto-secundario);">
+      Las fechas dependen del último dígito del NIT de la empresa.
+    </p>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Impuesto</th>
+            <th>Período</th>
+            <th>Formulario</th>
+            <th class="texto-derecha">Monto</th>
+            <th>Fecha Vencimiento</th>
+            <th class="texto-derecha">Días</th>
+          </tr>
+        </thead>
+        <tbody id="cal-tabla">
+          <tr><td colspan="7" style="text-align:center; padding:24px;">Cargando vencimientos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+.btn-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-tab:hover {
+  background: var(--color-fondo-claro);
+}
+.btn-tab.activo {
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.semaforo {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.semaforo.verde { background: var(--color-exito); }
+.semaforo.amarillo { background: #f59e0b; }
+.semaforo.rojo { background: var(--color-error); }
+</style>
+
+<script src="js/vistas/impuestos-vista.js"></script>

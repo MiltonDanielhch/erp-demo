@@ -2003,6 +2003,1127 @@ class ModuloImpuestos {
     return `CRET-${año}-${String(correlativo).padStart(4, '0')}`;
   }
 
+    // ══════════════════════════════════════════════════════════
+  // IUE-BE — IUE PARA BENEFICIARIOS DEL EXTERIOR
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Calcula el IUE-BE (IUE para Beneficiarios del Exterior).
+   *
+   * Lógica boliviana:
+   *   - Se aplica sobre remesas de utilidades o dividendos al exterior.
+   *   - Tasa nominal: 25% (tasa del IUE).
+   *   - Base imponible presunta: 50% del monto remesado.
+   *   - Tasa EFECTIVA: 25% × 50% = 12.5%.
+   *
+   * Base legal: Art. 48 Ley 843, modificado por Ley 091
+   * Formulario SIN: Form. 530 (IUE-BE)
+   *
+   * @param {number} montoRemesa - Monto bruto a remesar al exterior
+   * @returns {Object}
+   */
+  calcularIUEBE(montoRemesa) {
+    const monto = Number(montoRemesa) || 0;
+
+    if (monto <= 0) {
+      return {
+        exito: false,
+        errores: ['El monto de la remesa debe ser positivo']
+      };
+    }
+
+    // Base imponible presunta: 50% del monto remesado
+    const baseImponible = this._r2(monto * 0.50);
+
+    // IUE-BE: 25% sobre la base presunta (= 12.5% efectivo)
+    const iueBE = this._r2(baseImponible * 0.25);
+
+    // Equivalente directo: 12.5% del monto
+    const iueBE_Efectivo = this._r2(monto * 0.125);
+
+    // Neto a remesar al exterior
+    const netoRemesado = this._r2(monto - iueBE);
+
+    // Tasa efectiva para referencia
+    const tasaEfectiva = this._r2((iueBE / monto) * 100);
+
+    return {
+      exito: true,
+      montoRemesa: monto,
+      baseImponible,
+      tasaNominal: 0.25,         // 25% (IUE)
+      porcentajeBase: 0.50,      // 50% presunción
+      tasaEfectiva: 0.125,       // 12.5%
+      tasaEfectivaPorcentaje: tasaEfectiva,
+      iueBE,
+      iueBE_Efectivo,
+      netoRemesado,
+      formulario: 'FORM_530',
+      detalleCalculo: [
+        `Monto remesado:        ${this._fmt(monto)}`,
+        `Base presunta (50%):   ${this._fmt(baseImponible)}`,
+        `IUE-BE (25% × 50%):    ${this._fmt(iueBE)}`,
+        `Tasa efectiva:         ${tasaEfectiva.toFixed(2)}%`,
+        `Neto a remesar:        ${this._fmt(netoRemesado)}`
+      ].join('\n')
+    };
+  }
+
+  /**
+   * Registra una remesa de utilidades al exterior con asiento contable.
+   *
+   * Genera:
+   *   1. El cálculo del IUE-BE
+   *   2. El documento fuente (COMPROBANTE_REMESA_EXTERIOR)
+   *   3. El asiento contable:
+   *        Utilidades Retenidas (3.2.02)       Bs X (Debe)
+   *            IUE-BE por Pagar (2.2.03)             Bs Y (Haber)
+   *            Bancos (1.1.02)                       Bs Z (Haber)
+   *
+   * @param {Object} datos
+   * @returns {Object}
+   */
+  registrarRemesaExterior(datos) {
+    const calculo = this.calcularIUEBE(datos.montoRemesa);
+
+    if (!calculo.exito) {
+      return { exito: false, errores: calculo.errores };
+    }
+
+    const fecha = datos.fecha || new Date().toISOString().split('T')[0];
+    const periodo = fecha.slice(0, 7);
+
+    // 1. Crear comprobante de remesa (documento fuente)
+    const comprobante = {
+      id: 'rem-ext-' + Date.now().toString(36),
+      tipoDocumento: 'COMPROBANTE_REMESA_EXTERIOR',
+      numeroComprobante: this._generarNumeroRemesaExterior(),
+      fecha,
+      periodo,
+      beneficiarioNombre: datos.beneficiarioNombre || 'Beneficiario del exterior',
+      beneficiarioPais: datos.beneficiarioPais || 'No especificado',
+      beneficiarioIdentificacion: datos.beneficiarioIdentificacion || '',
+      concepto: datos.concepto || 'Remesa de utilidades/dividendos',
+      montoRemesa: calculo.montoRemesa,
+      baseImponible: calculo.baseImponible,
+      iueBE: calculo.iueBE,
+      netoRemesado: calculo.netoRemesado,
+      formulario: 'FORM_530',
+      creadoEn: new Date().toISOString()
+    };
+
+    // 2. Generar asiento contable
+    let asiento = null;
+    if (window.motorContable) {
+      const lineas = [
+        {
+          cuentaCodigo: '3.2.02',
+          cuentaNombre: 'Utilidades Retenidas',
+          debe: calculo.montoRemesa,
+          haber: 0
+        },
+        {
+          cuentaCodigo: '2.2.03',
+          cuentaNombre: 'IUE-BE por Pagar',
+          debe: 0,
+          haber: calculo.iueBE
+        },
+        {
+          cuentaCodigo: '1.1.02',
+          cuentaNombre: 'Bancos',
+          debe: 0,
+          haber: calculo.netoRemesado
+        }
+      ];
+
+      const resultadoAsiento = window.motorContable.crearAsientoManual({
+        fecha,
+        concepto: `IUE-BE remesa a ${comprobante.beneficiarioNombre} (${comprobante.beneficiarioPais}) — ${comprobante.numeroComprobante}`,
+        lineas
+      });
+
+      if (resultadoAsiento.exito) {
+        asiento = resultadoAsiento.asiento;
+        comprobante.asientoId = asiento.id;
+        comprobante.asientoNumero = asiento.numero;
+      }
+    }
+
+    // 3. Guardar comprobante en colección
+    const COLLECCION = 'remesas_exterior';
+    if (!this.almacenamiento.obtener(COLLECCION)) {
+      this.almacenamiento.guardar(COLLECCION, []);
+    }
+    this.almacenamiento.guardar(COLLECCION, comprobante);
+
+    // 4. También generar asiento del gasto (si corresponde)
+    // El IUE-BE como gasto del ejercicio se registra en 5.6.03
+    // (en muchos sistemas el IUE-BE se considera costo de distribución,
+    // no gasto del ejercicio, por eso no se genera aquí)
+
+    console.log(`🌍 Remesa exterior registrada: ${comprobante.numeroComprobante} — IUE-BE ${this._fmt(calculo.iueBE)}`);
+
+    return {
+      exito: true,
+      comprobante,
+      asiento,
+      calculo
+    };
+  }
+
+  /**
+   * Obtiene todas las remesas al exterior del período.
+   *
+   * @param {string} periodo - Formato "AAAA-MM" (opcional, si no se pasa, todas)
+   * @returns {Object}
+   */
+  obtenerRemesasExterior(periodo = null) {
+    const COLLECCION = 'remesas_exterior';
+    const todas = this.almacenamiento.obtener(COLLECCION) || [];
+
+    const filtradas = periodo
+      ? todas.filter(r => r.periodo === periodo)
+      : todas;
+
+    let totalRemesado = 0;
+    let totalIUEBE = 0;
+    let totalNeto = 0;
+
+    filtradas.forEach(r => {
+      totalRemesado += r.montoRemesa || 0;
+      totalIUEBE += r.iueBE || 0;
+      totalNeto += r.netoRemesado || 0;
+    });
+
+    return {
+      exito: true,
+      periodo: periodo || 'TODOS',
+      cantidad: filtradas.length,
+      totalRemesado: this._r2(totalRemesado),
+      totalIUEBE: this._r2(totalIUEBE),
+      totalNetoRemesado: this._r2(totalNeto),
+      detalle: filtradas
+    };
+  }
+
+  /**
+   * Genera la estructura del Formulario 530 del SIN (IUE-BE).
+   *
+   * El Form. 530 se presenta por cada remesa al exterior.
+   *
+   * @param {string} remesaId - ID de la remesa específica
+   * @returns {Object}
+   */
+  generarFormulario530(remesaId) {
+    const COLLECCION = 'remesas_exterior';
+    const todas = this.almacenamiento.obtener(COLLECCION) || [];
+    const remesa = todas.find(r => r.id === remesaId);
+
+    if (!remesa) {
+      return { exito: false, errores: ['Remesa no encontrada'] };
+    }
+
+    const nitEmpresa = (window.BOLIVIA && window.BOLIVIA.NIT_EMPRESA) || '000000000-0';
+    const [anio, mes] = remesa.periodo.split('-').map(Number);
+
+    const formulario = {
+      // Datos del agente de retención (empresa boliviana)
+      agenteRetencion: {
+        nit: nitEmpresa,
+        razonSocial: (window.BOLIVIA && window.BOLIVIA.RAZON_SOCIAL) || 'EMPRESA S.A.'
+      },
+
+      // Datos del beneficiario del exterior
+      beneficiario: {
+        nombre: remesa.beneficiarioNombre,
+        pais: remesa.beneficiarioPais,
+        identificacion: remesa.beneficiarioIdentificacion
+      },
+
+      // Datos de la remesa
+      remesa: {
+        fecha: remesa.fecha,
+        periodoFiscal: remesa.periodo,
+        gestion: anio,
+        mes,
+        concepto: remesa.concepto
+      },
+
+      // Liquidación del IUE-BE
+      liquidacion: {
+        montoRemesa: remesa.montoRemesa,
+        baseImponible: remesa.baseImponible,
+        tasaNominal: 0.25,
+        porcentajeBase: 0.50,
+        tasaEfectiva: 0.125,
+        iueBE: remesa.iueBE,
+        netoRemesado: remesa.netoRemesado
+      },
+
+      // Estado
+      estado: 'GENERADO',
+      presentado: false,
+      pagado: false,
+      numeroComprobante: remesa.numeroComprobante
+    };
+
+    console.log(`📄 Form. 530 generado: ${remesa.numeroComprobante} — IUE-BE ${this._fmt(remesa.iueBE)}`);
+
+    return { exito: true, formulario, remesa };
+  }
+
+  /**
+   * Genera número correlativo para comprobantes de remesa exterior.
+   * @private
+   * 
+   */
+  _generarNumeroRemesaExterior() {
+    const COLLECCION = 'remesas_exterior';
+    const todos = this.almacenamiento.obtener(COLLECCION) || [];
+    const año = new Date().getFullYear();
+    const correlativo = todos.filter(c =>
+      c.numeroComprobante && c.numeroComprobante.startsWith(`REXT-${año}`)
+    ).length + 1;
+    return `REXT-${año}-${String(correlativo).padStart(4, '0')}`;
+  }
+    // ══════════════════════════════════════════════════════════
+  // REGÍMENES TRIBUTARIOS (RG, RTS, STI, RAU, SIETE-RG)
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Obtiene el régimen tributario de un contribuyente por su NIT.
+   * Busca en catálogos de clientes/proveedores. Default: RG.
+   *
+   * @param {string} nit
+   * @returns {Object}
+   */
+  obtenerRegimenContribuyente(nit) {
+    if (!nit || typeof nit !== 'string') {
+      return { exito: false, regimen: null, errores: ['NIT inválido'] };
+    }
+
+    const nitNormalizado = nit.trim();
+    let regimenCodigo = 'RG';
+    let fuente = 'DEFAULT';
+    let contribuyente = null;
+
+    // Buscar en catálogo de proveedores
+    if (window.CatalogoProveedores) {
+      const proveedores = window.CatalogoProveedores.obtenerTodos
+        ? window.CatalogoProveedores.obtenerTodos()
+        : (this.almacenamiento.obtener('proveedores') || []);
+      const prov = proveedores.find(p => p.nit === nitNormalizado);
+      if (prov) {
+        regimenCodigo = prov.regimenTributario || 'RG';
+        fuente = 'CATALOGO_PROVEEDORES';
+        contribuyente = { tipo: 'PROVEEDOR', datos: prov };
+      }
+    }
+
+    // Buscar en catálogo de clientes
+    if (!contribuyente && window.CatalogoClientes) {
+      const clientes = window.CatalogoClientes.obtenerTodos
+        ? window.CatalogoClientes.obtenerTodos()
+        : (this.almacenamiento.obtener('clientes') || []);
+      const cli = clientes.find(c => c.nit === nitNormalizado);
+      if (cli) {
+        regimenCodigo = cli.regimenTributario || 'RG';
+        fuente = 'CATALOGO_CLIENTES';
+        contribuyente = { tipo: 'CLIENTE', datos: cli };
+      }
+    }
+
+    const regimen = window.REGIMENES_TRIBUTARIOS
+      ? window.REGIMENES_TRIBUTARIOS[regimenCodigo]
+      : null;
+
+    if (!regimen) {
+      return {
+        exito: false,
+        regimen: null,
+        regimenCodigo,
+        errores: [`Régimen ${regimenCodigo} no reconocido`]
+      };
+    }
+
+    return {
+      exito: true,
+      nit: nitNormalizado,
+      regimen,
+      regimenCodigo,
+      fuente,
+      contribuyente
+    };
+  }
+
+  /**
+   * Valida si un régimen tributario permite cierta operación.
+   *
+   * @param {string} regimenCodigo
+   * @param {string} tipoOperacion
+   * @param {Object} [datos]
+   * @returns {Object} { permitido, advertencia, detalle }
+   */
+  validarRegimenParaOperacion(regimenCodigo, tipoOperacion, datos = {}) {
+    const regimen = window.REGIMENES_TRIBUTARIOS
+      ? window.REGIMENES_TRIBUTARIOS[regimenCodigo]
+      : null;
+
+    if (!regimen) {
+      return {
+        permitido: false,
+        advertencia: `Régimen ${regimenCodigo} no reconocido`,
+        detalle: null
+      };
+    }
+
+    switch (tipoOperacion) {
+
+      case 'EMITIR_CREDITO_FISCAL':
+      case 'COMPENSAR_IVA': {
+        const permite = regimen.emiteCreditoFiscal === true;
+
+        // PARTICULARIDAD del SIETE-RG: acumula crédito para migración
+        if (regimenCodigo === 'SIETE-RG') {
+          return {
+            permitido: false,
+            advertencia: `⚠️ ${regimen.nombre}: NO emite crédito fiscal actualmente, ` +
+              `pero el IVA se ACUMULA para cuando el contribuyente migre al RG.`,
+            detalle: {
+              acumulaCredito: true,
+              motivo: 'Régimen SIETE-RG con acumulación de crédito'
+            }
+          };
+        }
+
+        return {
+          permitido: permite,
+          advertencia: permite
+            ? `✅ ${regimen.nombre}: permite ${tipoOperacion === 'COMPENSAR_IVA' ? 'compensar IVA' : 'emitir crédito fiscal'}`
+            : `❌ ${regimen.nombre}: NO permite ${tipoOperacion === 'COMPENSAR_IVA' ? 'compensar IVA' : 'emitir crédito fiscal'}`,
+          detalle: {
+            emiteCreditoFiscal: regimen.emiteCreditoFiscal,
+            motivo: permite ? 'Régimen General autorizado' : 'Régimen sin crédito fiscal'
+          }
+        };
+      }
+
+      case 'EMITIR_FACTURA_SIN': {
+        return {
+          permitido: regimen.emiteFacturaSIN === true,
+          advertencia: regimen.emiteFacturaSIN
+            ? `✅ ${regimen.nombre}: emite factura con CUF/NIT`
+            : `❌ ${regimen.nombre}: emite nota de venta (sin CUF)`,
+          detalle: { emiteFacturaSIN: regimen.emiteFacturaSIN }
+        };
+      }
+
+      case 'LLEVAR_CONTABILIDAD': {
+        return {
+          permitido: true,
+          obligatorio: regimen.requiereContabilidad === true,
+          advertencia: regimen.requiereContabilidad
+            ? `📋 ${regimen.nombre}: contabilidad OBLIGATORIA`
+            : `📋 ${regimen.nombre}: contabilidad NO requerida`,
+          detalle: { requiereContabilidad: regimen.requiereContabilidad }
+        };
+      }
+
+      case 'VERIFICAR_LIMITE_INGRESOS': {
+        if (!datos.ingresosAnuales) {
+          return {
+            permitido: true,
+            advertencia: 'Sin datos de ingresos para verificar',
+            detalle: null
+          };
+        }
+
+        const limite = regimen.limites?.ingresosAnuales;
+        if (limite === null || limite === undefined) {
+          return {
+            permitido: true,
+            advertencia: `✅ ${regimen.nombre}: sin límite de ingresos`,
+            detalle: { ingresosAnuales: datos.ingresosAnuales, limite: null }
+          };
+        }
+
+        const supera = datos.ingresosAnuales > limite;
+        return {
+          permitido: !supera,
+          advertencia: supera
+            ? `⚠️ Ingresos ${this._fmt(datos.ingresosAnuales)} SUPERAN el límite de ${this._fmt(limite)} del ${regimen.nombre}`
+            : `✅ Ingresos dentro del límite de ${this._fmt(limite)}`,
+          detalle: {
+            ingresosAnuales: datos.ingresosAnuales,
+            limite,
+            supera
+          }
+        };
+      }
+
+      default:
+        return {
+          permitido: true,
+          advertencia: `Operación ${tipoOperacion} no validada específicamente`,
+          detalle: null
+        };
+    }
+  }
+
+  /**
+   * Detecta si un contribuyente debe migrar a otro régimen.
+   *
+   * @param {Object} contribuyente
+   * @returns {Object}
+   */
+  detectarMigracionRegimen(contribuyente) {
+    if (!contribuyente) {
+      return { exito: false, errores: ['Contribuyente no proporcionado'] };
+    }
+
+    const regimenActual = contribuyente.regimenTributario || 'RG';
+    const regimen = window.REGIMENES_TRIBUTARIOS
+      ? window.REGIMENES_TRIBUTARIOS[regimenActual]
+      : null;
+
+    if (!regimen) {
+      return {
+        exito: false,
+        errores: [`Régimen actual ${regimenActual} no reconocido`]
+      };
+    }
+
+    const motivos = [];
+    const limites = regimen.limites || {};
+    const ingresosAnuales = Number(contribuyente.ingresosAnuales) || 0;
+    const aniosAntiguedad = Number(contribuyente.aniosAntiguedad) || 0;
+    const empleados = Number(contribuyente.empleados) || 0;
+
+    // Verificar límites de ingresos
+    if (limites.ingresosAnuales !== null && limites.ingresosAnuales !== undefined) {
+      if (ingresosAnuales > limites.ingresosAnuales) {
+        motivos.push(
+          `📈 Ingresos anuales (${this._fmt(ingresosAnuales)}) superan el límite de ` +
+          `${this._fmt(limites.ingresosAnuales)} del ${regimen.nombre}`
+        );
+      }
+    }
+
+    // Verificar años de antigüedad (SIETE-RG)
+    if (limites.aniosAntiguedad !== null && limites.aniosAntiguedad !== undefined) {
+      if (aniosAntiguedad >= limites.aniosAntiguedad) {
+        motivos.push(
+          `📅 Antigüedad en régimen (${aniosAntiguedad} años) alcanza el límite de ` +
+          `${limites.aniosAntiguedad} años del ${regimen.nombre}`
+        );
+      }
+    }
+
+    // Verificar empleados (RTS)
+    if (limites.empleados !== null && limites.empleados !== undefined) {
+      if (empleados > limites.empleados) {
+        motivos.push(
+          `👥 Empleados (${empleados}) superan el límite de ${limites.empleados} del ${regimen.nombre}`
+        );
+      }
+    }
+
+    const debeMigrar = motivos.length > 0;
+    const regimenSugerido = debeMigrar ? 'RG' : regimenActual;
+    const regimenSugeridoInfo = debeMigrar
+      ? (window.REGIMENES_TRIBUTARIOS ? window.REGIMENES_TRIBUTARIOS['RG'] : null)
+      : null;
+
+    let advertencia = '';
+    if (debeMigrar) {
+      advertencia = `⚠️ El contribuyente debe migrar al Régimen General (RG) por: ${motivos.join(' | ')}`;
+    } else {
+      advertencia = `✅ Contribuyente dentro de los límites del ${regimen.nombre}`;
+    }
+
+    return {
+      exito: true,
+      debeMigrar,
+      regimenActual,
+      regimenSugerido,
+      regimenSugeridoInfo,
+      motivos,
+      advertencia,
+      datosEvaluados: {
+        ingresosAnuales,
+        aniosAntiguedad,
+        empleados
+      }
+    };
+  }
+
+  /**
+   * Obtiene un resumen comparativo de todos los regímenes.
+   *
+   * @returns {Array}
+   */
+  obtenerResumenRegimenes() {
+    if (!window.REGIMENES_TRIBUTARIOS) return [];
+
+    return Object.values(window.REGIMENES_TRIBUTARIOS).map(r => ({
+      codigo: r.codigo,
+      nombre: r.nombre,
+      descripcion: r.descripcion,
+      impuestos: r.impuestos,
+      periodicidad: r.periodicidad,
+      emiteCreditoFiscal: r.emiteCreditoFiscal,
+      limiteIngresos: r.limites?.ingresosAnuales || null,
+      vigencia: r.vigencia,
+      esNuevo: r.esNuevo || false
+    }));
+  }
+
+    // ══════════════════════════════════════════════════════════
+  // ASIENTOS CONTABLES DE IMPUESTOS
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Genera el asiento contable de la conciliación del IVA (Form. 200).
+   *
+   * Asiento cuando hay IVA a pagar:
+   *   IVA Débito Fiscal (2.1.03)       Bs X (Debe)
+   *       IVA Crédito Fiscal (1.1.07)      Bs Y (Haber)
+   *       IVA por Pagar (2.1.04)           Bs (X-Y) (Haber)
+   *
+   * Asiento cuando hay saldo a favor:
+   *   IVA Débito Fiscal (2.1.03)       Bs X (Debe)
+   *   IVA Saldo a Favor (1.1.08)       Bs (Y-X) (Debe)
+   *       IVA Crédito Fiscal (1.1.07)      Bs Y (Haber)
+   *
+   * @param {Object} conciliacion - Resultado de conciliarIVA()
+   * @returns {Object}
+   */
+  generarAsientoIVA(conciliacion) {
+    if (!conciliacion || !conciliacion.exito) {
+      return { exito: false, errores: ['Conciliación inválida'] };
+    }
+
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    const lineas = [];
+
+    // Debe: IVA Débito Fiscal (si hay ventas)
+    if (conciliacion.debitoFiscal > 0) {
+      lineas.push({
+        cuentaCodigo: '2.1.03',
+        cuentaNombre: 'IVA Débito Fiscal',
+        debe: conciliacion.debitoFiscal,
+        haber: 0
+      });
+    }
+
+    // Haber: IVA Crédito Fiscal (si hay compras aprovechables)
+    if (conciliacion.creditoFiscal > 0) {
+      lineas.push({
+        cuentaCodigo: '1.1.07',
+        cuentaNombre: 'IVA Crédito Fiscal',
+        debe: 0,
+        haber: conciliacion.creditoFiscal
+      });
+    }
+
+    // Resultado: IVA por pagar o saldo a favor
+    if (conciliacion.ivaPorPagar > 0) {
+      lineas.push({
+        cuentaCodigo: '2.1.04',
+        cuentaNombre: 'IVA por Pagar',
+        debe: 0,
+        haber: conciliacion.ivaPorPagar
+      });
+    } else if (conciliacion.saldoFavorNuevo > 0 && conciliacion.debitoFiscal < conciliacion.creditoFiscal) {
+      // Saldo a favor como activo (solo si crédito > débito en este período)
+      const saldoEstePeriodo = this._r2(conciliacion.creditoFiscal - conciliacion.debitoFiscal);
+      lineas.push({
+        cuentaCodigo: '1.1.08',
+        cuentaNombre: 'IVA Saldo a Favor',
+        debe: saldoEstePeriodo,
+        haber: 0
+      });
+    }
+
+    if (lineas.length === 0) {
+      return { exito: false, errores: ['No hay movimientos de IVA que registrar'] };
+    }
+
+    const concepto = `Conciliación IVA ${conciliacion.periodo} — ` +
+      (conciliacion.ivaPorPagar > 0
+        ? `A pagar ${this._fmt(conciliacion.ivaPorPagar)}`
+        : `Saldo a favor ${this._fmt(conciliacion.saldoFavorNuevo)}`);
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: this._ultimoDiaDelMes(conciliacion.periodo),
+      concepto,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`📝 Asiento IVA generado: ${resultado.asiento.numero} — ${concepto}`);
+    return { exito: true, asiento: resultado.asiento, conciliacion };
+  }
+
+  /**
+   * Genera el asiento contable del IT mensual (Form. 400).
+   *
+   * Asiento:
+   *   Gasto IT (5.6.01)              Bs X (Debe)
+   *       IT por Pagar (2.1.05)          Bs X (Haber)
+   *
+   * @param {Object} itCalculado - Resultado de calcularIT()
+   * @returns {Object}
+   */
+  generarAsientoIT(itCalculado) {
+    if (!itCalculado || !itCalculado.exito) {
+      return { exito: false, errores: ['Cálculo de IT inválido'] };
+    }
+
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    if (itCalculado.itPorPagar <= 0) {
+      return { exito: false, errores: ['No hay IT a registrar'] };
+    }
+
+    const lineas = [
+      {
+        cuentaCodigo: '5.6.01',
+        cuentaNombre: 'IT (Impuesto a las Transacciones)',
+        debe: itCalculado.itPorPagar,
+        haber: 0
+      },
+      {
+        cuentaCodigo: '2.1.05',
+        cuentaNombre: 'IT por Pagar',
+        debe: 0,
+        haber: itCalculado.itPorPagar
+      }
+    ];
+
+    const concepto = `IT mensual ${itCalculado.periodo} — ${this._fmt(itCalculado.itPorPagar)} (3% sobre ${this._fmt(itCalculado.ingresosBrutos)})`;
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: this._ultimoDiaDelMes(itCalculado.periodo),
+      concepto,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`📝 Asiento IT generado: ${resultado.asiento.numero} — ${this._fmt(itCalculado.itPorPagar)}`);
+    return { exito: true, asiento: resultado.asiento, it: itCalculado };
+  }
+
+  /**
+   * Genera el asiento contable del pago de IVA e IT al SIN.
+   *
+   * Asiento:
+   *   IVA por Pagar (2.1.04)         Bs X (Debe)
+   *   IT por Pagar (2.1.05)          Bs Y (Debe)
+   *       Bancos (1.1.02)                  Bs (X+Y) (Haber)
+   *
+   * @param {string} periodo
+   * @param {number} montoIVA - IVA a pagar
+   * @param {number} montoIT - IT a pagar
+   * @returns {Object}
+   */
+  generarAsientoPagoImpuestos(periodo, montoIVA, montoIT) {
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    const iva = this._r2(Number(montoIVA) || 0);
+    const it = this._r2(Number(montoIT) || 0);
+    const total = this._r2(iva + it);
+
+    if (total <= 0) {
+      return { exito: false, errores: ['No hay impuestos que pagar'] };
+    }
+
+    const lineas = [];
+
+    if (iva > 0) {
+      lineas.push({
+        cuentaCodigo: '2.1.04',
+        cuentaNombre: 'IVA por Pagar',
+        debe: iva,
+        haber: 0
+      });
+    }
+
+    if (it > 0) {
+      lineas.push({
+        cuentaCodigo: '2.1.05',
+        cuentaNombre: 'IT por Pagar',
+        debe: it,
+        haber: 0
+      });
+    }
+
+    lineas.push({
+      cuentaCodigo: '1.1.02',
+      cuentaNombre: 'Bancos',
+      debe: 0,
+      haber: total
+    });
+
+    const concepto = `Pago de impuestos al SIN — Período ${periodo} ` +
+      `(IVA ${this._fmt(iva)} + IT ${this._fmt(it)})`;
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: new Date().toISOString().split('T')[0],
+      concepto,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`💸 Pago de impuestos: ${resultado.asiento.numero} — ${this._fmt(total)}`);
+    return {
+      exito: true,
+      asiento: resultado.asiento,
+      periodo,
+      desglose: { iva, it, total }
+    };
+  }
+
+  /**
+   * Genera el asiento contable del IUE anual (Form. 500).
+   *
+   * Asiento:
+   *   Gasto IUE (5.6.02)              Bs X (Debe)
+   *       IUE por Pagar (2.2.02)          Bs X (Haber)
+   *
+   * @param {Object} iueCalculado - Resultado de calcularIUE()
+   * @returns {Object}
+   */
+  generarAsientoIUE(iueCalculado) {
+    if (!iueCalculado || !iueCalculado.exito) {
+      return { exito: false, errores: ['Cálculo de IUE inválido'] };
+    }
+
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    if (iueCalculado.iueDeterminado <= 0) {
+      return { exito: false, errores: ['No hay IUE que registrar (pérdida o cero)'] };
+    }
+
+    const lineas = [
+      {
+        cuentaCodigo: '5.6.02',
+        cuentaNombre: 'IUE (Impuesto a las Utilidades)',
+        debe: iueCalculado.iueDeterminado,
+        haber: 0
+      },
+      {
+        cuentaCodigo: '2.2.02',
+        cuentaNombre: 'IUE por Pagar',
+        debe: 0,
+        haber: iueCalculado.iueDeterminado
+      }
+    ];
+
+    const concepto = `IUE Gestión ${iueCalculado.anio} — 25% sobre utilidad imponible ${this._fmt(iueCalculado.utilidadImponible)}`;
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: `${iueCalculado.anio}-12-31`,
+      concepto,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`📝 Asiento IUE generado: ${resultado.asiento.numero} — ${this._fmt(iueCalculado.iueDeterminado)}`);
+    return { exito: true, asiento: resultado.asiento, iue: iueCalculado };
+  }
+
+  /**
+   * Genera el asiento contable de la compensación IT-IUE (Art. 77 Ley 843).
+   *
+   * Asiento:
+   *   IUE por Pagar (2.2.02)          Bs X (Debe) [IUE determinado]
+   *       IT Pagado Acumulado (1.1.15)    Bs Y (Haber) [IT usado]
+   *       IUE por Pagar (2.2.02)          Bs (X-Y) (Haber) [Diferencia a pagar]
+   *
+   * ⚠️ Si IT > IUE: IUE = 0, el exceso se pierde (no genera asiento de pérdida).
+   *
+   * @param {Object} compensacion - Resultado de compensarITcontraIUE()
+   * @returns {Object}
+   */
+  generarAsientoCompensacionIT(compensacion) {
+    if (!compensacion || !compensacion.exito) {
+      return { exito: false, errores: ['Compensación inválida'] };
+    }
+
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    // Caso PERDIDA: no hay asiento de compensación
+    if (compensacion.caso === 'PERDIDA') {
+      return {
+        exito: false,
+        errores: ['No hay IUE en pérdida, no se genera asiento de compensación'],
+        caso: 'PERDIDA'
+      };
+    }
+
+    const lineas = [];
+
+    // Debe: IUE por Pagar (total determinado)
+    lineas.push({
+      cuentaCodigo: '2.2.02',
+      cuentaNombre: 'IUE por Pagar',
+      debe: compensacion.iueDeterminado,
+      haber: 0
+    });
+
+    // Haber: IT Pagado (activo transitorio) — la parte que se usa
+    if (compensacion.itCompensado > 0) {
+      lineas.push({
+        cuentaCodigo: '1.1.15',
+        cuentaNombre: 'IT Pagado Acumulado',
+        debe: 0,
+        haber: compensacion.itCompensado
+      });
+    }
+
+    // Haber: IUE por Pagar — la diferencia (si IT < IUE)
+    if (compensacion.iuePorPagar > 0) {
+      lineas.push({
+        cuentaCodigo: '2.2.02',
+        cuentaNombre: 'IUE por Pagar (diferencia)',
+        debe: 0,
+        haber: compensacion.iuePorPagar
+      });
+    }
+
+    // Caso IT_MAYOR: el exceso se pierde (no se genera asiento).
+    // Solo registramos la compensación efectiva.
+    if (compensacion.caso === 'IT_MAYOR' && compensacion.excesoIT > 0) {
+      console.log(`⚠️ Compensación IT-IUE: Exceso de IT ${this._fmt(compensacion.excesoIT)} SE PIERDE (Art. 77 Ley 843)`);
+    }
+
+    const concepto = `Compensación IT-IUE Gestión ${compensacion.anio} — ` +
+      `IT ${this._fmt(compensacion.itAcumulado)} vs IUE ${this._fmt(compensacion.iueDeterminado)} ` +
+      `(${compensacion.caso})`;
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: `${compensacion.anio}-12-31`,
+      concepto,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`📝 Asiento compensación IT-IUE: ${resultado.asiento.numero} — ${compensacion.caso}`);
+    return {
+      exito: true,
+      asiento: resultado.asiento,
+      compensacion,
+      advertenciaExceso: compensacion.excesoIT > 0 ? compensacion.excesoIT : null
+    };
+  }
+
+  /**
+   * Genera el asiento contable del pago de IUE al SIN.
+   *
+   * Asiento:
+   *   IUE por Pagar (2.2.02)          Bs X (Debe)
+   *       Bancos (1.1.02)                  Bs X (Haber)
+   *
+   * @param {number} anio
+   * @param {number} monto
+   * @returns {Object}
+   */
+  generarAsientoPagoIUE(anio, monto) {
+    if (!window.motorContable) {
+      return { exito: false, errores: ['Motor Contable no disponible'] };
+    }
+
+    const montoNum = this._r2(Number(monto) || 0);
+    if (montoNum <= 0) {
+      return { exito: false, errores: ['No hay IUE que pagar'] };
+    }
+
+    const lineas = [
+      {
+        cuentaCodigo: '2.2.02',
+        cuentaNombre: 'IUE por Pagar',
+        debe: montoNum,
+        haber: 0
+      },
+      {
+        cuentaCodigo: '1.1.02',
+        cuentaNombre: 'Bancos',
+        debe: 0,
+        haber: montoNum
+      }
+    ];
+
+    const concepto = `Pago IUE Gestión ${anio} — ${this._fmt(montoNum)}`;
+
+    const resultado = window.motorContable.crearAsientoManual({
+      fecha: new Date().toISOString().split('T')[0],
+      concepto,
+      lineas
+    });
+
+    if (!resultado.exito) {
+      return { exito: false, errores: resultado.errores };
+    }
+
+    console.log(`💸 Pago IUE: ${resultado.asiento.numero} — ${this._fmt(montoNum)}`);
+    return { exito: true, asiento: resultado.asiento, anio, monto: montoNum };
+  }
+
+  /**
+   * Genera TODOS los asientos de impuestos de un período (mensual).
+   * Método orquestador que ejecuta: IVA + IT + Pago.
+   *
+   * @param {string} periodo - Formato "AAAA-MM"
+   * @returns {Object}
+   */
+  generarAsientosPeriodo(periodo) {
+    const resultados = {
+      periodo,
+      iva: null,
+      it: null,
+      pago: null,
+      errores: []
+    };
+
+    // 1. Conciliar IVA y generar asiento
+    const conciliacion = this.conciliarIVA(periodo);
+    if (conciliacion.exito) {
+      const asientoIVA = this.generarAsientoIVA(conciliacion);
+      if (asientoIVA.exito) {
+        resultados.iva = asientoIVA;
+      } else {
+        resultados.errores.push(`IVA: ${asientoIVA.errores.join(', ')}`);
+      }
+    }
+
+    // 2. Calcular IT y generar asiento
+    const it = this.calcularIT(periodo);
+    if (it.exito && it.itPorPagar > 0) {
+      const asientoIT = this.generarAsientoIT(it);
+      if (asientoIT.exito) {
+        resultados.it = asientoIT;
+      } else {
+        resultados.errores.push(`IT: ${asientoIT.errores.join(', ')}`);
+      }
+    }
+
+    // 3. Generar asiento de pago (si hay impuestos por pagar)
+    const ivaAPagar = conciliacion.exito ? conciliacion.ivaPorPagar : 0;
+    const itAPagar = it.exito ? it.itPorPagar : 0;
+
+    if (ivaAPagar > 0 || itAPagar > 0) {
+      const pago = this.generarAsientoPagoImpuestos(periodo, ivaAPagar, itAPagar);
+      if (pago.exito) {
+        resultados.pago = pago;
+      } else {
+        resultados.errores.push(`Pago: ${pago.errores.join(', ')}`);
+      }
+    }
+
+    console.log(`📚 Asientos período ${periodo}: ` +
+      `IVA ${resultados.iva ? '✅' : '❌'} | ` +
+      `IT ${resultados.it ? '✅' : '❌'} | ` +
+      `Pago ${resultados.pago ? '✅' : '❌'}`);
+
+    return resultados;
+  }
+
+  /**
+   * Genera todos los asientos anuales (cierre de gestión).
+   * Ejecuta: IUE + Compensación IT-IUE + Pago.
+   *
+   * @param {number} anio
+   * @param {Object} [opcionesIUE] - Opciones para calcularIUE
+   * @returns {Object}
+   */
+  generarAsientosAnuales(anio, opcionesIUE = {}) {
+    const resultados = {
+      anio,
+      iue: null,
+      compensacion: null,
+      pago: null,
+      errores: []
+    };
+
+    // 1. Compensar IT vs IUE (Art. 77)
+    const comp = this.compensarITcontraIUE(anio, opcionesIUE);
+    if (!comp.exito) {
+      resultados.errores.push(`Compensación: ${comp.errores.join(', ')}`);
+      return resultados;
+    }
+
+    // 2. Generar asiento del IUE determinado
+    if (comp.iueDeterminado > 0) {
+      const iueCalc = this.calcularIUE(anio, opcionesIUE);
+      if (iueCalc.exito) {
+        const asientoIUE = this.generarAsientoIUE(iueCalc);
+        if (asientoIUE.exito) {
+          resultados.iue = asientoIUE;
+        }
+      }
+    }
+
+    // 3. Generar asiento de compensación
+    if (comp.caso !== 'PERDIDA' && comp.iueDeterminado > 0) {
+      const asientoComp = this.generarAsientoCompensacionIT(comp);
+      if (asientoComp.exito) {
+        resultados.compensacion = asientoComp;
+      }
+    }
+
+    // 4. Pago del IUE (si hay diferencia)
+    if (comp.iuePorPagar > 0) {
+      const pago = this.generarAsientoPagoIUE(anio, comp.iuePorPagar);
+      if (pago.exito) {
+        resultados.pago = pago;
+      }
+    }
+
+    console.log(`📚 Asientos anuales ${anio}: ` +
+      `IUE ${resultados.iue ? '✅' : '❌'} | ` +
+      `Compensación ${resultados.compensacion ? '✅' : '❌'} | ` +
+      `Pago ${resultados.pago ? '✅' : '❌'}`);
+
+    return resultados;
+  }
+
+  /**
+   * Obtiene el último día de un mes.
+   * @private
+   */
+  _ultimoDiaDelMes(periodo) {
+    const [anio, mes] = periodo.split('-').map(Number);
+    const ultimoDia = new Date(anio, mes, 0).getDate();
+    return `${periodo}-${String(ultimoDia).padStart(2, '0')}`;
+  } 
+
   // ══════════════════════════════════════════════════════════
   // UTILIDADES PRIVADAS
   // ══════════════════════════════════════════════════════════

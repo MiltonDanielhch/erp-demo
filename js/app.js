@@ -219,6 +219,15 @@ function iniciarERP() {
   });
   console.log('🧾 Módulo de Impuestos inicializado (Módulo 5).');
 
+  // ── NUEVO Fase 6.2: Instanciar Capa 4 (Estados Financieros) ──
+  const capaEstadosFinancieros = new CapaEstadosFinancieros({
+    motorContable: motorContable,
+    almacenamiento: almacenamiento,
+    periodosFiscales: periodosFiscales,
+    moduloImpuestos: moduloImpuestos
+  });
+  console.log('📊 Capa 4: Estados Financieros inicializada.');
+
   // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
   const moduloAsientosNomina = new ModuloAsientosNomina({
     almacenamiento: almacenamiento,
@@ -299,6 +308,7 @@ function iniciarERP() {
   window.moduloRCIVA = moduloRCIVA;
   window.periodosFiscales = periodosFiscales;
   window.moduloImpuestos = moduloImpuestos;
+  window.capaEstadosFinancieros = capaEstadosFinancieros;
   window.moduloAsientosNomina = moduloAsientosNomina;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
@@ -316,6 +326,7 @@ function iniciarERP() {
   window.ERP.moduloRCIVA = moduloRCIVA;
   window.ERP.periodosFiscales = periodosFiscales;
   window.ERP.moduloImpuestos = moduloImpuestos;
+  window.ERP.capaEstadosFinancieros = capaEstadosFinancieros;
   window.ERP.moduloAsientosNomina = moduloAsientosNomina;
   window.moduloCompras = moduloCompras;
   window.ERP.moduloCompras = moduloCompras;
@@ -476,6 +487,12 @@ function iniciarERP() {
   console.log('   window.moduloImpuestos.conciliarIVA("2026-09")');
   console.log('   window.moduloImpuestos.generarFormulario200("2026-09")');
   console.log('   window.moduloImpuestos.obtenerSaldoIVAFavor()');
+  console.log('');
+  console.log('   📌 ESTADOS FINANCIEROS (Módulo 6 - Capa 4):');
+  console.log('   window.capaEstadosFinancieros.generarEstadoResultados("2026")');
+  console.log('   window.capaEstadosFinancieros.generarEstadoResultados("2026-09")');
+  console.log('   window.capaEstadosFinancieros.compararPeriodos("2026-08", "2026-09")');
+  console.log('   window.capaEstadosFinancieros.calcularVariacion(1000, 1500)');
 }
 
 // ──────────────────────────────────────────────────────────────

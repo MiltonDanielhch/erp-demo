@@ -610,18 +610,18 @@ Pago por servicio profesional sin factura: Bs 10,000
 ## Tareas de la Fase 5.8
 
 ```text
-[ ] Implementar calcularRetenciones(montoPago, tipoProveedor)
+[x] Implementar calcularRetenciones(montoPago, tipoProveedor)
     → Determina qué retenciones aplican según el tipo de proveedor.
     → Calcula retención RC-IVA (si aplica).
     → Calcula retención IT (si aplica).
     → Devuelve { retencionRCIVA, retencionIT, totalRetenido, netoAPagar }.
 
-[ ] Implementar obtenerRetencionesDelPeriodo(periodo)
+[x] Implementar obtenerRetencionesDelPeriodo(periodo)
     → Recorre todos los pagos del período.
     → Suma las retenciones de RC-IVA e IT.
     → Devuelve el total para el Form. 110.
 
-[ ] Implementar registrarRetencion(datosRetencion)
+[x] Implementar registrarRetencion(datosRetencion)
     → Registra una retención practicada.
     → Genera el documento fuente: COMPROBANTE_RETENCION.
     → Genera el asiento contable:
@@ -660,7 +660,7 @@ Remesa de utilidades al exterior: Bs 100,000
 ## Tareas de la Fase 5.9
 
 ```text
-[ ] Implementar calcularIUEBE(montoRemesa)
+[x] Implementar calcularIUEBE(montoRemesa)
     → Calcula el IUE-BE: 12.5% del monto remesado.
     → Devuelve { montoRemesa, iueBE, netoRemesado }.
     → 🧠 Mini-Prompt para IA: "Escribe una función JS que calcule 
@@ -669,7 +669,7 @@ Remesa de utilidades al exterior: Bs 100,000
       Devuelve el monto retenido y el neto a remesar. Incluye 
       la referencia al Formulario 530."
 
-[ ] Implementar registrarRemesaExterior(datosRemesa)
+[x] Implementar registrarRemesaExterior(datosRemesa)
     → Registra una remesa de utilidades al exterior.
     → Calcula el IUE-BE.
     → Genera el asiento contable:
@@ -712,17 +712,17 @@ Implementa la **clasificación de contribuyentes por régimen tributario**. Cada
 ## Tareas de la Fase 5.10
 
 ```text
-[ ] Crear js/config/regimenes-tributarios.js
+[x] Crear js/config/regimenes-tributarios.js
     → Exportar constante REGIMENES_TRIBUTARIOS con los 5 regímenes.
     → Cada régimen tiene: codigo, nombre, descripcion, 
       periodicidad, emiteCreditoFiscal, limites.
 
-[ ] Implementar obtenerRegimenContribuyente(nit)
+[x] Implementar obtenerRegimenContribuyente(nit)
     → Consulta el régimen tributario del contribuyente.
     → En el prototipo, se guarda en el catálogo de clientes/proveedores.
     → En un sistema productivo, se consultaría al padrón del SIN.
 
-[ ] Implementar validarRegimenParaOperacion(regimen, tipoOperacion)
+[x] Implementar validarRegimenParaOperacion(regimen, tipoOperacion)
     → Verifica si un régimen permite cierta operación.
     → Ejemplo: RTS no puede emitir factura con crédito fiscal.
     → Ejemplo: SIETE-RG no genera débito/crédito fiscal.
@@ -734,7 +734,7 @@ Implementa la **clasificación de contribuyentes por régimen tributario**. Cada
       el crédito para cuando migre al RG. Devuelve si está 
       permitido y una advertencia explicativa."
 
-[ ] Implementar detectarMigracionRegimen(contribuyente)
+[x] Implementar detectarMigracionRegimen(contribuyente)
     → Verifica si el contribuyente superó los límites de su régimen.
     → Si superó → sugiere migrar al Régimen General.
     → Ejemplo: RTS con ventas > límite → migrar a RG.
@@ -789,33 +789,33 @@ ASIENTO DE PAGO DE IUE:
 ## Tareas de la Fase 5.11
 
 ```text
-[ ] Implementar generarAsientoIVA(conciliacion)
+[x] Implementar generarAsientoIVA(conciliacion)
     → Genera el asiento de conciliación del IVA.
     → Debe: IVA Débito Fiscal.
     → Haber: IVA Crédito Fiscal + IVA por Pagar.
     → Si hay saldo a favor → se registra como activo.
 
-[ ] Implementar generarAsientoIT(itCalculado)
+[x] Implementar generarAsientoIT(itCalculado)
     → Genera el asiento del IT del mes.
     → Debe: Gasto de IT.
     → Haber: IT por Pagar.
 
-[ ] Implementar generarAsientoPagoImpuestos(iva, it)
+[x] Implementar generarAsientoPagoImpuestos(iva, it)
     → Genera el asiento de pago al SIN.
     → Debe: IVA por Pagar + IT por Pagar.
     → Haber: Bancos.
 
-[ ] Implementar generarAsientoIUE(iueCalculado)
+[x] Implementar generarAsientoIUE(iueCalculado)
     → Genera el asiento del IUE anual.
     → Debe: Gasto de IUE.
     → Haber: IUE por Pagar.
 
-[ ] Implementar generarAsientoCompensacionIT(compensacion)
+[x] Implementar generarAsientoCompensacionIT(compensacion)
     → Genera el asiento de compensación IT-IUE.
     → Debe: IUE por Pagar (total).
     → Haber: IT Pagado (acumulado) + IUE por Pagar (diferencia).
 
-[ ] Conectar con el Motor Contable (Módulo 3)
+[x] Conectar con el Motor Contable (Módulo 3)
     → Los asientos generados se guardan en "asientosPendientes".
     → El Motor Contable los procesa y valida la partida doble.
 ```
@@ -830,7 +830,7 @@ Construye las **pantallas** donde el usuario gestiona los impuestos: liquidació
 ## Tareas de la Fase 5.12
 
 ```text
-[ ] Crear vistas/impuestos.html
+[x] Crear vistas/impuestos.html
     → Secciones:
       ├── <h1> Impuestos y Cumplimiento Fiscal
       ├── <div class="tabs">
@@ -844,7 +844,7 @@ Construye las **pantallas** donde el usuario gestiona los impuestos: liquidació
       ├── <div id="contenido-tab">
       └── <table> para listar registros
 
-[ ] Crear js/vistas/impuestos-vista.js
+[x] Crear js/vistas/impuestos-vista.js
     → Lógica de la vista de impuestos.
     → Manejar cambio de tabs.
     → Botón "Calcular IVA del Mes" → conciliarIVA().
@@ -853,19 +853,19 @@ Construye las **pantallas** donde el usuario gestiona los impuestos: liquidació
     → Botón "Compensar IT vs IUE" → compensarITcontraIUE().
     → Vista previa de cada formulario del SIN.
 
-[ ] Implementar la vista de liquidación de IVA
+[x] Implementar la vista de liquidación de IVA
     → Tabla con: IVA débito, IVA crédito, IVA por pagar.
     → Desglose por factura (LCV preliminar).
     → Botón "Generar Form. 200" que muestra la estructura.
 
-[ ] Implementar la vista de compensación IT-IUE
+[x] Implementar la vista de compensación IT-IUE
     → Tabla con el IT pagado mes a mes.
     → Acumulado anual.
     → IUE determinado.
     → Resultado de la compensación.
     → Advertencia si el IT supera el IUE.
 
-[ ] Implementar el calendario de vencimientos
+[x] Implementar el calendario de vencimientos
     → Tabla con los próximos vencimientos.
     → Ordenado por fecha ascendente.
     → Semáforo: verde (>7 días), amarillo (3-7 días), rojo (<3 días).
@@ -877,7 +877,7 @@ Construye las **pantallas** donde el usuario gestiona los impuestos: liquidació
       verde si faltan más de 7 días, amarillo si faltan 3-7 días, 
       rojo si faltan menos de 3 días."
 
-[ ] Conectar con el menú lateral
+[x] Conectar con el menú lateral
     → Agregar enlace "🧾 Impuestos" en index.html.
     → Verificar que el enrutador carga vistas/impuestos.html.
 ```
