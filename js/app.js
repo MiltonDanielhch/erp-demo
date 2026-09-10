@@ -272,7 +272,15 @@ function iniciarERP() {
   });
   console.log('📒 Módulo de Asientos de Nómina inicializado.');
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
-  const moduloCompras = new ModuloCompras({
+
+  // ── Módulo 8: Contabilidad de Costos ──
+  const inventarioCapas = new InventarioCapasClase({ almacenamiento });
+  console.log('📦 Módulo Inventario por Capas inicializado (Módulo 8)');
+
+  const centrosCosto = new CentrosCostoClase({ almacenamiento });
+  console.log('🏢 Módulo Centros de Costo inicializado (Módulo 8)');
+
+   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
     capaDocumentos: capaDocumentos,
     catalogoProveedores: catalogoProveedores,
@@ -345,6 +353,8 @@ function iniciarERP() {
   window.ModuloCumplimiento = moduloCumplimiento;
   window.moduloFacturacion = moduloFacturacion;
   window.moduloFundempresa = moduloFundempresa;
+  window.inventarioCapas = inventarioCapas;
+  window.centrosCosto = centrosCosto;
 
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
@@ -387,6 +397,9 @@ function iniciarERP() {
   window.ERP.moduloCumplimiento = moduloCumplimiento;
   window.ERP.moduloFacturacion = moduloFacturacion;
   window.ERP.moduloFundempresa = moduloFundempresa;
+
+  window.ERP.inventarioCapas = inventarioCapas;
+  window.ERP.centrosCosto = centrosCosto;
 
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
