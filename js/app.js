@@ -247,6 +247,13 @@ function iniciarERP() {
   });
   console.log('✅ Módulo de Cumplimiento SIN inicializado (Módulo 7).');
 
+  // ── Módulo 7.7: Facturación Electrónica (SIAT simulado) ──
+  const moduloFacturacion = new ModuloFacturacionClase({
+    almacenamiento,
+    nitEmpresa: '123456789-1'
+  });
+  console.log('🧾 Módulo de Facturación Electrónica inicializado (Módulo 7.7).');
+
   // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
   const moduloAsientosNomina = new ModuloAsientosNomina({
     almacenamiento: almacenamiento,
@@ -330,6 +337,7 @@ function iniciarERP() {
   window.moduloAsientosNomina = moduloAsientosNomina;
   window.CalendarioTributario = calendarioTributario;
   window.ModuloCumplimiento = moduloCumplimiento;
+  window.moduloFacturacion = moduloFacturacion;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -369,7 +377,8 @@ function iniciarERP() {
 
   window.ERP.calendarioTributario = calendarioTributario;
   window.ERP.moduloCumplimiento = moduloCumplimiento;
-
+  window.ERP.moduloFacturacion = moduloFacturacion;
+  
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
 
