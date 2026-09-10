@@ -1038,6 +1038,9 @@ class ModuloCumplimientoSIN {
       alertasFE.forEach(a => alertas.push({
         ...a,
         origen: 'FUNDEMPRESA',
+        icono: a.semaforo?.icono || '⚪',
+        color: a.semaforo?.color || 'gris',
+        nivel: a.semaforo?.nivel || 'INFO',
         prioridad: this._calcularPrioridad(a.diasRestantes)
       }));
     }

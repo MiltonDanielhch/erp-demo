@@ -1,27 +1,257 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Cumplimiento y Reportería
-     Capa 5: Cumplimiento
      ══════════════════════════════════════════════════════════ -->
 
 <h2 class="contenido-titulo">✅ Cumplimiento y Reportería</h2>
-<p class="contenido-subtitulo">Formularios SIN, calendario tributario, LCV, SIAT</p>
+<p class="contenido-subtitulo">
+  Gestión integral ante SIN, Fundempresa y auditores externos
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Dashboard de Cumplimiento</button>
-  <button class="tab">Calendario Tributario</button>
-  <button class="tab">Formularios SIN</button>
-  <button class="tab">LCV</button>
-  <button class="tab">Facturación Electrónica</button>
-  <button class="tab">Fundempresa</button>
+<!-- ═══════════ Tabs ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div class="tabs" style="display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid var(--color-borde); padding-bottom: 8px;">
+    <button class="btn btn-tab activo" data-tab="dashboard">📊 Dashboard</button>
+    <button class="btn btn-tab" data-tab="calendario">📅 Calendario</button>
+    <button class="btn btn-tab" data-tab="formularios">📄 Formularios SIN</button>
+    <button class="btn btn-tab" data-tab="lcv">📋 LCV</button>
+    <button class="btn btn-tab" data-tab="facturacion">🧾 Facturación</button>
+    <button class="btn btn-tab" data-tab="fundempresa">🏛️ Fundempresa</button>
+    <button class="btn btn-tab" data-tab="auditoria">🔍 Auditoría</button>
+    <button class="btn btn-tab" data-tab="alertas">🚨 Alertas</button>
+  </div>
 </div>
 
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      ✅ Módulo de Cumplimiento — Se implementará en el <strong>Módulo 7</strong>.<br>
-      Aquí podrás generar los formularios del SIN (200, 400, 500),<br>
-      gestionar el calendario tributario, generar el LCV,<br>
-      y simular la facturación electrónica (CUIS, CUFD, CUF).
+<!-- ═══════════ Tab: Dashboard ═══════════ -->
+<div id="tab-dashboard" class="tab-content">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <h3 style="margin: 0;">📊 Dashboard de Cumplimiento</h3>
+      <button id="dash-btn-actualizar" class="btn btn-primary">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <div id="dash-resumen" class="card" style="margin-bottom: var(--espacio-md);">
+    <p style="text-align: center; padding: 20px; color: var(--texto-secundario);">
+      Presione "Actualizar" para cargar el dashboard
+    </p>
+  </div>
+
+  <div id="dash-contenido">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Sin datos
     </p>
   </div>
 </div>
+
+<!-- ═══════════ Tab: Calendario ═══════════ -->
+<div id="tab-calendario" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+        <label class="form-label">NIT de la empresa</label>
+        <input type="text" id="cal-nit" class="form-input" value="123456789-1" placeholder="Ej: 123456789-1">
+      </div>
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="cal-periodo" class="form-input">
+      </div>
+      <button id="cal-btn-calcular" class="btn btn-primary">📅 Calcular Vencimientos</button>
+    </div>
+  </div>
+
+  <div id="cal-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Calcular Vencimientos" para ver el calendario tributario
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Formularios SIN ═══════════ -->
+<div id="tab-formularios" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Formulario</label>
+        <select id="form-tipo" class="form-select">
+          <option value="FORM_200">Form. 200 — IVA</option>
+          <option value="FORM_400">Form. 400 — IT</option>
+          <option value="FORM_110">Form. 110 — Retenciones</option>
+          <option value="FORM_500">Form. 500 — IUE</option>
+          <option value="FORM_601">Form. 601 — Partes Vinculadas</option>
+          <option value="FORM_605">Form. 605 — EEFF SIAT</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período / Gestión</label>
+        <input type="month" id="form-periodo" class="form-input">
+      </div>
+      <button id="form-btn-generar" class="btn btn-primary">📄 Generar Formulario</button>
+      <button id="form-btn-exportar" class="btn btn-outline">📥 Exportar JSON</button>
+    </div>
+  </div>
+
+  <div id="form-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Seleccione un formulario y presione "Generar Formulario"
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: LCV ═══════════ -->
+<div id="tab-lcv" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="lcv-periodo" class="form-input">
+      </div>
+      <button id="lcv-btn-generar" class="btn btn-primary">📋 Generar LCV</button>
+      <button id="lcv-btn-conciliar" class="btn btn-outline">⚖️ Conciliar con Form. 200</button>
+      <button id="lcv-btn-exportar" class="btn btn-ghost">📥 Exportar CSV</button>
+    </div>
+  </div>
+
+  <div id="lcv-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar LCV" para ver el Libro de Compras y Ventas
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Facturación ═══════════ -->
+<div id="tab-facturacion" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <button id="fact-btn-cuis" class="btn btn-primary">🔑 Generar CUIS</button>
+      <button id="fact-btn-cufd" class="btn btn-outline">📋 Generar CUFD</button>
+      <button id="fact-btn-factura" class="btn btn-success">🧾 Emitir Factura Electrónica</button>
+      <button id="fact-btn-actualizar" class="btn btn-ghost">🔄 Actualizar Estado</button>
+    </div>
+  </div>
+
+  <div id="fact-estado" class="card" style="margin-bottom: var(--espacio-md);">
+    <p style="text-align: center; padding: 20px; color: var(--texto-secundario);">
+      Presione "Actualizar Estado" para ver el estado de CUIS/CUFD
+    </p>
+  </div>
+
+  <div id="fact-facturas" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Sin facturas emitidas
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Fundempresa ═══════════ -->
+<div id="tab-fundempresa" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Gestión</label>
+        <input type="number" id="fund-gestion" class="form-input" value="2026" min="2000" max="2100">
+      </div>
+      <button id="fund-btn-generar" class="btn btn-primary">📅 Generar Obligaciones Anuales</button>
+      <button id="fund-btn-actualizar" class="btn btn-outline">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <div id="fund-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Actualizar" para ver las obligaciones de Fundempresa
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Auditoría ═══════════ -->
+<div id="tab-auditoria" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="audit-periodo" class="form-input">
+      </div>
+      <button id="audit-btn-papeles" class="btn btn-primary">📋 Generar Papeles de Trabajo</button>
+      <button id="audit-btn-exportar" class="btn btn-outline">📥 Exportar Paquete</button>
+    </div>
+    <div style="margin-top: 12px;">
+      <label class="form-label">Trazabilidad de documento</label>
+      <div style="display: flex; gap: 8px;">
+        <input type="text" id="audit-doc-id" class="form-input" placeholder="ID del documento" style="flex: 1;">
+        <button id="audit-btn-trazar" class="btn btn-outline">🔍 Trazar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="audit-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar Papeles de Trabajo" para ver el paquete de auditoría
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Alertas ═══════════ -->
+<div id="tab-alertas" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <h3 style="margin: 0;">🚨 Alertas Consolidadas</h3>
+      <button id="alert-btn-actualizar" class="btn btn-primary">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <div id="alert-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Actualizar" para ver las alertas
+    </p>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+.btn-tab {
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-tab:hover { background: var(--color-fondo-claro); }
+.btn-tab.activo {
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+.tab-content { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.alerta-card {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid;
+}
+.alerta-card.critico { background: #fef2f2; border-color: var(--color-error); }
+.alerta-card.proximo { background: #fffbeb; border-color: #f59e0b; }
+.alerta-card.ok { background: #f0fdf4; border-color: var(--color-exito); }
+.estado-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+.estado-badge.verde { background: #dcfce7; color: #166534; }
+.estado-badge.amarillo { background: #fef3c7; color: #92400e; }
+.estado-badge.rojo { background: #fee2e2; color: #991b1b; }
+.estado-badge.negro { background: #1f2937; color: #fff; }
+</style>
+
+<script src="js/vistas/cumplimiento-vista.js"></script>
