@@ -732,7 +732,7 @@ Construye la **pantalla principal** donde el usuario visualiza todos los estados
 ## Tareas de la Fase 6.9
 
 ```text
-[ ] Crear vistas/estados-financieros.html
+[x] Crear vistas/estados-financieros.html
     → Secciones:
       ├── <h1> Estados Financieros
       ├── <div class="tabs">
@@ -746,7 +746,7 @@ Construye la **pantalla principal** donde el usuario visualiza todos los estados
       ├── <div id="contenido-tab">
       └── Botones de exportación (PDF, CSV)
 
-[ ] Crear js/vistas/estados-vista.js
+[x] Crear js/vistas/estados-vista.js
     → Lógica de la vista de estados financieros.
     → Manejar cambio de tabs.
     → Selector de período / fecha de corte.
@@ -754,35 +754,35 @@ Construye la **pantalla principal** donde el usuario visualiza todos los estados
     → Botón "Comparar" que genera el comparativo.
     → Botón "Imprimir" que usa css/reportes.css.
 
-[ ] Implementar la vista del Estado de Resultados
+[x] Implementar la vista del Estado de Resultados
     → Tabla con todos los niveles (bruta, operativa, neta).
     → Selector de período (mensual, trimestral, anual).
     → Formato de impresión limpio (sin menú lateral).
 
-[ ] Implementar la vista del Balance General
+[x] Implementar la vista del Balance General
     → Tabla con activos, pasivos, patrimonio.
     → Indicador visual de la ecuación contable.
     → Selector de fecha de corte.
 
-[ ] Implementar la vista del Flujo de Efectivo
+[x] Implementar la vista del Flujo de Efectivo
     → Tabla con las 3 categorías (operativo, inversión, financiamiento).
     → Selector de método (directo / indirecto).
 
-[ ] Implementar la vista de Razones Financieras
+[x] Implementar la vista de Razones Financieras
     → Tarjetas con cada ratio.
     → Semáforo visual (verde / amarillo / rojo).
     → Interpretación en lenguaje simple.
 
-[ ] Implementar la vista del Resumen Ejecutivo
+[x] Implementar la vista del Resumen Ejecutivo
     → 1 página con los datos clave.
     → Lenguaje simple para la gerencia.
     → Botón "Descargar PDF" (usando window.print()).
 
-[ ] Conectar con el menú lateral
+[x] Conectar con el menú lateral
     → Agregar enlace "📊 Estados Financieros" en index.html.
     → Verificar que el enrutador carga vistas/estados-financieros.html.
 
-[ ] Agregar estilos en css/reportes.css
+[x] Agregar estilos en css/reportes.css
     → Estilos para impresión (@media print).
     → Ocultar menú lateral y botones al imprimir.
     → Formato limpio con logo de la empresa.

@@ -211,7 +211,7 @@ function iniciarERP() {
   });
   console.log('📅 Períodos Fiscales inicializado (Módulo 5).');
 
-    // ── NUEVO Fase 5.3: Instanciar Módulo de Impuestos ───────────
+  // ── NUEVO Fase 5.3: Instanciar Módulo de Impuestos ───────────
   const moduloImpuestos = new ModuloImpuestos({
     almacenamiento: almacenamiento,
     capaDocumentos: capaDocumentos,
@@ -220,6 +220,7 @@ function iniciarERP() {
   console.log('🧾 Módulo de Impuestos inicializado (Módulo 5).');
 
   // ── NUEVO Fase 6.2: Instanciar Capa 4 (Estados Financieros) ──
+  // ⚠️ DEBE ir ANTES de moduloCumplimiento (dependencia)
   const capaEstadosFinancieros = new CapaEstadosFinancieros({
     motorContable: motorContable,
     almacenamiento: almacenamiento,
@@ -227,6 +228,24 @@ function iniciarERP() {
     moduloImpuestos: moduloImpuestos
   });
   console.log('📊 Capa 4: Estados Financieros inicializada.');
+
+  // ── NUEVO Módulo 7.2: Calendario Tributario ──
+  const calendarioTributario = new CalendarioTributarioClase({
+    almacenamiento,
+    nitEmpresa: '123456789-1'
+  });
+  console.log('📅 Calendario Tributario inicializado (Módulo 7).');
+
+  // ── NUEVO Módulo 7.3 a 7.6: Cumplimiento SIN ──
+  // ⚠️ DEBE ir AL FINAL porque usa todas las dependencias anteriores
+  const moduloCumplimiento = new ModuloCumplimientoSINClase({
+    almacenamiento,
+    motorContable,
+    moduloImpuestos,
+    capaEstadosFinancieros,   // ✅ ahora sí está declarada
+    calendarioTributario
+  });
+  console.log('✅ Módulo de Cumplimiento SIN inicializado (Módulo 7).');
 
   // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
   const moduloAsientosNomina = new ModuloAsientosNomina({
@@ -239,7 +258,6 @@ function iniciarERP() {
     motorContable: motorContable
   });
   console.log('📒 Módulo de Asientos de Nómina inicializado.');
-
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
   const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
@@ -310,6 +328,8 @@ function iniciarERP() {
   window.moduloImpuestos = moduloImpuestos;
   window.capaEstadosFinancieros = capaEstadosFinancieros;
   window.moduloAsientosNomina = moduloAsientosNomina;
+  window.CalendarioTributario = calendarioTributario;
+  window.ModuloCumplimiento = moduloCumplimiento;
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -346,6 +366,9 @@ function iniciarERP() {
   // ── Exponer al objeto window ─────────────────────────────────
   window.PeriodosContables = PeriodosContables;
   window.ERP.periodosContables = PeriodosContables;
+
+  window.ERP.calendarioTributario = calendarioTributario;
+  window.ERP.moduloCumplimiento = moduloCumplimiento;
 
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
