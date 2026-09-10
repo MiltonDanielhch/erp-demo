@@ -261,3 +261,101 @@
     display: none !important;
   }
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   ESTILOS DE IMPRESIÓN PARA ESTADOS FINANCIEROS
+   ══════════════════════════════════════════════════════════ */
+
+@media print {
+  /* Ocultar elementos de navegación */
+  #menu-lateral,
+  #header-principal,
+  #footer-principal,
+  .btn,
+  .btn-tab,
+  .form-group,
+  .tabs,
+  #contenedor-toasts {
+    display: none !important;
+  }
+
+  /* Contenido a ancho completo */
+  #contenido {
+    margin: 0 !important;
+    padding: 20px !important;
+    width: 100% !important;
+  }
+
+  /* Tipografía serif para documentos formales */
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+  }
+
+  /* Encabezado del reporte */
+  .reporte-header {
+    text-align: center;
+    margin-bottom: 30px;
+    page-break-after: avoid;
+  }
+
+  .reporte-header h3 {
+    font-size: 18pt;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .reporte-header p {
+    margin: 4px 0;
+    font-size: 11pt;
+  }
+
+  /* Tablas limpias */
+  .tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  .tabla td,
+  .tabla th {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .tabla tr {
+    page-break-inside: avoid;
+  }
+
+  /* Saltos de página entre secciones */
+  h4 {
+    page-break-before: always;
+    margin-top: 20px;
+  }
+
+  h4:first-of-type {
+    page-break-before: avoid;
+  }
+
+  /* Ocultar tabs y mostrar solo el activo */
+  .tab-content {
+    display: none !important;
+  }
+
+  .tab-content:not(.oculto) {
+    display: block !important;
+  }
+
+  /* Notas: mostrar todas expandidas */
+  .nota-body {
+    display: block !important;
+  }
+
+  /* Márgenes amplios */
+  @page {
+    margin: 2cm;
+  }
+}

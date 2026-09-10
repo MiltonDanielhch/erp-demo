@@ -1,26 +1,242 @@
 <!-- ══════════════════════════════════════════════════════════
      VISTA: Estados Financieros
-     Capa 4: Estados Financieros
      ══════════════════════════════════════════════════════════ -->
 
-<h2 class="contenido-titulo">📈 Estados Financieros</h2>
-<p class="contenido-subtitulo">Según NC del CTNAC — UFV suspendido desde dic/2020</p>
+<h2 class="contenido-titulo">📊 Estados Financieros</h2>
+<p class="contenido-subtitulo">
+  Reportes financieros según las NC del CTNAC (Expresado en Bolivianos)
+</p>
 
-<div class="tabs">
-  <button class="tab activo">Estado de Resultados</button>
-  <button class="tab">Balance General</button>
-  <button class="tab">Flujo de Efectivo</button>
-  <button class="tab">Notas</button>
-  <button class="tab">Ratios</button>
+<!-- ═══════════ Tabs ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div class="tabs" style="display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 2px solid var(--color-borde); padding-bottom: 8px;">
+    <button class="btn btn-tab activo" data-tab="resultados">📊 Estado de Resultados</button>
+    <button class="btn btn-tab" data-tab="balance">📋 Balance General</button>
+    <button class="btn btn-tab" data-tab="flujo">💧 Flujo de Efectivo</button>
+    <button class="btn btn-tab" data-tab="notas">📝 Notas</button>
+    <button class="btn btn-tab" data-tab="comparativos">📈 Comparativos</button>
+    <button class="btn btn-tab" data-tab="ratios">🎯 Razones Financieras</button>
+    <button class="btn btn-tab" data-tab="resumen">📄 Resumen Ejecutivo</button>
+  </div>
 </div>
 
-<div id="contenido-modulo">
-  <div class="card">
-    <p style="color: var(--gris-medio); text-align: center; padding: var(--espacio-xl);">
-      📈 Estados Financieros — Se implementará en el <strong>Módulo 6</strong>.<br>
-      Aquí podrás generar el Estado de Resultados, Balance General,<br>
-      Estado de Flujo de Efectivo, Notas a los EEFF,<br>
-      y razones financieras (ratios).
+<!-- ═══════════ Tab: Estado de Resultados ═══════════ -->
+<div id="tab-resultados" class="tab-content">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="er-periodo" class="form-input">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Tipo</label>
+        <select id="er-tipo" class="form-select">
+          <option value="mensual">Mensual</option>
+          <option value="anual" selected>Anual</option>
+        </select>
+      </div>
+      <button id="er-btn-generar" class="btn btn-primary">📊 Generar Estado</button>
+      <button id="er-btn-comparar" class="btn btn-outline">📈 Comparar</button>
+      <button id="er-btn-imprimir" class="btn btn-ghost">🖨️ Imprimir</button>
+    </div>
+  </div>
+
+  <div id="er-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar Estado" para ver el Estado de Resultados
     </p>
   </div>
 </div>
+
+<!-- ═══════════ Tab: Balance General ═══════════ -->
+<div id="tab-balance" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Fecha de corte</label>
+        <input type="date" id="bg-fecha" class="form-input">
+      </div>
+      <button id="bg-btn-generar" class="btn btn-primary">📋 Generar Balance</button>
+      <button id="bg-btn-imprimir" class="btn btn-ghost">🖨️ Imprimir</button>
+    </div>
+  </div>
+
+  <div id="bg-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar Balance" para ver el Balance General
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Flujo de Efectivo ═══════════ -->
+<div id="tab-flujo" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="fe-periodo" class="form-input">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Método</label>
+        <select id="fe-metodo" class="form-select">
+          <option value="INDIRECTO" selected>Indirecto</option>
+          <option value="DIRECTO">Directo</option>
+        </select>
+      </div>
+      <button id="fe-btn-generar" class="btn btn-primary">💧 Generar Flujo</button>
+      <button id="fe-btn-imprimir" class="btn btn-ghost">🖨️ Imprimir</button>
+    </div>
+  </div>
+
+  <div id="fe-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar Flujo" para ver el Estado de Flujo de Efectivo
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Notas ═══════════ -->
+<div id="tab-notas" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="notas-periodo" class="form-input">
+      </div>
+      <button id="notas-btn-generar" class="btn btn-primary">📝 Generar Notas</button>
+    </div>
+  </div>
+
+  <div id="notas-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar Notas" para ver las Notas a los Estados Financieros
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Comparativos ═══════════ -->
+<div id="tab-comparativos" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Período 1</label>
+        <input type="month" id="comp-periodo1" class="form-input">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Período 2</label>
+        <input type="month" id="comp-periodo2" class="form-input">
+      </div>
+      <button id="comp-btn-generar" class="btn btn-primary">📈 Comparar</button>
+    </div>
+  </div>
+
+  <div id="comp-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Seleccione dos períodos y presione "Comparar"
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Razones Financieras ═══════════ -->
+<div id="tab-ratios" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="ratios-periodo" class="form-input">
+      </div>
+      <button id="ratios-btn-generar" class="btn btn-primary">🎯 Calcular Ratios</button>
+    </div>
+  </div>
+
+  <div id="ratios-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Calcular Ratios" para ver las Razones Financieras
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab: Resumen Ejecutivo ═══════════ -->
+<div id="tab-resumen" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="resumen-periodo" class="form-input">
+      </div>
+      <button id="resumen-btn-generar" class="btn btn-primary">📄 Generar Resumen</button>
+      <button id="resumen-btn-pdf" class="btn btn-success">📥 Descargar PDF</button>
+    </div>
+  </div>
+
+  <div id="resumen-contenido" class="card">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Generar Resumen" para ver el Resumen Ejecutivo
+    </p>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<style>
+.btn-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-tab:hover { background: var(--color-fondo-claro); }
+.btn-tab.activo {
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+.tab-content { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.nota-acordeon {
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.nota-header {
+  padding: 12px 16px;
+  background: var(--color-fondo-claro);
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.nota-body {
+  padding: 16px;
+  display: none;
+}
+.nota-body.abierto { display: block; }
+.ratio-card {
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  margin-bottom: 12px;
+}
+.ratio-card.verde { border-color: var(--color-exito); background: #f0fdf4; }
+.ratio-card.amarillo { border-color: #f59e0b; background: #fffbeb; }
+.ratio-card.rojo { border-color: var(--color-error); background: #fef2f2; }
+.semaforo-ecuacion {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+.semaforo-ecuacion.cuadra { background: #f0fdf4; color: var(--color-exito); }
+.semaforo-ecuacion.no-cuadra { background: #fef2f2; color: var(--color-error); }
+</style>
+
+<script src="js/vistas/estados-vista.js"></script>

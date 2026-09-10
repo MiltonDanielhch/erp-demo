@@ -178,10 +178,10 @@ Ventas Netas                              Bs 150,000.00
 ## Tareas de la Fase 6.2
 
 ```text
-[ ] Crear js/capas/capa4-estados.js
+[x] Crear js/capas/capa4-estados.js
     → Clase CapaEstadosFinancieros con métodos para cada estado.
 
-[ ] Implementar generarEstadoResultados(periodo)
+[x] Implementar generarEstadoResultados(periodo)
     → Recorre todas las cuentas de resultados (grupos 4 y 5).
     → Agrupa por categoría: Ventas, Costo de Ventas, 
       Gastos Operativos, Ingresos/Gastos No Operativos.
@@ -195,22 +195,22 @@ Ventas Netas                              Bs 150,000.00
       del 25% si hay utilidad positiva. Devuelve objeto 
       estructurado con todos los niveles."
 
-[ ] Implementar calcularUtilidadBruta(ventas, costoVentas)
+[x] Implementar calcularUtilidadBruta(ventas, costoVentas)
     → Utilidad Bruta = Ventas Netas − Costo de Ventas.
 
-[ ] Implementar calcularUtilidadOperativa(utilidadBruta, gastosOperativos)
+[x] Implementar calcularUtilidadOperativa(utilidadBruta, gastosOperativos)
     → Utilidad Operativa = Utilidad Bruta − Gastos Operativos.
 
-[ ] Implementar calcularUtilidadNeta(utilidadAntesImpuestos, iue)
+[x] Implementar calcularUtilidadNeta(utilidadAntesImpuestos, iue)
     → Utilidad Neta = Utilidad Antes de Impuestos − IUE.
     → Si utilidad antes de impuestos ≤ 0 → IUE = 0.
 
-[ ] Implementar compararPeriodos(periodo1, periodo2)
+[x] Implementar compararPeriodos(periodo1, periodo2)
     → Genera un estado de resultados comparativo.
     → Columnas: Período 1, Período 2, Variación (Bs y %).
     → Para análisis de tendencias.
 
-[ ] Crear vista parcial en estados-financieros.html
+[x] Crear vista parcial en estados-financieros.html
     → Tabla con el Estado de Resultados.
     → Selector de período (mensual, trimestral, anual).
     → Botón "Comparar con período anterior".
@@ -288,7 +288,7 @@ TOTAL PASIVO + PATRIMONIO            Bs 135,200.00 ✓ (= Activo)
 ## Tareas de la Fase 6.3
 
 ```text
-[ ] Implementar generarBalanceGeneral(fecha)
+[x] Implementar generarBalanceGeneral(fecha)
     → Recorre todas las cuentas de balance (grupos 1, 2, 3).
     → Agrupa por categoría: Activo Corriente, Activo No Corriente, 
       Pasivo Corriente, Pasivo No Corriente, Patrimonio.
@@ -302,25 +302,25 @@ TOTAL PASIVO + PATRIMONIO            Bs 135,200.00 ✓ (= Activo)
       Verifica la ecuación contable: Activo = Pasivo + Patrimonio. 
       Si no cuadra, devuelve el monto de la diferencia."
 
-[ ] Implementar verificarEcuacionContable(balance)
+[x] Implementar verificarEcuacionContable(balance)
     → Compara Total Activo vs. Total Pasivo + Patrimonio.
     → Si son iguales → devuelve { cuadra: true }.
     → Si no → devuelve { cuadra: false, diferencia: monto }.
     → ⚠️ Si no cuadra, el ERP debe alertar y NO permitir cerrar.
 
-[ ] Implementar clasificarCuentaPorCorriente(cuentaCodigo)
+[x] Implementar clasificarCuentaPorCorriente(cuentaCodigo)
     → Determina si una cuenta es corriente o no corriente.
     → Activos corrientes: efectivo, clientes, inventario, IVA CF.
     → Activos no corrientes: maquinaria, vehículos, edificios.
     → Pasivos corrientes: proveedores, impuestos, nómina.
     → Pasivos no corrientes: préstamos a largo plazo.
 
-[ ] Implementar generarBalanceComparativo(fecha1, fecha2)
+[x] Implementar generarBalanceComparativo(fecha1, fecha2)
     → Genera un balance comparativo entre dos fechas.
     → Columnas: Fecha 1, Fecha 2, Variación (Bs y %).
     → Para análisis de evolución patrimonial.
 
-[ ] Crear vista parcial en estados-financieros.html
+[] Crear vista parcial en estados-financieros.html
     → Tabla con el Balance General.
     → Selector de fecha de corte.
     → Indicador visual: ✓ verde si cuadra, ❌ rojo si no.
@@ -371,7 +371,7 @@ Saldo Final de Efectivo:                Bs 25,000.00
 ## Tareas de la Fase 6.4
 
 ```text
-[ ] Implementar generarFlujoEfectivo(periodo, metodo)
+[X] Implementar generarFlujoEfectivo(periodo, metodo)
     → Si metodo = "DIRECTO": suma entradas y salidas de caja.
     → Si metodo = "INDIRECTO": parte de utilidad neta y ajusta.
     → Clasifica en 3 categorías: Operativo, Inversión, Financiamiento.
@@ -384,27 +384,27 @@ Saldo Final de Efectivo:                Bs 25,000.00
       operativas, de inversión y de financiamiento. Devuelve 
       el flujo neto del período y los saldos inicial y final."
 
-[ ] Implementar calcularFlujoOperativo(utilidadNeta, ajustes)
+[x] Implementar calcularFlujoOperativo(utilidadNeta, ajustes)
     → Parte de la utilidad neta.
     → Suma depreciación (no mueve caja).
     → Ajusta por variaciones en capital de trabajo.
     → Devuelve el flujo operativo.
 
-[ ] Implementar calcularFlujoInversion(movimientosActivos)
+[x] Implementar calcularFlujoInversion(movimientosActivos)
     → Suma las compras de activos fijos (salida de caja).
     → Suma las ventas de activos fijos (entrada de caja).
     → Devuelve el flujo de inversión.
 
-[ ] Implementar calcularFlujoFinanciamiento(movimientosDeuda)
+[x] Implementar calcularFlujoFinanciamiento(movimientosDeuda)
     → Suma los préstamos recibidos (entrada de caja).
     → Suma los pagos de préstamos y dividendos (salida de caja).
     → Devuelve el flujo de financiamiento.
 
-[ ] Implementar verificarFlujoEfectivo(flujo, saldoInicial, saldoFinal)
+[x] Implementar verificarFlujoEfectivo(flujo, saldoInicial, saldoFinal)
     → Verifica que: Saldo Inicial + Flujo Neto = Saldo Final.
     → Si no cuadra → devuelve la diferencia.
 
-[ ] Crear vista parcial en estados-financieros.html
+[x] Crear vista parcial en estados-financieros.html
     → Tabla con el Flujo de Efectivo.
     → Selector de método (directo / indirecto).
     → Selector de período.
@@ -472,7 +472,7 @@ NOTA 12: Hechos Posteriores al Cierre
 ## Tareas de la Fase 6.5
 
 ```text
-[ ] Implementar generarEstructuraNotas(empresa, periodo)
+[x] Implementar generarEstructuraNotas(empresa, periodo)
     → Genera la estructura vacía de las 12 notas típicas.
     → Pre-llena los datos automáticos (NIT, período, moneda).
     → Deja campos vacíos para el contenido narrativo del contador.
@@ -486,24 +486,24 @@ NOTA 12: Hechos Posteriores al Cierre
       obligaciones bancarias, patrimonio, contingencias, y 
       hechos posteriores. Pre-llena campos automáticos."
 
-[ ] Implementar generarNotaPoliticasContables(config)
+[x] Implementar generarNotaPoliticasContables(config)
     → Genera la Nota 3 con las políticas configuradas en el ERP.
     → Método de inventario (PEPS / Promedio Ponderado).
     → Método de depreciación (línea recta).
     → Tratamiento del IVA (incluido / por fuera).
     → ⚠️ Debe indicar que NO se aplica ajuste por inflación.
 
-[ ] Implementar generarNotaActivosFijos(activos)
+[x] Implementar generarNotaActivosFijos(activos)
     → Genera la Nota 7 con el desglose de activos fijos.
     → Incluye: costo original, depreciación acumulada, valor neto.
     → Agrupado por tipo: maquinaria, vehículos, edificios, muebles.
 
-[ ] Implementar generarNotaCuentasCobrar(clientes)
+[x] Implementar generarNotaCuentasCobrar(clientes)
     → Genera la Nota 5 con la antigüedad de saldos.
     → Agrupa: 0-30 días, 31-60 días, 61-90 días, >90 días.
     → Calcula la provisión para incobrables.
 
-[ ] Crear vista parcial en estados-financieros.html
+[x] Crear vista parcial en estados-financieros.html
     → Sección "Notas a los Estados Financieros".
     → Acordeón con las 12 notas (expandible/colapsable).
     → Campos editables para el contenido narrativo.
@@ -553,7 +553,7 @@ Utilidad Neta         │ Bs 1,163   │ Bs 375     │ +Bs 788 (+210%)
 ## Tareas de la Fase 6.6
 
 ```text
-[ ] Implementar generarEstadoResultadosComparativo(periodo1, periodo2)
+[x] Implementar generarEstadoResultadosComparativo(periodo1, periodo2)
     → Genera el estado de resultados de ambos períodos.
     → Calcula la variación en Bs y en % para cada línea.
     → Devuelve objeto con las 3 columnas.
@@ -564,18 +564,18 @@ Utilidad Neta         │ Bs 1,163   │ Bs 375     │ +Bs 788 (+210%)
       la variación porcentual. Devuelve objeto con las 3 
       columnas: Período 1, Período 2, Variación."
 
-[ ] Implementar generarBalanceComparativo(fecha1, fecha2)
+[x] Implementar generarBalanceComparativo(fecha1, fecha2)
     → Genera el balance general de ambas fechas.
     → Calcula la variación en Bs y en % para cada cuenta.
     → Devuelve objeto con las 3 columnas.
 
-[ ] Implementar calcularVariacion(valor1, valor2)
+[x] Implementar calcularVariacion(valor1, valor2)
     → Variación absoluta = valor2 − valor1.
     → Variación porcentual = (valor2 − valor1) ÷ valor1 × 100.
     → Maneja división por cero (si valor1 = 0).
     → Devuelve { variacionBs, variacionPorcentaje }.
 
-[ ] Crear vista parcial en estados-financieros.html
+[x] Crear vista parcial en estados-financieros.html
     → Selector de tipo de comparativo.
     → Tabla con las 3 columnas.
     → Colores: verde si variación positiva, rojo si negativa.
@@ -624,7 +624,7 @@ ROE = 11,850 / 53,300 = 22.2%
 ## Tareas de la Fase 6.7
 
 ```text
-[ ] Implementar calcularRatiosFinancieros(balance, estadoResultados)
+[x] Implementar calcularRatiosFinancieros(balance, estadoResultados)
     → Calcula todos los ratios listados arriba.
     → Devuelve objeto con cada ratio y su interpretación.
     → 🧠 Mini-Prompt para IA: "Escribe una función JS que calcule 
@@ -634,18 +634,18 @@ ROE = 11,850 / 53,300 = 22.2%
       Para cada ratio, devuelve el valor numérico y una 
       interpretación breve en español."
 
-[ ] Implementar interpretarRatio(nombre, valor)
+[x] Implementar interpretarRatio(nombre, valor)
     → Devuelve una interpretación en lenguaje simple.
     → Ejemplo: liquidez > 1.5 → "Buena capacidad de pago".
     → Ejemplo: endeudamiento > 70% → "Alto nivel de deuda".
     → Ejemplo: margen neto < 5% → "Rentabilidad baja".
 
-[ ] Implementar generarDashboardRatios(ratios)
+[x] Implementar generarDashboardRatios(ratios)
     → Genera un panel visual con los ratios.
     → Semáforo: verde (bueno), amarillo (regular), rojo (malo).
     → Para el dashboard principal del ERP.
 
-[ ] Crear vista parcial en estados-financieros.html
+[x] Crear vista parcial en estados-financieros.html
     → Sección "Razones Financieras".
     → Tarjetas con cada ratio y su interpretación.
     → Semáforo visual.
@@ -689,13 +689,13 @@ Estados Financieros completos → Formulario 605 (SIAT)
 ## Tareas de la Fase 6.8
 
 ```text
-[ ] Implementar prepararDatosFormulario500(año)
+[x] Implementar prepararDatosFormulario500(año)
     → Recopila: utilidad contable, ajustes, utilidad imponible, 
       IUE determinado, IT compensado, IUE por pagar.
     → Genera la estructura del Formulario 500.
     → Devuelve objeto con todos los campos.
 
-[ ] Implementar prepararDatosFormulario605(año)
+[x] Implementar prepararDatosFormulario605(año)
     → Recopila: Balance General, Estado de Resultados, 
       Flujo de Efectivo, Notas.
     → Genera la estructura del Formulario 605.
@@ -708,14 +708,14 @@ Estados Financieros completos → Formulario 605 (SIAT)
       Patrimonio Neto, y Notas a los Estados Financieros. 
       Devuelve la estructura JSON lista para envío."
 
-[ ] Implementar validarEstadosParaEnvio(estados)
+[x] Implementar validarEstadosParaEnvio(estados)
     → Verifica que todos los estados estén completos.
     → Verifica que el Balance cuadre (Activo = Pasivo + Patrimonio).
     → Verifica que las Notas estén presentes.
     → Verifica que no haya períodos cerrados pendientes.
     → Devuelve { valido, errores[] }.
 
-[ ] Implementar generarResumenEjecutivo(estados)
+[x] Implementar generarResumenEjecutivo(estados)
     → Genera un resumen de 1 página para la gerencia.
     → Incluye: utilidad neta, total activos, endeudamiento, 
       liquidez, flujo de efectivo.
