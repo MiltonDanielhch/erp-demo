@@ -355,6 +355,9 @@ function iniciarERP() {
   window.moduloFundempresa = moduloFundempresa;
   window.inventarioCapas = inventarioCapas;
   window.centrosCosto = centrosCosto;
+  window.costosCIF = costosCIF;
+  window.ordenesTrabajo = ordenesTrabajo;
+  window.analisisMargen = analisisMargen;
 
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
@@ -400,6 +403,10 @@ function iniciarERP() {
 
   window.ERP.inventarioCapas = inventarioCapas;
   window.ERP.centrosCosto = centrosCosto;
+
+  window.ERP.costosCIF = costosCIF;
+  window.ERP.ordenesTrabajo = ordenesTrabajo;
+  window.ERP.analisisMargen = analisisMargen;
 
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
