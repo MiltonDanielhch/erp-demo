@@ -725,6 +725,693 @@ class ModuloCumplimientoSIN {
     };
   }
 
+    // ══════════════════════════════════════════════════════════
+  // FASE 7.9 — AUDITORÍA: TRAZABILIDAD Y PAPELES DE TRABAJO
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Genera todos los papeles de trabajo para auditoría externa.
+   *
+   * Incluye:
+   * 1. Libro Diario completo del período
+   * 2. Libro Mayor por cuenta
+   * 3. Balanza de Comprobación
+   * 4. Conciliación bancaria
+   * 5. Detalle de cuentas por cobrar (antigüedad)
+   * 6. Detalle de cuentas por pagar (vencimiento)
+   * 7. Kardex valorado de inventario
+   * 8. Detalle de activos fijos y depreciación
+   * 9. Detalle de provisiones (aguinaldo, indemnización)
+   * 10. Conciliación de IVA (Form. 200)
+   * 11. Conciliación de IT (Form. 400)
+   * 12. Liquidación de IUE (Form. 500)
+   * 13. LCV completo
+   * 14. Estados Financieros con Notas
+   *
+   * @param {string} periodo - "AAAA" o "AAAA-MM"
+   * @returns {Object}
+   */
+  generarPapelesTrabajo(periodo) {
+    const esAnual = /^\d{4}$/.test(periodo);
+    const gestion = esAnual ? periodo : periodo.split('-')[0];
+
+    const papeles = {
+      exito: true,
+      periodo,
+      fechaGeneracion: new Date().toISOString(),
+      totalPapeles: 14,
+      advertencia: '⚠️ Paquete de auditoría generado en modo prototipo educativo.'
+    };
+
+    // 1. Libro Diario
+    papeles.libroDiario = this._generarPapelLibroDiario(periodo);
+
+    // 2. Libro Mayor
+    papeles.libroMayor = this._generarPapelLibroMayor();
+
+    // 3. Balanza de Comprobación
+    papeles.balanza = this._generarPapelBalanza(periodo);
+
+    // 4. Conciliación bancaria
+    papeles.conciliacionBancaria = this._generarPapelConciliacionBancaria(periodo);
+
+    // 5. Cuentas por cobrar (antigüedad)
+    papeles.cuentasPorCobrar = this._generarPapelCuentasPorCobrar(periodo);
+
+    // 6. Cuentas por pagar (vencimiento)
+    papeles.cuentasPorPagar = this._generarPapelCuentasPorPagar(periodo);
+
+    // 7. Kardex de inventario
+    papeles.kardexInventario = this._generarPapelKardex(periodo);
+
+    // 8. Activos fijos y depreciación
+    papeles.activosFijos = this._generarPapelActivosFijos();
+
+    // 9. Provisiones (aguinaldo, indemnización)
+    papeles.provisiones = this._generarPapelProvisiones(gestion);
+
+    // 10. Conciliación IVA (Form. 200)
+    papeles.conciliacionIVA = this._generarPapelConciliacionIVA(periodo);
+
+    // 11. Conciliación IT (Form. 400)
+    papeles.conciliacionIT = this._generarPapelConciliacionIT(periodo);
+
+    // 12. Liquidación IUE (Form. 500)
+    papeles.liquidacionIUE = this._generarPapelLiquidacionIUE(gestion);
+
+    // 13. LCV
+    papeles.lcv = isFinite(Number(periodo)) ? null : this.generarLCV(periodo);
+
+    // 14. Estados Financieros
+    papeles.estadosFinancieros = this._generarPapelEstadosFinancieros(gestion);
+
+    // Resumen
+    const disponibles = Object.entries(papeles)
+      .filter(([k, v]) => k !== 'exito' && k !== 'periodo' && k !== 'fechaGeneracion' &&
+                          k !== 'totalPapeles' && k !== 'advertencia' && v !== null)
+      .length;
+
+    papeles.papelesDisponibles = disponibles;
+
+    console.log(`📋 Papeles de trabajo generados: ${disponibles}/${papeles.totalPapeles} para ${periodo}`);
+    return papeles;
+  }
+
+  /**
+   * Genera la trazabilidad completa de un documento fuente.
+   *
+   * Rastrea: Documento → Asiento → Cuenta en Mayor → Saldo en Balanza
+   * → Estado Financiero.
+   *
+   * @param {string} documentoId - ID del documento
+   * @returns {Object} Cadena de trazabilidad
+   */
+  generarTrazabilidadDocumento(documentoId) {
+    if (!documentoId) {
+      return { exito: false, errores: ['ID de documento requerido'] };
+    }
+
+    // 1. Buscar documento fuente
+    const documentos = this._obtenerDocumentosTodos();
+    const documento = documentos.find(d =>
+      (d.id || d.documentoId) === documentoId
+    );
+
+    if (!documento) {
+      return { exito: false, errores: [`Documento ${documentoId} no encontrado`] };
+    }
+
+    // 2. Buscar asientos relacionados
+    const asientos = this._obtenerAsientosRelacionados(documentoId);
+
+    // 3. Obtener cuentas afectadas
+    const cuentas = this._obtenerCuentasDeAsientos(asientos);
+
+    // 4. Obtener saldos de esas cuentas
+    const saldos = this._obtenerSaldosDeCuentas(cuentas);
+
+    // 5. Determinar en qué estados financieros aparecen
+    const estadosAfectados = this._determinarEstadosAfectados(cuentas);
+
+    const trazabilidad = {
+      exito: true,
+      documentoId,
+      cadena: {
+        documento: {
+          id: documento.id || documento.documentoId,
+          tipo: this._tipoOperacionDocumento(documento),
+          fecha: documento.fecha || documento.fechaEmision,
+          monto: documento.total || documento.monto,
+          contraparte: documento.razonSocial || documento.clienteNombre || documento.proveedorNombre
+        },
+        asientos: asientos.map(a => ({
+          id: a.id,
+          numero: a.numero,
+          fecha: a.fecha,
+          concepto: a.concepto,
+          totalDebe: a.totalDebe,
+          totalHaber: a.totalHaber
+        })),
+        cuentasAfectadas: cuentas.map(c => ({
+          codigo: c.cuentaCodigo,
+          nombre: c.cuentaNombre,
+          montoEnDocumento: this._montoDeCuentaEnAsientos(c.cuentaCodigo, asientos)
+        })),
+        saldos: saldos,
+        estadosAfectados
+      },
+      resumen: {
+        cantidadAsientos: asientos.length,
+        cantidadCuentas: cuentas.length,
+        estados: estadosAfectados.join(', ')
+      }
+    };
+
+    console.log(`🔍 Trazabilidad ${documentoId}: ${asientos.length} asientos → ${cuentas.length} cuentas`);
+    return trazabilidad;
+  }
+
+  /**
+   * Exporta paquete completo de auditoría.
+   *
+   * @param {string} periodo
+   * @param {string} formato - 'JSON' o 'CSV'
+   * @returns {string}
+   */
+  exportarParaAuditor(periodo, formato = 'JSON') {
+    const papeles = this.generarPapelesTrabajo(periodo);
+
+    if (formato.toUpperCase() === 'JSON') {
+      return JSON.stringify(papeles, null, 2);
+    }
+
+    if (formato.toUpperCase() === 'CSV') {
+      // En CSV solo exportamos los papeles tabulares
+      return '# PAPELES DE TRABAJO\n' +
+             '# Formato CSV simplificado\n' +
+             `# Período: ${periodo}\n` +
+             `# Fecha: ${new Date().toISOString()}\n` +
+             JSON.stringify(this._aplanarObjeto(papeles), null, 2);
+    }
+
+    return JSON.stringify(papeles, null, 2);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // FASE 7.10 — DASHBOARD DE CUMPLIMIENTO
+  // ══════════════════════════════════════════════════════════
+
+  /**
+   * Genera el dashboard completo de cumplimiento.
+   *
+   * Consolida:
+   * - Estado de formularios SIN
+   * - Alertas del calendario tributario
+   * - Obligaciones de Fundempresa
+   * - Estado de facturación electrónica
+   * - Indicadores de cumplimiento
+   *
+   * @returns {Object}
+   */
+  generarDashboardCumplimiento() {
+    const dashboard = {
+      exito: true,
+      fechaGeneracion: new Date().toISOString(),
+
+      // Estado de formularios
+      formularios: this._obtenerEstadoFormularios(),
+
+      // Próximos vencimientos (SIN)
+      proximosVencimientos: this.calendarioTributario
+        ? this.calendarioTributario.obtenerProximosVencimientos(10)
+        : [],
+
+      // Alertas del calendario
+      alertasSIN: this.calendarioTributario
+        ? this.calendarioTributario.generarAlertasVencimiento(30)
+        : [],
+
+      // Obligaciones Fundempresa
+      fundempresa: this._obtenerEstadoFundempresa(),
+
+      // Facturación electrónica
+      facturacion: this._obtenerEstadoFacturacion(),
+
+      // Indicadores
+      indicadores: this.calcularIndicadoresCumplimiento(),
+
+      // Alertas consolidadas
+      alertasConsolidadas: this.generarAlertasConsolidadas()
+    };
+
+    // Resumen ejecutivo
+    dashboard.resumen = this._generarResumenDashboard(dashboard);
+
+    console.log(`📊 Dashboard de cumplimiento generado: ${dashboard.alertasConsolidadas.length} alertas`);
+    return dashboard;
+  }
+
+  /**
+   * Calcula indicadores de cumplimiento.
+   *
+   * @returns {Object}
+   */
+  calcularIndicadoresCumplimiento() {
+    const documentos = this._obtenerDocumentosTodos();
+    const facturasCompra = documentos.filter(d => this._tipoOperacionDocumento(d) === 'COMPRA');
+
+    // % facturas con NIT válido
+    const conNIT = facturasCompra.filter(d => {
+      const nit = d.nit || d.proveedorNit || '';
+      return nit && nit.length >= 8;
+    }).length;
+
+    const porcentajeNIT = facturasCompra.length > 0
+      ? this._r2((conNIT / facturasCompra.length) * 100)
+      : 0;
+
+    // % facturas con CUF
+    const conCUF = facturasCompra.filter(d => d.cuf || d.CUF).length;
+    const porcentajeCUF = facturasCompra.length > 0
+      ? this._r2((conCUF / facturasCompra.length) * 100)
+      : 0;
+
+    // Facturas observadas (sin CUF o NIT inválido)
+    const observadas = facturasCompra.length - Math.min(conNIT, conCUF);
+
+    // Períodos cerrados vs abiertos
+    const periodosCerrados = this._contarPeriodosCerrados();
+
+    return {
+      porcentajeFacturasConNIT: porcentajeNIT,
+      porcentajeFacturasConCUF: porcentajeCUF,
+      facturasObservadas: observadas,
+      totalFacturasCompra: facturasCompra.length,
+      periodosCerrados,
+      calidadDocumental: this._calificarCalidad(porcentajeNIT, porcentajeCUF),
+      fechaCalculo: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Genera alertas consolidadas de SIN + Fundempresa + Facturación.
+   *
+   * @returns {Array}
+   */
+  generarAlertasConsolidadas() {
+    const alertas = [];
+
+    // 1. Alertas SIN
+    if (this.calendarioTributario) {
+      const alertasSIN = this.calendarioTributario.generarAlertasVencimiento(30);
+      alertasSIN.forEach(a => alertas.push({
+        ...a,
+        origen: 'SIN',
+        prioridad: this._calcularPrioridad(a.diasRestantes)
+      }));
+    }
+
+    // 2. Alertas Fundempresa
+    const moduloFund = window.moduloFundempresa;
+    if (moduloFund) {
+      const alertasFE = moduloFund.generarAlertasFundempresa(60);
+      alertasFE.forEach(a => alertas.push({
+        ...a,
+        origen: 'FUNDEMPRESA',
+        prioridad: this._calcularPrioridad(a.diasRestantes)
+      }));
+    }
+
+    // 3. Alertas Facturación (CUIS/CUFD por expirar)
+    const moduloFact = window.moduloFacturacion;
+    if (moduloFact) {
+      const estadoFact = moduloFact.obtenerEstado();
+      if (!estadoFact.cuis.vigente) {
+        alertas.push({
+          origen: 'FACTURACION',
+          nivel: 'CRÍTICO',
+          color: 'rojo',
+          icono: '🔴',
+          mensaje: '⚠️ No hay CUIS vigente. La facturación está bloqueada.',
+          diasRestantes: 0,
+          prioridad: 1
+        });
+      }
+      if (!estadoFact.cufd.vigente) {
+        alertas.push({
+          origen: 'FACTURACION',
+          nivel: 'CRÍTICO',
+          color: 'rojo',
+          icono: '🔴',
+          mensaje: '⚠️ No hay CUFD vigente. La facturación está bloqueada.',
+          diasRestantes: 0,
+          prioridad: 1
+        });
+      }
+    }
+
+    // Ordenar por prioridad (ascendente)
+    alertas.sort((a, b) => a.prioridad - b.prioridad);
+
+    return alertas;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // UTILIDADES PRIVADAS DE AUDITORÍA
+  // ══════════════════════════════════════════════════════════
+
+  _generarPapelLibroDiario(periodo) {
+    try {
+      if (!this.motorContable || !this.motorContable.obtenerDiarioPorPeriodo) {
+        return null;
+      }
+      return this.motorContable.obtenerDiarioPorPeriodo(periodo);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  _generarPapelLibroMayor() {
+    try {
+      if (!this.motorContable || !this.motorContable.obtenerLibroMayor) {
+        return null;
+      }
+      return this.motorContable.obtenerLibroMayor();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  _generarPapelBalanza(periodo) {
+    try {
+      if (!this.motorContable || !this.motorContable.calcularBalanza) {
+        return null;
+      }
+      return this.motorContable.calcularBalanza(periodo);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  _generarPapelConciliacionBancaria(periodo) {
+    // Prototipo simplificado
+    return {
+      periodo,
+      cuentasBancarias: [],
+      nota: 'Conciliación bancaria no implementada en prototipo'
+    };
+  }
+
+  _generarPapelCuentasPorCobrar(periodo) {
+    const mayor = this._generarPapelLibroMayor();
+    if (!mayor) return null;
+
+    const cuentas = mayor.filter(c =>
+      c.cuentaCodigo && c.cuentaCodigo.startsWith('1.1.04')
+    );
+
+    return {
+      periodo,
+      totalCuentasPorCobrar: this._r2(cuentas.reduce((s, c) => s + (c.saldo || 0), 0)),
+      detalle: cuentas
+    };
+  }
+
+  _generarPapelCuentasPorPagar(periodo) {
+    const mayor = this._generarPapelLibroMayor();
+    if (!mayor) return null;
+
+    const cuentas = mayor.filter(c =>
+      c.cuentaCodigo && c.cuentaCodigo.startsWith('2.1.')
+    );
+
+    return {
+      periodo,
+      totalCuentasPorPagar: this._r2(cuentas.reduce((s, c) => s + (c.saldo || 0), 0)),
+      detalle: cuentas
+    };
+  }
+
+  _generarPapelKardex(periodo) {
+    try {
+      if (window.moduloInventario && typeof window.moduloInventario.obtenerKardex === 'function') {
+        return window.moduloInventario.obtenerKardex({});
+      }
+    } catch (e) {}
+    return { nota: 'Módulo de inventario no disponible para auditoría' };
+  }
+
+  _generarPapelActivosFijos() {
+    const mayor = this._generarPapelLibroMayor();
+    if (!mayor) return null;
+
+    const activos = mayor.filter(c =>
+      c.cuentaCodigo && c.cuentaCodigo.startsWith('1.2.')
+    );
+
+    return {
+      totalActivosFijos: this._r2(activos.reduce((s, c) => s + Math.abs(c.saldo || 0), 0)),
+      detalle: activos.map(a => ({
+        codigo: a.cuentaCodigo,
+        nombre: a.cuentaNombre,
+        saldo: a.saldo
+      }))
+    };
+  }
+
+  _generarPapelProvisiones(gestion) {
+    return {
+      gestion,
+      aguinaldo: this._obtenerSaldoCuenta('2.1.11'),
+      segundoAguinaldo: this._obtenerSaldoCuenta('2.1.12'),
+      indemnizacion: this._obtenerSaldoCuenta('2.1.14'),
+      vacaciones: this._obtenerSaldoCuenta('2.1.16')
+    };
+  }
+
+  _generarPapelConciliacionIVA(periodo) {
+    const f200 = this.generarFormulario200(periodo);
+    const lcv = this.generarLCV(periodo);
+    return {
+      form200: f200,
+      lcv: lcv,
+      conciliacion: this.conciliarLCVconForm200(lcv, f200)
+    };
+  }
+
+  _generarPapelConciliacionIT(periodo) {
+    return {
+      form400: this.generarFormulario400(periodo)
+    };
+  }
+
+  _generarPapelLiquidacionIUE(gestion) {
+    return {
+      form500: this.generarFormulario500(gestion)
+    };
+  }
+
+  _generarPapelEstadosFinancieros(gestion) {
+    if (!this.capaEstadosFinancieros) return null;
+
+    return {
+      balanceGeneral: this.capaEstadosFinancieros.generarBalanceGeneral(`${gestion}-12-31`),
+      estadoResultados: this.capaEstadosFinancieros.generarEstadoResultados(gestion),
+      flujoEfectivo: this.capaEstadosFinancieros.generarFlujoEfectivo(gestion, 'INDIRECTO'),
+      notas: this.capaEstadosFinancieros.generarEstructuraNotas({}, gestion)
+    };
+  }
+
+  _obtenerAsientosRelacionados(documentoId) {
+    try {
+      if (this.motorContable && this.motorContable.obtenerDiarioPorDocumento) {
+        return this.motorContable.obtenerDiarioPorDocumento(documentoId) || [];
+      }
+    } catch (e) {}
+    return [];
+  }
+
+  _obtenerCuentasDeAsientos(asientos) {
+    const cuentasMap = new Map();
+    asientos.forEach(a => {
+      (a.lineas || []).forEach(l => {
+        if (!cuentasMap.has(l.cuentaCodigo)) {
+          cuentasMap.set(l.cuentaCodigo, {
+            cuentaCodigo: l.cuentaCodigo,
+            cuentaNombre: l.cuentaNombre
+          });
+        }
+      });
+    });
+    return Array.from(cuentasMap.values());
+  }
+
+  _obtenerSaldosDeCuentas(cuentas) {
+    const mayor = this._generarPapelLibroMayor();
+    if (!mayor) return [];
+
+    return cuentas.map(c => {
+      const cuenta = mayor.find(m => m.cuentaCodigo === c.cuentaCodigo);
+      return {
+        codigo: c.cuentaCodigo,
+        nombre: c.cuentaNombre,
+        saldo: cuenta ? cuenta.saldo : 0
+      };
+    });
+  }
+
+  _montoDeCuentaEnAsientos(cuentaCodigo, asientos) {
+    let total = 0;
+    asientos.forEach(a => {
+      (a.lineas || []).forEach(l => {
+        if (l.cuentaCodigo === cuentaCodigo) {
+          total += (l.debe || 0) + (l.haber || 0);
+        }
+      });
+    });
+    return this._r2(total);
+  }
+
+  _determinarEstadosAfectados(cuentas) {
+    const estados = new Set();
+    cuentas.forEach(c => {
+      const codigo = c.cuentaCodigo || '';
+      if (codigo.startsWith('1.') || codigo.startsWith('2.') || codigo.startsWith('3.')) {
+        estados.add('Balance General');
+      }
+      if (codigo.startsWith('4.') || codigo.startsWith('5.')) {
+        estados.add('Estado de Resultados');
+      }
+      if (codigo.startsWith('1.1.01') || codigo.startsWith('1.1.02')) {
+        estados.add('Estado de Flujo de Efectivo');
+      }
+    });
+    return Array.from(estados);
+  }
+
+  _obtenerSaldoCuenta(codigo) {
+    const mayor = this._generarPapelLibroMayor();
+    if (!mayor) return 0;
+    const cuenta = mayor.find(m => m.cuentaCodigo === codigo);
+    return cuenta ? this._r2(cuenta.saldo || 0) : 0;
+  }
+
+  _obtenerEstadoFormularios() {
+    const periodos = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05',
+                      '2026-06', '2026-07', '2026-08', '2026-09'];
+    const estados = [];
+
+    periodos.forEach(p => {
+      const f200 = this._leerFormularioGuardado('FORM_200', p);
+      const f400 = this._leerFormularioGuardado('FORM_400', p);
+      const f110 = this._leerFormularioGuardado('FORM_110', p);
+
+      estados.push({
+        periodo: p,
+        form200: f200 ? 'GENERADO' : 'PENDIENTE',
+        form400: f400 ? 'GENERADO' : 'PENDIENTE',
+        form110: f110 ? 'GENERADO' : 'PENDIENTE'
+      });
+    });
+
+    return estados;
+  }
+
+  _leerFormularioGuardado(formulario, periodo) {
+    try {
+      const formularios = JSON.parse(localStorage.getItem(this.KEY_FORMULARIOS) || '[]');
+      return formularios.find(f => f.formulario === formulario && f.periodo === periodo);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  _obtenerEstadoFundempresa() {
+    const moduloFund = window.moduloFundempresa;
+    if (!moduloFund) return { disponible: false };
+
+    return {
+      disponible: true,
+      pendientes: moduloFund.obtenerObligacionesPendientes().length,
+      cumplidas: moduloFund.obtenerObligacionesCumplidas().length,
+      alertas: moduloFund.generarAlertasFundempresa(60).length
+    };
+  }
+
+  _obtenerEstadoFacturacion() {
+    const moduloFact = window.moduloFacturacion;
+    if (!moduloFact) return { disponible: false };
+
+    const estado = moduloFact.obtenerEstado();
+    return {
+      disponible: true,
+      cuisVigente: estado.cuis.vigente,
+      cufdVigente: estado.cufd.vigente,
+      totalFacturas: estado.facturas.total
+    };
+  }
+
+  _contarPeriodosCerrados() {
+    try {
+      if (window.PeriodosContables && typeof window.PeriodosContables.obtenerCerrados === 'function') {
+        return window.PeriodosContables.obtenerCerrados().length;
+      }
+    } catch (e) {}
+    return 0;
+  }
+
+  _calificarCalidad(porcentajeNIT, porcentajeCUF) {
+    const promedio = (porcentajeNIT + porcentajeCUF) / 2;
+    if (promedio >= 95) return { nivel: 'EXCELENTE', color: 'verde' };
+    if (promedio >= 80) return { nivel: 'BUENA', color: 'verde' };
+    if (promedio >= 60) return { nivel: 'REGULAR', color: 'amarillo' };
+    return { nivel: 'DEFICIENTE', color: 'rojo' };
+  }
+
+  _calcularPrioridad(diasRestantes) {
+    if (diasRestantes < 0) return 1;     // Vencido
+    if (diasRestantes < 3) return 2;     // Crítico
+    if (diasRestantes < 7) return 3;     // Urgente
+    if (diasRestantes < 30) return 4;    // Próximo
+    return 5;                             // Normal
+  }
+
+  _generarResumenDashboard(dashboard) {
+    const alertasCriticas = dashboard.alertasConsolidadas.filter(a => a.prioridad <= 2).length;
+    const alertasProximas = dashboard.alertasConsolidadas.filter(a => a.prioridad === 3 || a.prioridad === 4).length;
+
+    let estadoGeneral = 'BUENO';
+    let colorGeneral = 'verde';
+
+    if (alertasCriticas > 0) {
+      estadoGeneral = 'CRÍTICO';
+      colorGeneral = 'rojo';
+    } else if (alertasProximas > 5) {
+      estadoGeneral = 'ATENCIÓN';
+      colorGeneral = 'amarillo';
+    }
+
+    return {
+      estadoGeneral,
+      colorGeneral,
+      totalAlertas: dashboard.alertasConsolidadas.length,
+      alertasCriticas,
+      alertasProximas,
+      calidadDocumental: dashboard.indicadores.calidadDocumental,
+      mensaje: this._generarMensajeResumen(estadoGeneral, alertasCriticas)
+    };
+  }
+
+  _generarMensajeResumen(estado, criticas) {
+    if (estado === 'CRÍTICO') {
+      return `⚠️ Hay ${criticas} alertas críticas que requieren atención inmediata.`;
+    }
+    if (estado === 'ATENCIÓN') {
+      return '🟡 Varios vencimientos próximos. Monitorear de cerca.';
+    }
+    return '✅ Sistema de cumplimiento en buen estado.';
+  }
+
   // ══════════════════════════════════════════════════════════
   // UTILIDADES PRIVADAS
   // ══════════════════════════════════════════════════════════

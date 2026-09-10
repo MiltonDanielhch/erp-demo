@@ -254,6 +254,12 @@ function iniciarERP() {
   });
   console.log('🧾 Módulo de Facturación Electrónica inicializado (Módulo 7.7).');
 
+  // ── Módulo 7.8: Fundempresa ──
+  const moduloFundempresa = new ModuloFundempresaClase({
+    almacenamiento
+  });
+  console.log('🏛️ Módulo Fundempresa inicializado (Módulo 7.8).');
+
   // ── NUEVO Fase 4.8: Instanciar Módulo de Asientos de Nómina ──
   const moduloAsientosNomina = new ModuloAsientosNomina({
     almacenamiento: almacenamiento,
@@ -338,6 +344,8 @@ function iniciarERP() {
   window.CalendarioTributario = calendarioTributario;
   window.ModuloCumplimiento = moduloCumplimiento;
   window.moduloFacturacion = moduloFacturacion;
+  window.moduloFundempresa = moduloFundempresa;
+
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
@@ -378,7 +386,8 @@ function iniciarERP() {
   window.ERP.calendarioTributario = calendarioTributario;
   window.ERP.moduloCumplimiento = moduloCumplimiento;
   window.ERP.moduloFacturacion = moduloFacturacion;
-  
+  window.ERP.moduloFundempresa = moduloFundempresa;
+
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
 
