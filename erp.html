@@ -35,161 +35,237 @@
   <div id="app">
 
     <!-- ────────────────────────────────────────────────────────
-         ASIDE: Menú lateral de navegación
+         ASIDE: Menú lateral colapsable por grupos
          ──────────────────────────────────────────────────────── -->
     <aside id="menu-lateral">
       <nav aria-label="Navegación principal">
 
-        <!-- Sección: Principal -->
-        <div class="menu-seccion">
-          <span class="menu-titulo">PRINCIPAL</span>
-          <ul>
-            <li>
-              <a href="#/dashboard" class="menu-link activo" data-vista="dashboard">
-                <span class="menu-icono">📊</span>
-                <span class="menu-texto">Dashboard</span>
-              </a>
-            </li>
-          </ul>
+        <!-- Control rápido: expandir/colapsar todo -->
+        <div class="menu-control-total">
+          <button id="btn-expandir-todo" class="btn-menu-total" type="button">＋ Expandir</button>
+          <button id="btn-colapsar-todo" class="btn-menu-total" type="button">－ Contraer</button>
         </div>
 
-        <!-- Sección: Capa 1 - Documentos -->
-        <div class="menu-seccion">
-          <span class="menu-titulo">CAPA 1: DOCUMENTOS</span>
-          <ul>
-            <li>
-              <a href="#/documentos" class="menu-link" data-vista="documentos">
-                <span class="menu-icono">📄</span>
-                <span class="menu-texto">Documentos Fuente</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <li><a href="#/costos" class="menu-link">🏭 Costos</a></li>
-        <li>
-          <a href="#/catalogos" class="menu-link" data-vista="catalogos">
-            <span class="menu-icono">📚</span>
-            <span class="menu-texto">Catálogos</span>
-          </a>
-        </li>
-
-        <!-- Sección: Capa 2 - Módulos Operativos -->
-        <div class="menu-seccion">
-          <span class="menu-titulo">CAPA 2: MÓDULOS</span>
-          <ul>
-            <li>
-              <a href="#/compras" class="menu-link" data-vista="compras">
-                <span class="menu-icono">🛒</span>
-                <span class="menu-texto">Compras</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/ventas" class="menu-link" data-vista="ventas">
-                <span class="menu-icono">💰</span>
-                <span class="menu-texto">Ventas</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/lcv" class="menu-link" data-vista="lcv">
-                <span class="menu-icono">📋</span>
-                <span class="menu-texto">Libro Compras/Ventas</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/inventario" class="menu-link" data-vista="inventario">
-                <span class="menu-icono">📦</span>
-                <span class="menu-texto">Inventario</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/nomina" class="menu-link" data-vista="nomina">
-                <span class="menu-icono">👥</span>
-                <span class="menu-texto">Nómina</span>
-              </a>
-            </li>
-            <li class="menu-seccion">👥 Recursos Humanos</li>
-            <li>
-              <a href="#/empleados" class="menu-link" data-vista="empleados">
-                <span class="menu-icono">👥</span>
-                <span class="menu-texto">Empleados</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/bono-antiguedad" class="menu-link" data-vista="bono-antiguedad">
-                <span class="menu-icono">🎖️</span>
-                <span class="menu-texto">Bono de Antigüedad</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/rc-iva" class="menu-link" data-vista="rc-iva">
-                <span class="menu-icono">🧾</span>
-                <span class="menu-texto">RC-IVA con facturas</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/impuestos" class="menu-link" data-vista="impuestos">
-                <span class="menu-icono">🧾</span>
-                <span class="menu-texto">Impuestos</span>
-              </a>
-            </li>
-          </ul>
+        <!-- GRUPO: PRINCIPAL -->
+        <div class="menu-seccion" data-grupo="principal">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">PRINCIPAL</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/dashboard" class="menu-link activo" data-vista="dashboard">
+                  <span class="menu-icono">📊</span>
+                  <span class="menu-texto">Dashboard</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Sección: Capa 3 - Motor Contable -->
-        <div class="menu-seccion">
-          <span class="menu-titulo">CAPA 3: CONTABILIDAD</span>
-          <ul>
-            <li>
-              <a href="#/libro-diario" class="menu-link" data-vista="libro-diario">
-                <span class="menu-icono">📖</span>
-                <span class="menu-texto">Libro Diario</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/libro-mayor" class="menu-link" data-vista="libro-mayor">
-                <span class="menu-icono">📒</span>
-                <span class="menu-texto">Libro Mayor</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/balanza" class="menu-link" data-vista="balanza">
-                <span class="menu-icono">⚖️</span>
-                <span class="menu-texto">Balanza</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/asientos" class="menu-link" data-vista="asientos">
-                <span class="menu-icono">✍️</span>
-                <span class="menu-texto">Nuevo Asiento Manual</span>
-              </a>
-            </li>
-          </ul>
+        <!-- GRUPO: CAPA 1 DOCUMENTOS -->
+        <div class="menu-seccion" data-grupo="capa1">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">CAPA 1: DOCUMENTOS</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/documentos" class="menu-link" data-vista="documentos">
+                  <span class="menu-icono">📄</span>
+                  <span class="menu-texto">Documentos Fuente</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/catalogos" class="menu-link" data-vista="catalogos">
+                  <span class="menu-icono">📚</span>
+                  <span class="menu-texto">Catálogos</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Sección: Capa 4 - Estados Financieros -->
-        <div class="menu-seccion">
-          <span class="menu-titulo">CAPA 4: ESTADOS</span>
-          <ul>
-            <li>
-              <a href="#/estados-financieros" class="menu-link" data-vista="estados-financieros">
-                <span class="menu-icono">📈</span>
-                <span class="menu-texto">Estados Financieros</span>
-              </a>
-            </li>
-          </ul>
+        <!-- GRUPO: CAPA 2 MÓDULOS -->
+        <div class="menu-seccion" data-grupo="capa2">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">CAPA 2: MÓDULOS</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/compras" class="menu-link" data-vista="compras">
+                  <span class="menu-icono">🛒</span>
+                  <span class="menu-texto">Compras</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/ventas" class="menu-link" data-vista="ventas">
+                  <span class="menu-icono">💰</span>
+                  <span class="menu-texto">Ventas</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/lcv" class="menu-link" data-vista="lcv">
+                  <span class="menu-icono">📋</span>
+                  <span class="menu-texto">Libro Compras/Ventas</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/inventario" class="menu-link" data-vista="inventario">
+                  <span class="menu-icono">📦</span>
+                  <span class="menu-texto">Inventario</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Sección: Capa 5 - Cumplimiento -->
-        <div class="menu-seccion">
-          <span class="menu-titulo">CAPA 5: CUMPLIMIENTO</span>
-          <ul>
-            <li>
-              <a href="#/cumplimiento" class="menu-link" data-vista="cumplimiento">
-                <span class="menu-icono">✅</span>
-                <span class="menu-texto">Cumplimiento SIN</span>
-              </a>
-            </li>
-          </ul>
+        <!-- GRUPO: RECURSOS HUMANOS -->
+        <div class="menu-seccion" data-grupo="rrhh">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">RECURSOS HUMANOS</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/nomina" class="menu-link" data-vista="nomina">
+                  <span class="menu-icono">👥</span>
+                  <span class="menu-texto">Nómina</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/empleados" class="menu-link" data-vista="empleados">
+                  <span class="menu-icono">👥</span>
+                  <span class="menu-texto">Empleados</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/bono-antiguedad" class="menu-link" data-vista="bono-antiguedad">
+                  <span class="menu-icono">🎖️</span>
+                  <span class="menu-texto">Bono de Antigüedad</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/rc-iva" class="menu-link" data-vista="rc-iva">
+                  <span class="menu-icono">🧾</span>
+                  <span class="menu-texto">RC-IVA con facturas</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- GRUPO: IMPUESTOS (Módulo 5) -->
+        <div class="menu-seccion" data-grupo="impuestos">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">MÓDULO 5: IMPUESTOS</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/impuestos" class="menu-link" data-vista="impuestos">
+                  <span class="menu-icono">🧾</span>
+                  <span class="menu-texto">Impuestos (IVA/IT/IUE)</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- GRUPO: COSTOS (Módulo 8) -->
+        <div class="menu-seccion" data-grupo="costos">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">MÓDULO 8: COSTOS</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/costos" class="menu-link" data-vista="costos">
+                  <span class="menu-icono">🏭</span>
+                  <span class="menu-texto">Costos y Rentabilidad</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- GRUPO: CAPA 3 CONTABILIDAD -->
+        <div class="menu-seccion" data-grupo="capa3">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">CAPA 3: CONTABILIDAD</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/libro-diario" class="menu-link" data-vista="libro-diario">
+                  <span class="menu-icono">📖</span>
+                  <span class="menu-texto">Libro Diario</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/libro-mayor" class="menu-link" data-vista="libro-mayor">
+                  <span class="menu-icono">📒</span>
+                  <span class="menu-texto">Libro Mayor</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/balanza" class="menu-link" data-vista="balanza">
+                  <span class="menu-icono">⚖️</span>
+                  <span class="menu-texto">Balanza</span>
+                </a>
+              </li>
+              <li>
+                <a href="#/asientos" class="menu-link" data-vista="asientos">
+                  <span class="menu-icono">✍️</span>
+                  <span class="menu-texto">Nuevo Asiento Manual</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- GRUPO: CAPA 4 ESTADOS -->
+        <div class="menu-seccion" data-grupo="capa4">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">CAPA 4: ESTADOS</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/estados-financieros" class="menu-link" data-vista="estados-financieros">
+                  <span class="menu-icono">📈</span>
+                  <span class="menu-texto">Estados Financieros</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- GRUPO: CAPA 5 CUMPLIMIENTO -->
+        <div class="menu-seccion" data-grupo="capa5">
+          <button class="menu-titulo-btn" type="button" aria-expanded="true">
+            <span class="menu-titulo">CAPA 5: CUMPLIMIENTO</span>
+            <span class="menu-flecha">▾</span>
+          </button>
+          <div class="menu-desplegable">
+            <ul class="menu-lista">
+              <li>
+                <a href="#/cumplimiento" class="menu-link" data-vista="cumplimiento">
+                  <span class="menu-icono">✅</span>
+                  <span class="menu-texto">Cumplimiento SIN</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
       </nav>
@@ -278,6 +354,7 @@
   <script src="js/modulos/punto-equilibrio.js"></script>
   <script src="js/modulos/asientos-costos.js"></script>
   <script src="js/modulos/dashboard-costos.js"></script>
+  <script src="js/nucleo/sidebar-colapsable.js"></script>
 
   <!-- 4. Punto de entrada (último) -->
   <script src="js/app.js"></script>

@@ -4,22 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- SEO -->
+  <!-- SEO básico -->
   <title>ERP Contable Bolivia — Sistema contable con normativa boliviana real</title>
-  <meta name="description" content="ERP contable integral construido desde cero con Vanilla JavaScript. Entiende la normativa boliviana real: Ley 843, NC del CTNAC, SIN y Fundempresa. 41,090 líneas de código, 8 módulos completos.">
-  <meta name="keywords" content="ERP, contabilidad, Bolivia, Ley 843, SIN, IVA, IUE, portafolio">
-  <meta name="author" content="Tu Nombre">
+  <meta name="description" content="ERP contable integral construido desde cero con Vanilla JavaScript. Entiende la normativa boliviana real: Ley 843, NC del CTNAC, SIN y Fundempresa. 44,000+ líneas de código, 8 módulos completos y 17 guías de aprendizaje.">
+  <meta name="keywords" content="ERP, contabilidad, Bolivia, Ley 843, SIN, IVA, IUE, IT, RC-IVA, portafolio, Vanilla JavaScript">
+  <meta name="author" content="Milton Daniel H.">
+  <meta name="theme-color" content="#0f172a">
 
-  <!-- Open Graph (para compartir en redes) -->
-  <meta property="og:title" content="ERP Contable Bolivia">
-  <meta property="og:description" content="Sistema contable integral que entiende la normativa boliviana real. 41k LoC, 8 módulos, 17 guías de aprendizaje.">
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/imagenes/og-image.png">
+  <meta property="og:title" content="ERP Contable Bolivia">
+  <meta property="og:description" content="Sistema contable integral que entiende la normativa boliviana real. 8 módulos, 17 guías de aprendizaje y comparador FIFO/LIFO/Promedio en vivo.">
+  <meta property="og:url" content="https://miltondanielhch.github.io/erp-demo/">
+  <meta property="og:image" content="https://miltondanielhch.github.io/erp-demo/landing/assets/og-image.png">
+  <meta property="og:locale" content="es_BO">
+  <meta property="og:site_name" content="ERP Contable Bolivia">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ERP Contable Bolivia">
+  <meta name="twitter:description" content="ERP contable con normativa boliviana real: Ley 843, NC del CTNAC, SIN y Fundempresa.">
+  <meta name="twitter:image" content="https://miltondanielhch.github.io/erp-demo/landing/assets/og-image.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="landing/assets/logo.svg">
 
-  <!-- Fuentes de Google -->
+  <!-- Performance: preconnect de fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -31,7 +41,8 @@
   <link rel="stylesheet" href="landing/css/secciones.css">
 </head>
 <body>
-
+  <!-- Enlace para saltar al contenido (accesibilidad) -->
+  <a href="#modulos" class="skip-link">Saltar al contenido principal</a>
   <!-- ══════════════════════════════════════════════════════════
        NAVBAR
        ══════════════════════════════════════════════════════════ -->
@@ -47,23 +58,35 @@
         <a href="#aprendizaje" class="navbar-enlace">Aprendizaje</a>
         <a href="#particularidades" class="navbar-enlace">Bolivia</a>
         <a href="#demo" class="navbar-enlace">Demo</a>
-        <a href="#arquitectura" class="navbar-enlace">Arquitectura</a>
       </div>
 
       <div class="navbar-acciones">
+        <!-- Botón hamburguesa (solo móvil) -->
+        <button class="navbar-hamburguesa" id="navbar-hamburguesa"
+                aria-label="Abrir menú de navegación" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
         <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
           <span id="theme-icon">🌙</span>
         </button>
-        <a href="erp.html#/dashboard" class="btn btn-secundario btn-pequenio">
+        <a href="erp.html#/dashboard" class="btn btn-secundario btn-pequenio ocultar-movil">
           📊 Dashboard
         </a>
-        <a href="erp.html" class="btn btn-primario btn-pequenio">
+        <a href="erp.html" class="btn btn-primario btn-pequenio ocultar-movil">
           🚀 Ir al ERP
         </a>
       </div>
     </div>
   </nav>
 
+  <!-- Overlay oscuro para el menú móvil -->
+  <div class="navbar-overlay" id="navbar-overlay"></div>
+
+  <!-- Barra de progreso de lectura -->
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
   <!-- ══════════════════════════════════════════════════════════
        HERO SECTION (Fase 2)
        ══════════════════════════════════════════════════════════ -->
@@ -115,29 +138,6 @@
           <span class="btn-icono">📖</span>
           Ver documentación
         </a>
-      </div>
-
-      <!-- Métricas de impacto -->
-      <div class="hero-metricas reveal reveal-delay-3" id="hero-metricas">
-        <div class="metrica">
-          <div class="metrica-valor" data-target="41090" data-sufijo="">0</div>
-          <div class="metrica-label">Líneas de código</div>
-        </div>
-        <div class="metrica-separador"></div>
-        <div class="metrica">
-          <div class="metrica-valor" data-target="127" data-sufijo="">0</div>
-          <div class="metrica-label">Archivos totales</div>
-        </div>
-        <div class="metrica-separador"></div>
-        <div class="metrica">
-          <div class="metrica-valor" data-target="8" data-sufijo="">0</div>
-          <div class="metrica-label">Módulos completos</div>
-        </div>
-        <div class="metrica-separador"></div>
-        <div class="metrica">
-          <div class="metrica-valor" data-target="17" data-sufijo="">0</div>
-          <div class="metrica-label">Guías de aprendizaje</div>
-        </div>
       </div>
     </div>
 
@@ -223,26 +223,6 @@
 
       <div id="comparador-contenido">
         <!-- Se renderiza desde comparador.js -->
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       SECCIÓN: ARQUITECTURA TÉCNICA (Fase 7)
-       ══════════════════════════════════════════════════════════ -->
-  <section class="seccion seccion-alternada" id="arquitectura">
-    <div class="contenedor">
-      <div class="seccion-header reveal">
-        <span class="seccion-etiqueta">Arquitectura</span>
-        <h2 class="seccion-titulo">Cómo Está Construido</h2>
-        <p class="seccion-subtitulo">
-          Vanilla JavaScript + LocalStorage. Sin frameworks.
-          Cada decisión tiene un porqué documentado en ADRs.
-        </p>
-      </div>
-
-      <div id="arquitectura-contenido">
-        <!-- Se renderiza dinámicamente desde landing.js -->
       </div>
     </div>
   </section>

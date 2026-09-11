@@ -7,13 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   inicializarThemeToggle();
   inicializarAnimacionesReveal();
-  inicializarContadoresAnimados();
   renderizarModulos();
   renderizarGuias();
   renderizarParticularidades();
-  renderizarArquitectura();
   renderizarUbicacionFooter();
   inicializarNavbarScroll();
+  inicializarMenuMovil();
+  inicializarBarraProgreso();
+  inicializarImagenesLazy();
 });
 
 // ────────────────────────────────────────────────────────────────
@@ -54,75 +55,6 @@ function inicializarAnimacionesReveal() {
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
 
-// ────────────────────────────────────────────────────────────────
-// CONTADORES ANIMADOS (Métricas del hero) - Versión mejorada
-// ────────────────────────────────────────────────────────────────
-function inicializarContadoresAnimados() {
-  const contadores = document.querySelectorAll('.metrica-valor[data-target]');
-
-  if (contadores.length === 0) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !entry.target.classList.contains('animado')) {
-        entry.target.classList.add('animado');
-        animarContador(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.5,
-    rootMargin: '0px 0px -10% 0px'
-  });
-
-  contadores.forEach(c => observer.observe(c));
-}
-
-/**
- * Anima un contador desde 0 hasta su valor target.
- * Usa easing ease-out cubic para un efecto natural.
- *
- * @param {HTMLElement} elemento - El elemento con data-target
- */
-function animarContador(elemento) {
-  const target = parseInt(elemento.dataset.target, 10);
-  const sufijo = elemento.dataset.sufijo || '';
-  const duracion = 1500; // 1.5 segundos
-  const inicio = performance.now();
-
-  // Si el navegador no soporta requestAnimationFrame, mostrar directo
-  if (!window.requestAnimationFrame) {
-    elemento.textContent = formatearNumero(target) + sufijo;
-    return;
-  }
-
-  function actualizar(ahora) {
-    const progreso = Math.min((ahora - inicio) / duracion, 1);
-
-    // Easing: ease-out cubic (desacelera al final)
-    const eased = 1 - Math.pow(1 - progreso, 3);
-
-    const valor = Math.floor(eased * target);
-    elemento.textContent = formatearNumero(valor) + sufijo;
-
-    if (progreso < 1) {
-      requestAnimationFrame(actualizar);
-    } else {
-      // Asegurar el valor final exacto
-      elemento.textContent = formatearNumero(target) + sufijo;
-    }
-  }
-
-  requestAnimationFrame(actualizar);
-}
-
-/**
- * Formatea un número con separadores de miles.
- * @param {number} numero
- * @returns {string}
- */
-function formatearNumero(numero) {
-  return numero.toLocaleString('es-BO');
-}
 
 // ────────────────────────────────────────────────────────────────
 // RENDERIZAR MÓDULOS (Fase 3 - Versión con expansión)
@@ -513,84 +445,6 @@ function conectarExpansionParticularidades() {
 }
 
 // ────────────────────────────────────────────────────────────────
-// RENDERIZAR ARQUITECTURA (Fase 7 - Versión completa)
-// ────────────────────────────────────────────────────────────────
-function renderizarArquitectura() {
-  const contenedor = document.getElementById('arquitectura-contenido');
-  if (!contenedor) return;
-
-  contenedor.innerHTML = `
-    <!-- Stack técnico -->
-    <div class="stack-tecnico">
-      <h3 class="arquitectura-subtitulo">⚡ Stack Técnico</h3>
-      <div class="stack-badges">
-        ${STACK_TECNICO.map(s => `
-          <span class="badge badge-neutral stack-badge">
-            ${s.icono} ${s.nombre}
-          </span>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- Diagrama de capas -->
-    <div class="arquitectura-diagrama">
-      <h3 class="arquitectura-subtitulo">🏗️ Arquitectura por Capas</h3>
-      <div class="arquitectura-capas">
-        ${ARQUITECTURA_CAPAS.map((capa, i) => `
-          <div class="capa reveal reveal-delay-${(i % 3) + 1}"
-               style="border-left: 4px solid ${capa.color};"
-               tabindex="0">
-            <div class="capa-nombre" style="color: ${capa.color};">${capa.nombre}</div>
-            <div class="capa-descripcion">${capa.descripcion}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- ADRs -->
-    <div class="arquitectura-adrs">
-      <h3 class="arquitectura-subtitulo">📋 Decisiones de Diseño (ADRs)</h3>
-      <div class="adrs-grid">
-        ${ADRS_PROYECTO.map(adr => `
-          <div class="adr-card">
-            <div class="adr-header">
-              <span class="badge badge-primario">${adr.numero}</span>
-              <span class="badge badge-exito">${adr.decision}</span>
-            </div>
-            <h4 class="adr-titulo">${adr.titulo}</h4>
-            <p class="adr-resumen">${adr.resumen}</p>
-            <ul class="adr-razones">
-              ${adr.razones.map(r => `<li>${r}</li>`).join('')}
-            </ul>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- Roadmaps -->
-    <div class="arquitectura-roadmaps">
-      <h3 class="arquitectura-subtitulo">🗺️ Roadmaps del Proyecto</h3>
-      <p class="roadmaps-resumen">
-        ${ROADMAPS_PROYECTO.length} roadmaps documentados ·
-        ${METRICAS_ERP.lineasDeCodigo.toLocaleString('es-BO')} líneas de código
-      </p>
-      <div class="roadmaps-lista">
-        ${ROADMAPS_PROYECTO.map(r => `
-          <div class="roadmap-item">
-            <span class="roadmap-estado">${r.estado}</span>
-            <span class="roadmap-nombre">Módulo ${r.numero}: ${r.nombre}</span>
-            <span class="roadmap-loc">${r.loc} LoC</span>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-
-  // Re-observar elementos reveal
-  inicializarAnimacionesReveal();
-}
-
-// ────────────────────────────────────────────────────────────────
 // NAVBAR CON SCROLL (indicador de sección activa)
 // ────────────────────────────────────────────────────────────────
 function inicializarNavbarScroll() {
@@ -641,4 +495,77 @@ function renderizarUbicacionFooter() {
       Empresa de ejemplo: ${empresaEjemplo.nombre} · NIT ${empresaEjemplo.nit}
     </p>
   `;
+}
+
+// ────────────────────────────────────────────────────────────────
+// FASE 8 — MENÚ MÓVIL Y BARRA DE PROGRESO
+// ────────────────────────────────────────────────────────────────
+
+function inicializarMenuMovil() {
+  const hamburguesa = document.getElementById('navbar-hamburguesa');
+  const enlaces = document.getElementById('navbar-enlaces');
+  const overlay = document.getElementById('navbar-overlay');
+
+  if (!hamburguesa || !enlaces) return;
+
+  function cerrarMenu() {
+    hamburguesa.classList.remove('abierta');
+    enlaces.classList.remove('abierto');
+    overlay?.classList.remove('visible');
+    hamburguesa.setAttribute('aria-expanded', 'false');
+  }
+
+  function abrirMenu() {
+    hamburguesa.classList.add('abierta');
+    enlaces.classList.add('abierto');
+    overlay?.classList.add('visible');
+    hamburguesa.setAttribute('aria-expanded', 'true');
+  }
+
+  hamburguesa.addEventListener('click', () => {
+    const estaAbierto = enlaces.classList.contains('abierto');
+    estaAbierto ? cerrarMenu() : abrirMenu();
+  });
+
+  // Cerrar al hacer click en un enlace
+  enlaces.querySelectorAll('.navbar-enlace').forEach(enlace => {
+    enlace.addEventListener('click', cerrarMenu);
+  });
+
+  // Cerrar al hacer click fuera (overlay)
+  overlay?.addEventListener('click', cerrarMenu);
+
+  // Cerrar con tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cerrarMenu();
+  });
+
+  // Cerrar si la ventana crece a desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) cerrarMenu();
+  });
+}
+
+function inicializarBarraProgreso() {
+  const barra = document.getElementById('scroll-progress');
+  if (!barra) return;
+
+  function actualizar() {
+    const altoTotal = document.documentElement.scrollHeight - window.innerHeight;
+    const progreso = altoTotal > 0 ? (window.scrollY / altoTotal) * 100 : 0;
+    barra.style.width = progreso + '%';
+  }
+
+  window.addEventListener('scroll', actualizar, { passive: true });
+  actualizar();
+}
+
+function inicializarImagenesLazy() {
+  document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+    if (img.complete) {
+      img.classList.add('cargada');
+    } else {
+      img.addEventListener('load', () => img.classList.add('cargada'));
+    }
+  });
 }

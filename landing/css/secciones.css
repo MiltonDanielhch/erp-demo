@@ -1351,3 +1351,367 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   FASE 8 — PULIDO FINAL
+   Menú móvil, barra de progreso, accesibilidad y performance
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Skip link (accesibilidad) ── */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  background: var(--color-primario);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radio-md);
+  z-index: 999;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* ── Barra de progreso de lectura ── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+  z-index: calc(var(--z-navbar) + 1);
+  transition: width 0.1s linear;
+}
+
+/* ── Botón hamburguesa ── */
+.navbar-hamburguesa {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: calc(var(--z-navbar) + 2);
+}
+
+.navbar-hamburguesa span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--texto-principal);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Animación a X cuando está abierto */
+.navbar-hamburguesa.abierta span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-hamburguesa.abierta span:nth-child(2) {
+  opacity: 0;
+}
+.navbar-hamburguesa.abierta span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Overlay oscuro del menú móvil ── */
+.navbar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: calc(var(--z-navbar) - 1);
+}
+
+.navbar-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Utilidad: ocultar en móvil ── */
+.ocultar-movil {
+  display: inline-flex;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE MÓVIL (< 768px)
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .navbar-hamburguesa {
+    display: flex;
+  }
+
+  .ocultar-movil {
+    display: none;
+  }
+
+  /* Los enlaces se convierten en panel deslizante */
+  .navbar-enlaces {
+    position: fixed;
+    top: var(--alto-navbar, 72px);
+    right: 0;
+    width: min(300px, 85vw);
+    height: calc(100vh - var(--alto-navbar, 72px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--fondo-card);
+    border-left: 1px solid var(--borde-suave);
+    padding: var(--espacio-md);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    z-index: var(--z-navbar);
+    overflow-y: auto;
+    box-shadow: var(--sombra-fuerte);
+  }
+
+  .navbar-enlaces.abierto {
+    transform: translateX(0);
+  }
+
+  .navbar-enlace {
+    padding: 14px 16px;
+    font-size: var(--texto-base);
+    border-radius: var(--radio-md);
+  }
+
+  /* Acciones del navbar más compactas */
+  .navbar-acciones {
+    gap: var(--espacio-xs);
+  }
+
+  /* Hero ajustado */
+  .hero-contenido {
+    padding: var(--espacio-xl) var(--espacio-sm);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESIBILIDAD Y PERFORMANCE
+   ══════════════════════════════════════════════════════════════ */
+
+/* Foco visible para navegación por teclado */
+:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+/* Respetar preferencia de menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Imágenes con carga diferida */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"].cargada {
+  opacity: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FASE 8 — PULIDO FINAL
+   Menú móvil, barra de progreso, accesibilidad y performance
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Skip link (accesibilidad) ── */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  background: var(--color-primario);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radio-md);
+  z-index: 999;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* ── Barra de progreso de lectura ── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+  z-index: calc(var(--z-navbar) + 1);
+  transition: width 0.1s linear;
+}
+
+/* ── Botón hamburguesa ── */
+.navbar-hamburguesa {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: calc(var(--z-navbar) + 2);
+}
+
+.navbar-hamburguesa span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--texto-principal);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Animación a X cuando está abierto */
+.navbar-hamburguesa.abierta span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-hamburguesa.abierta span:nth-child(2) {
+  opacity: 0;
+}
+.navbar-hamburguesa.abierta span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Overlay oscuro del menú móvil ── */
+.navbar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: calc(var(--z-navbar) - 1);
+}
+
+.navbar-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Utilidad: ocultar en móvil ── */
+.ocultar-movil {
+  display: inline-flex;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE MÓVIL (< 768px)
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .navbar-hamburguesa {
+    display: flex;
+  }
+
+  .ocultar-movil {
+    display: none;
+  }
+
+  /* Los enlaces se convierten en panel deslizante */
+  .navbar-enlaces {
+    position: fixed;
+    top: var(--alto-navbar, 72px);
+    right: 0;
+    width: min(300px, 85vw);
+    height: calc(100vh - var(--alto-navbar, 72px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--fondo-card);
+    border-left: 1px solid var(--borde-suave);
+    padding: var(--espacio-md);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    z-index: var(--z-navbar);
+    overflow-y: auto;
+    box-shadow: var(--sombra-fuerte);
+  }
+
+  .navbar-enlaces.abierto {
+    transform: translateX(0);
+  }
+
+  .navbar-enlace {
+    padding: 14px 16px;
+    font-size: var(--texto-base);
+    border-radius: var(--radio-md);
+  }
+
+  /* Acciones del navbar más compactas */
+  .navbar-acciones {
+    gap: var(--espacio-xs);
+  }
+
+  /* Hero ajustado */
+  .hero-contenido {
+    padding: var(--espacio-xl) var(--espacio-sm);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESIBILIDAD Y PERFORMANCE
+   ══════════════════════════════════════════════════════════════ */
+
+/* Foco visible para navegación por teclado */
+:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+/* Respetar preferencia de menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Imágenes con carga diferida */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"].cargada {
+  opacity: 1;
+}

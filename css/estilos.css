@@ -258,3 +258,94 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gris-400);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR COLAPSABLE POR GRUPOS (acordeón)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Control rápido expandir/colapsar todo */
+.menu-control-total {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-borde);
+  margin-bottom: 8px;
+}
+
+.btn-menu-total {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-sm);
+  color: var(--texto-secundario);
+  cursor: pointer;
+  transition: all var(--transicion-rapida);
+}
+
+.btn-menu-total:hover {
+  background: var(--color-primario);
+  color: white;
+  border-color: var(--color-primario);
+}
+
+/* Botón de título de grupo (reemplaza al span estático) */
+.menu-titulo-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transicion-rapida);
+}
+
+.menu-titulo-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.menu-titulo-btn .menu-titulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+}
+
+/* Flecha indicadora */
+.menu-flecha {
+  font-size: 0.75rem;
+  color: var(--texto-secundario);
+  transition: transform 0.3s ease;
+}
+
+.menu-seccion.colapsada .menu-flecha {
+  transform: rotate(-90deg);
+}
+
+/* Animación de despliegue (truco grid-rows: altura automática suave) */
+.menu-desplegable {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.menu-seccion.colapsada .menu-desplegable {
+  grid-template-rows: 0fr;
+}
+
+.menu-desplegable .menu-lista {
+  overflow: hidden;
+  min-height: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Resaltar grupo con vista activa */
+.menu-seccion:has(.menu-link.activo) .menu-titulo-btn .menu-titulo {
+  color: var(--color-primario);
+}

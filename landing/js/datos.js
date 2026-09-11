@@ -31,18 +31,6 @@ const PROYECTO_INFO = {
   anioDesarrollo: 2026
 };
 
-// ────────────────────────────────────────────────────────────────
-// MÉTRICAS DEL PROYECTO
-// ────────────────────────────────────────────────────────────────
-const METRICAS_ERP = {
-  lineasDeCodigo: 41090,
-  archivos: 127,
-  modulosCompletos: 8,
-  guiasAprendizaje: 17,
-  roadmaps: 11,
-  adrs: 2,
-  pesoTotal: '2.09 MB'
-};
 
 // ────────────────────────────────────────────────────────────────
 // LOS 8 MÓDULOS (con detalle expandible)
@@ -431,97 +419,4 @@ conciliarIVA(130, 65, 0);
   }
 ];
 
-// ────────────────────────────────────────────────────────────────
-// ARQUITECTURA POR CAPAS
-// ────────────────────────────────────────────────────────────────
-const ARQUITECTURA_CAPAS = [
-  {
-    nombre: 'Capa 5: Cumplimiento',
-    descripcion: 'Formularios SIN, LCV, SIAT, Fundempresa',
-    color: '#dc2626'
-  },
-  {
-    nombre: 'Capa 4: Estados Financieros',
-    descripcion: 'Balance, resultados, flujo, notas, ratios',
-    color: '#d97706'
-  },
-  {
-    nombre: 'Capa 3: Motor Contable',
-    descripcion: 'Partida doble, libro diario, mayor, balanza',
-    color: '#059669'
-  },
-  {
-    nombre: 'Capa 2: Módulos Operativos',
-    descripcion: 'Compras, ventas, nómina, costos, impuestos',
-    color: '#0284c7'
-  },
-  {
-    nombre: 'Capa 1: Documentos',
-    descripcion: 'Facturas, notas, validación NIT/CUF',
-    color: '#7c3aed'
-  },
-  {
-    nombre: 'Núcleo',
-    descripcion: 'Almacenamiento, utilidades, validadores',
-    color: '#1e40af'
-  }
-];
 
-// ────────────────────────────────────────────────────────────────
-// DECISIONES DE ARQUITECTURA (ADRs)
-// ────────────────────────────────────────────────────────────────
-const ADRS_PROYECTO = [
-  {
-    numero: 'ADR-001',
-    titulo: 'Stack Vanilla JS sin backend',
-    resumen: 'Se eligió Vanilla JavaScript con LocalStorage en lugar de frameworks y base de datos para mantener el proyecto 100% educativo y ejecutable sin servidor.',
-    decision: 'Aceptar',
-    razones: [
-      'Sin dependencias externas que instalar',
-      'Funciona con solo abrir index.html',
-      'El foco es aprender contabilidad, no tooling',
-      'LocalStorage simula persistencia suficiente para demo'
-    ]
-  },
-  {
-    numero: 'ADR-002',
-    titulo: 'Normas contables bolivianas',
-    decision: 'Aceptar',
-    resumen: 'Se implementaron las NC del CTNAC (no NIIF puras) porque es lo que exige la normativa boliviana para empresas locales.',
-    razones: [
-      'El SIN exige NC del CTNAC para declaraciones',
-      'Las NIIF se usan solo de forma supletoria',
-      'El ajuste UFV está suspendido desde dic/2020',
-      'Coherencia con la práctica contable local'
-    ]
-  }
-];
-
-// ────────────────────────────────────────────────────────────────
-// ROADMAPS DEL PROYECTO
-// ────────────────────────────────────────────────────────────────
-const ROADMAPS_PROYECTO = [
-  { numero: '0', nombre: 'Setup', estado: '✅', loc: 421 },
-  { numero: '1', nombre: 'Documentos Fuente', estado: '✅', loc: 478 },
-  { numero: '2', nombre: 'Compras y Ventas', estado: '✅', loc: 665 },
-  { numero: '3', nombre: 'Motor Contable', estado: '✅', loc: 716 },
-  { numero: '4', nombre: 'Nómina Boliviana', estado: '✅', loc: 768 },
-  { numero: '5', nombre: 'Impuestos', estado: '✅', loc: 819 },
-  { numero: '6', nombre: 'Estados Financieros', estado: '✅', loc: 739 },
-  { numero: '7', nombre: 'Cumplimiento SIN', estado: '✅', loc: 835 },
-  { numero: '8', nombre: 'Costos', estado: '✅', loc: 991 },
-  { numero: '9', nombre: 'Migración SaaS', estado: '⏳', loc: 1240 },
-  { numero: '—', nombre: 'Resumen Final', estado: '📋', loc: 623 }
-];
-
-// ────────────────────────────────────────────────────────────────
-// STACK TÉCNICO
-// ────────────────────────────────────────────────────────────────
-const STACK_TECNICO = [
-  { nombre: 'Vanilla JavaScript', icono: '⚡', tipo: 'Lenguaje' },
-  { nombre: 'HTML5', icono: '📄', tipo: 'Estructura' },
-  { nombre: 'CSS3', icono: '🎨', tipo: 'Estilos' },
-  { nombre: 'LocalStorage', icono: '💾', tipo: 'Persistencia' },
-  { nombre: 'Sin frameworks', icono: '🚫', tipo: 'Decisión' },
-  { nombre: 'Sin backend', icono: '🖥️', tipo: 'Decisión' }
-];
