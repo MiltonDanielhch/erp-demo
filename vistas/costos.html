@@ -1,0 +1,359 @@
+<!-- ══════════════════════════════════════════════════════════
+     VISTA: Contabilidad de Costos
+     ══════════════════════════════════════════════════════════ -->
+
+<h2 class="contenido-titulo">🏭 Contabilidad de Costos</h2>
+<p class="contenido-subtitulo">
+  Gestión integral de costos: valuación de inventarios, centros de costo, órdenes de trabajo y análisis gerencial
+</p>
+
+<!-- ═══════════ Tabs ═══════════ -->
+<div class="card" style="margin-bottom: var(--espacio-md);">
+  <div class="tabs" style="display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid var(--color-borde); padding-bottom: 8px;">
+    <button class="btn btn-tab activo" data-tab="dashboard">📊 Dashboard</button>
+    <button class="btn btn-tab" data-tab="inventario">📦 Inventario (3 métodos)</button>
+    <button class="btn btn-tab" data-tab="centros">🏢 Centros de Costo</button>
+    <button class="btn btn-tab" data-tab="ordenes">🛠️ Órdenes de Trabajo</button>
+    <button class="btn btn-tab" data-tab="rentabilidad">💰 Rentabilidad</button>
+    <button class="btn btn-tab" data-tab="equilibrio">⚖️ Punto de Equilibrio</button>
+  </div>
+</div>
+
+<!-- ═══════════ Tab 1: Dashboard ═══════════ -->
+<div id="tab-dashboard" class="tab-content">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <h3 style="margin: 0;">📊 Dashboard de Costos</h3>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <select id="dash-periodo" class="form-select" style="margin: 0; min-width: 140px;"></select>
+        <button id="dash-btn-actualizar" class="btn btn-primary">🔄 Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dash-contenido">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Actualizar" para cargar el dashboard
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ Tab 2: Inventario (3 métodos) ═══════════ -->
+<div id="tab-inventario" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+        <label class="form-label">Producto</label>
+        <select id="inv-producto" class="form-select"></select>
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Método actual</label>
+        <select id="inv-metodo" class="form-select">
+          <option value="PROMEDIO">Promedio Ponderado</option>
+          <option value="FIFO">FIFO (PEPS)</option>
+          <option value="LIFO">LIFO (UEPS) ⚠️ Educativo</option>
+        </select>
+      </div>
+      <button id="inv-btn-cambiar" class="btn btn-outline">🔄 Cambiar Método</button>
+      <button id="inv-btn-comparar" class="btn btn-primary">📊 Comparar los 3</button>
+    </div>
+  </div>
+
+  <div id="inv-capas" class="card" style="margin-bottom: var(--espacio-md);">
+    <h4>📚 Capas de Inventario Actuales</h4>
+    <div id="inv-capas-contenido">
+      <p style="color: var(--texto-secundario);">Seleccione un producto para ver sus capas</p>
+    </div>
+  </div>
+
+  <div id="inv-comparador" class="card">
+    <h4>⚖️ Comparador de Métodos de Valuación</h4>
+    <div id="inv-comparador-contenido">
+      <p style="color: var(--texto-secundario);">
+        Presione "Comparar los 3" para ver el mismo inventario valuado con Promedio, FIFO y LIFO
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab 3: Centros de Costo ═══════════ -->
+<div id="tab-centros" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <button id="cc-btn-nuevo" class="btn btn-primary">➕ Nuevo Centro</button>
+      <button id="cc-btn-actualizar" class="btn btn-outline">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <div id="cc-lista" class="card">
+    <h4>🏢 Centros de Costo Registrados</h4>
+    <div id="cc-lista-contenido">
+      <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+        Presione "Actualizar" para ver los centros
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab 4: Órdenes de Trabajo ═══════════ -->
+<div id="tab-ordenes" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <button id="ot-btn-nueva" class="btn btn-primary">➕ Nueva Orden</button>
+      <select id="ot-filtro-estado" class="form-select" style="margin: 0; min-width: 160px;">
+        <option value="">Todos los estados</option>
+        <option value="ABIERTA">Abiertas</option>
+        <option value="EN_PROCESO">En Proceso</option>
+        <option value="TERMINADA">Terminadas</option>
+        <option value="CANCELADA">Canceladas</option>
+      </select>
+      <button id="ot-btn-actualizar" class="btn btn-outline">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <div id="ot-lista" class="card">
+    <h4>🛠️ Órdenes de Trabajo</h4>
+    <div id="ot-lista-contenido">
+      <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+        Presione "Actualizar" para ver las órdenes
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab 5: Rentabilidad ═══════════ -->
+<div id="tab-rentabilidad" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-tab activo sub-tab" data-subtab="productos">📦 Por Producto</button>
+      <button class="btn btn-tab sub-tab" data-subtab="clientes">👥 Por Cliente</button>
+    </div>
+  </div>
+
+  <div id="subtab-productos" class="sub-tab-content">
+    <div class="card" style="margin-bottom: var(--espacio-md);">
+      <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Período</label>
+          <input type="month" id="rent-prod-periodo" class="form-input">
+        </div>
+        <button id="rent-prod-btn" class="btn btn-primary">💰 Analizar Productos</button>
+      </div>
+    </div>
+    <div id="rent-prod-contenido" class="card"></div>
+  </div>
+
+  <div id="subtab-clientes" class="sub-tab-content oculto">
+    <div class="card" style="margin-bottom: var(--espacio-md);">
+      <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label">Período</label>
+          <input type="month" id="rent-cli-periodo" class="form-input">
+        </div>
+        <button id="rent-cli-btn" class="btn btn-primary">👥 Analizar Clientes</button>
+      </div>
+    </div>
+    <div id="rent-cli-contenido" class="card"></div>
+  </div>
+</div>
+
+<!-- ═══════════ Tab 6: Punto de Equilibrio ═══════════ -->
+<div id="tab-equilibrio" class="tab-content oculto">
+  <div class="card" style="margin-bottom: var(--espacio-md);">
+    <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; align-items: flex-end;">
+      <div class="form-group" style="margin: 0; flex: 1; min-width: 150px;">
+        <label class="form-label">Período</label>
+        <input type="month" id="pe-periodo" class="form-input">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label">Costos Fijos (Bs)</label>
+        <input type="number" id="pe-costos-fijos" class="form-input" value="50000" min="0">
+      </div>
+      <button id="pe-btn-calcular" class="btn btn-primary">⚖️ Calcular PE</button>
+      <button id="pe-btn-simular" class="btn btn-outline">🎯 Simular Escenarios</button>
+    </div>
+  </div>
+
+  <div id="pe-resultados" class="card" style="margin-bottom: var(--espacio-md);">
+    <p style="text-align: center; padding: 40px; color: var(--texto-secundario);">
+      Presione "Calcular PE" para ver el punto de equilibrio
+    </p>
+  </div>
+
+  <div id="pe-grafico" class="card" style="margin-bottom: var(--espacio-md); display: none;">
+    <h4>📈 Gráfico de Punto de Equilibrio</h4>
+    <canvas id="pe-chart" height="100"></canvas>
+  </div>
+
+  <div id="pe-escenarios" class="card">
+    <h4>🎯 Simulador de Escenarios (What-If)</h4>
+    <div id="pe-escenarios-contenido">
+      <p style="color: var(--texto-secundario);">Presione "Simular Escenarios" para ver proyecciones</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="contenedor-toasts" class="toast-contenedor"></div>
+
+<!-- ═══════════ Estilos ═══════════ -->
+<style>
+.btn-tab {
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-tab:hover { background: var(--color-fondo-claro); }
+.btn-tab.activo {
+  border-bottom-color: var(--color-primario);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+.tab-content, .sub-tab-content { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Comparador de métodos */
+.comparador-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.metodo-card {
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+.metodo-card.promedio { border-color: #3b82f6; background: #eff6ff; }
+.metodo-card.fifo { border-color: #10b981; background: #f0fdf4; }
+.metodo-card.lifo { border-color: #ef4444; background: #fef2f2; }
+
+.metodo-card .metrica {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.metodo-card .metrica:last-child { border-bottom: none; }
+.metodo-card .valor { font-weight: bold; }
+
+.advertencia-lifo {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.kpi-card {
+  padding: 16px;
+  background: var(--color-fondo-claro);
+  border-radius: 8px;
+  text-align: center;
+}
+.kpi-card .valor {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--color-primario);
+}
+.kpi-card .label {
+  color: var(--texto-secundario);
+  font-size: 0.85em;
+  margin-top: 4px;
+}
+
+/* Alertas */
+.alerta-card {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 4px solid;
+}
+.alerta-card.critica { background: #fef2f2; border-color: var(--color-error); }
+.alerta-card.advertencia { background: #fffbeb; border-color: #f59e0b; }
+.alerta-card.info { background: #f0fdf4; border-color: var(--color-exito); }
+
+/* Centro de costo cards */
+.cc-card {
+  padding: 16px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.cc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cc-barra-progreso {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.cc-barra-relleno {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+/* Orden de trabajo */
+.ot-card {
+  padding: 16px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.ot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.estado-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+.estado-badge.ABIERTA { background: #dbeafe; color: #1e40af; }
+.estado-badge.EN_PROCESO { background: #fef3c7; color: #92400e; }
+.estado-badge.TERMINADA { background: #d1fae5; color: #065f46; }
+.estado-badge.CANCELADA { background: #fee2e2; color: #991b1b; }
+
+.clase-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+.clase-badge.A { background: #10b981; color: white; }
+.clase-badge.B { background: #f59e0b; color: white; }
+.clase-badge.C { background: #6b7280; color: white; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/vistas/costos-vista.js"></script>

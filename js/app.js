@@ -52,7 +52,10 @@ const RUTAS_ERP = {
   'asientos': 'vistas/asientos.html',
 
   // Capa 5: Cumplimiento
-  'cumplimiento': 'vistas/cumplimiento.html'
+  'cumplimiento': 'vistas/cumplimiento.html',
+
+  // Capa 6: Contabilidad de Costos
+  'costos': 'vistas/costos.html',
 };
 
 // ──────────────────────────────────────────────────────────────
