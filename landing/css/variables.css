@@ -1,0 +1,153 @@
+/* ══════════════════════════════════════════════════════════════
+   VARIABLES.CSS — Tokens de Diseño del ERP Contable Bolivia
+   Sistema de diseño centralizado con soporte para modo oscuro
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ────────────────────────────────────────────────────────────
+     PALETA DE COLORES
+     Inspiración: profesionalismo contable + acentos bolivianos
+     ──────────────────────────────────────────────────────────── */
+
+  /* Colores de marca */
+  --color-primario: #1e40af;          /* Azul profundo (confianza) */
+  --color-primario-hover: #1d4ed8;
+  --color-primario-light: #dbeafe;
+  --color-secundario: #d97706;        /* Ámbar (acento boliviano) */
+  --color-secundario-hover: #b45309;
+  --color-secundario-light: #fef3c7;
+
+  /* Colores semánticos */
+  --color-exito: #059669;             /* Verde (correcto) */
+  --color-exito-light: #d1fae5;
+  --color-error: #dc2626;             /* Rojo (error) */
+  --color-error-light: #fee2e2;
+  --color-advertencia: #d97706;       /* Ámbar (alerta) */
+  --color-advertencia-light: #fef3c7;
+  --color-info: #0284c7;              /* Celeste (información) */
+  --color-info-light: #e0f2fe;
+
+  /* ────────────────────────────────────────────────────────────
+     FONDOS Y SUPERFICIES (Modo Claro — por defecto)
+     ──────────────────────────────────────────────────────────── */
+  --fondo-principal: #ffffff;
+  --fondo-alternado: #f8fafc;
+  --fondo-card: #ffffff;
+  --fondo-oscuro: #0f172a;            /* Para hero y footer */
+  --fondo-oscuro-alternado: #1e293b;
+  --fondo-code: #1e293b;
+
+  /* Bordes */
+  --borde-suave: #e2e8f0;
+  --borde-medio: #cbd5e1;
+
+  /* ────────────────────────────────────────────────────────────
+     TEXTO
+     ──────────────────────────────────────────────────────────── */
+  --texto-principal: #1e293b;
+  --texto-secundario: #64748b;
+  --texto-claro: #f8fafc;
+  --texto-en-oscuro: #e2e8f0;
+  --texto-code: #a5f3fc;
+
+  /* ────────────────────────────────────────────────────────────
+     TIPOGRAFÍA
+     ──────────────────────────────────────────────────────────── */
+  --fuente-titulos: 'Inter', system-ui, -apple-system, sans-serif;
+  --fuente-cuerpo: 'Inter', system-ui, -apple-system, sans-serif;
+  --fuente-codigo: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Escala tipográfica */
+  --texto-xs: 0.75rem;    /* 12px */
+  --texto-sm: 0.875rem;   /* 14px */
+  --texto-base: 1rem;     /* 16px */
+  --texto-lg: 1.125rem;   /* 18px */
+  --texto-xl: 1.25rem;    /* 20px */
+  --texto-2xl: 1.5rem;    /* 24px */
+  --texto-3xl: 1.875rem;  /* 30px */
+  --texto-4xl: 2.25rem;   /* 36px */
+  --texto-5xl: 3rem;      /* 48px */
+  --texto-6xl: 3.75rem;   /* 60px */
+
+  /* Alturas de línea */
+  --linea-ajustada: 1.25;
+  --linea-normal: 1.5;
+  --linea-relajada: 1.75;
+
+  /* ────────────────────────────────────────────────────────────
+     ESPACIADOS (Escala de 8px)
+     ──────────────────────────────────────────────────────────── */
+  --espacio-2xs: 4px;
+  --espacio-xs: 8px;
+  --espacio-sm: 16px;
+  --espacio-md: 24px;
+  --espacio-lg: 32px;
+  --espacio-xl: 48px;
+  --espacio-2xl: 64px;
+  --espacio-3xl: 96px;
+  --espacio-4xl: 128px;
+
+  /* ────────────────────────────────────────────────────────────
+     BORDES Y SOMBRAS
+     ──────────────────────────────────────────────────────────── */
+  --radio-sm: 6px;
+  --radio-md: 12px;
+  --radio-lg: 16px;
+  --radio-xl: 24px;
+  --radio-full: 9999px;
+
+  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sombra-media: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --sombra-fuerte: 0 8px 32px rgba(0, 0, 0, 0.16);
+  --sombra-glow: 0 0 24px rgba(30, 64, 175, 0.25);
+
+  /* ────────────────────────────────────────────────────────────
+     TRANSICIONES Y ANIMACIONES
+     ──────────────────────────────────────────────────────────── */
+  --transicion-rapida: 150ms ease;
+  --transicion-normal: 250ms ease;
+  --transicion-lenta: 400ms ease;
+
+  /* ────────────────────────────────────────────────────────────
+     LAYOUT
+     ──────────────────────────────────────────────────────────── */
+  --ancho-maximo: 1200px;
+  --ancho-contenido: 800px;
+  --alto-navbar: 72px;
+  --padding-seccion: var(--espacio-3xl);
+
+  /* Z-index */
+  --z-navbar: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MODO OSCURO (se activa con [data-theme="dark"] en <html>)
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --fondo-principal: #0f172a;
+  --fondo-alternado: #1e293b;
+  --fondo-card: #1e293b;
+  --fondo-oscuro: #020617;
+  --fondo-oscuro-alternado: #0f172a;
+  --fondo-code: #0f172a;
+
+  --borde-suave: #334155;
+  --borde-medio: #475569;
+
+  --texto-principal: #f1f5f9;
+  --texto-secundario: #94a3b8;
+  --texto-claro: #f8fafc;
+
+  --color-primario-light: #1e3a8a;
+  --color-secundario-light: #78350f;
+  --color-exito-light: #064e3b;
+  --color-error-light: #7f1d1d;
+  --color-advertencia-light: #78350f;
+  --color-info-light: #0c4a6e;
+
+  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --sombra-media: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --sombra-fuerte: 0 8px 32px rgba(0, 0, 0, 0.5);
+}

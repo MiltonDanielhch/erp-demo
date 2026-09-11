@@ -1,0 +1,335 @@
+/* ══════════════════════════════════════════════════════════════
+   COMPONENTES.CSS — Botones, cards, badges, tabs y más
+   ══════════════════════════════════════════════════════════════ */
+
+/* ────────────────────────────────────────────────────────────
+   BOTONES
+   ──────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: 12px 24px;
+  font-size: var(--texto-base);
+  font-weight: 600;
+  border-radius: var(--radio-md);
+  transition: all var(--transicion-normal);
+  cursor: pointer;
+  border: 2px solid transparent;
+  text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-media);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primario {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+.btn-primario:hover {
+  background-color: var(--color-primario-hover);
+  color: white;
+}
+
+.btn-secundario {
+  background-color: var(--color-secundario);
+  color: white;
+}
+
+.btn-secundario:hover {
+  background-color: var(--color-secundario-hover);
+  color: white;
+}
+
+.btn-contorno {
+  background-color: transparent;
+  color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.btn-contorno:hover {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+.btn-fantasma {
+  background-color: transparent;
+  color: var(--texto-principal);
+}
+
+.btn-fantasma:hover {
+  background-color: var(--fondo-alternado);
+}
+
+.btn-grande {
+  padding: 16px 32px;
+  font-size: var(--texto-lg);
+}
+
+.btn-pequenio {
+  padding: 8px 16px;
+  font-size: var(--texto-sm);
+}
+
+/* ────────────────────────────────────────────────────────────
+   CARDS
+   ──────────────────────────────────────────────────────────── */
+.card {
+  background-color: var(--fondo-card);
+  border: 1px solid var(--borde-suave);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-md);
+  transition: all var(--transicion-normal);
+}
+
+.card:hover {
+  box-shadow: var(--sombra-media);
+  transform: translateY(-4px);
+}
+
+.card-destacada {
+  border-color: var(--color-primario);
+  box-shadow: var(--sombra-glow);
+}
+
+.card-oscura {
+  background-color: var(--fondo-oscuro-alternado);
+  border-color: var(--borde-medio);
+  color: var(--texto-en-oscuro);
+}
+
+.card-icono {
+  font-size: var(--texto-4xl);
+  margin-bottom: var(--espacio-sm);
+}
+
+.card-titulo {
+  font-size: var(--texto-xl);
+  font-weight: 700;
+  margin-bottom: var(--espacio-xs);
+}
+
+.card-descripcion {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin-bottom: var(--espacio-sm);
+}
+
+/* ────────────────────────────────────────────────────────────
+   BADGES
+   ──────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: var(--texto-xs);
+  font-weight: 600;
+  border-radius: var(--radio-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-primario {
+  background-color: var(--color-primario-light);
+  color: var(--color-primario);
+}
+
+.badge-secundario {
+  background-color: var(--color-secundario-light);
+  color: var(--color-secundario);
+}
+
+.badge-exito {
+  background-color: var(--color-exito-light);
+  color: var(--color-exito);
+}
+
+.badge-error {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.badge-advertencia {
+  background-color: var(--color-advertencia-light);
+  color: var(--color-advertencia);
+}
+
+.badge-info {
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.badge-neutral {
+  background-color: var(--fondo-alternado);
+  color: var(--texto-secundario);
+}
+
+/* ────────────────────────────────────────────────────────────
+   TABS
+   ──────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: var(--espacio-xs);
+  border-bottom: 2px solid var(--borde-suave);
+  margin-bottom: var(--espacio-md);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 12px 20px;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  border-bottom: 3px solid transparent;
+  transition: all var(--transicion-normal);
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--color-primario);
+  background-color: var(--fondo-alternado);
+}
+
+.tab.activo {
+  color: var(--color-primario);
+  border-bottom-color: var(--color-primario);
+}
+
+.tab-contenido {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ────────────────────────────────────────────────────────────
+   MÉTRICAS / STATS
+   ──────────────────────────────────────────────────────────── */
+.metrica {
+  text-align: center;
+  padding: var(--espacio-md);
+}
+
+.metrica-valor {
+  font-size: var(--texto-5xl);
+  font-weight: 800;
+  color: var(--color-primario);
+  line-height: 1;
+  margin-bottom: var(--espacio-xs);
+}
+
+.metrica-label {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.seccion-oscura .metrica-valor {
+  color: var(--texto-claro);
+}
+
+.seccion-oscura .metrica-label {
+  color: var(--texto-en-oscuro);
+}
+
+/* ────────────────────────────────────────────────────────────
+   SEPARADORES Y TÍTULOS DE SECCIÓN
+   ──────────────────────────────────────────────────────────── */
+.seccion-header {
+  text-align: center;
+  margin-bottom: var(--espacio-xl);
+}
+
+.seccion-etiqueta {
+  display: inline-block;
+  font-size: var(--texto-sm);
+  font-weight: 700;
+  color: var(--color-secundario);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--espacio-xs);
+}
+
+.seccion-titulo {
+  font-size: var(--texto-4xl);
+  margin-bottom: var(--espacio-sm);
+}
+
+.seccion-subtitulo {
+  font-size: var(--texto-lg);
+  color: var(--texto-secundario);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ────────────────────────────────────────────────────────────
+   CÓDIGO Y SNIPPETS
+   ──────────────────────────────────────────────────────────── */
+.snippet {
+  background-color: var(--fondo-code);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  margin: var(--espacio-md) 0;
+}
+
+.snippet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--espacio-xs) var(--espacio-sm);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.snippet-titulo {
+  font-size: var(--texto-xs);
+  color: var(--texto-en-oscuro);
+  font-weight: 600;
+}
+
+.snippet pre {
+  margin: 0;
+  border-radius: 0;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TOOLTIPS SIMPLES
+   ──────────────────────────────────────────────────────────── */
+.tooltip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted var(--texto-secundario);
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--fondo-oscuro);
+  color: var(--texto-claro);
+  padding: 8px 12px;
+  border-radius: var(--radio-sm);
+  font-size: var(--texto-xs);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transicion-rapida);
+  z-index: var(--z-tooltip, 50);
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+}

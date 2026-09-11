@@ -1,0 +1,226 @@
+/* ══════════════════════════════════════════════════════════════
+   BASE.CSS — Reset, tipografía y utilidades globales
+   ══════════════════════════════════════════════════════════════ */
+
+/* ────────────────────────────────────────────────────────────
+   RESET MODERNO
+   ──────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--fuente-cuerpo);
+  font-size: var(--texto-base);
+  line-height: var(--linea-normal);
+  color: var(--texto-principal);
+  background-color: var(--fondo-principal);
+  transition: background-color var(--transicion-normal),
+              color var(--transicion-normal);
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--color-primario);
+  text-decoration: none;
+  transition: color var(--transicion-rapida);
+}
+
+a:hover {
+  color: var(--color-primario-hover);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TIPOGRAFÍA
+   ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  line-height: var(--linea-ajustada);
+  color: var(--texto-principal);
+}
+
+h1 { font-size: var(--texto-5xl); }
+h2 { font-size: var(--texto-4xl); }
+h3 { font-size: var(--texto-3xl); }
+h4 { font-size: var(--texto-2xl); }
+h5 { font-size: var(--texto-xl); }
+h6 { font-size: var(--texto-lg); }
+
+p {
+  margin-bottom: var(--espacio-sm);
+  color: var(--texto-secundario);
+}
+
+code,
+pre {
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-sm);
+}
+
+code {
+  background-color: var(--fondo-code);
+  color: var(--texto-code);
+  padding: 2px 6px;
+  border-radius: var(--radio-sm);
+}
+
+pre {
+  background-color: var(--fondo-code);
+  color: var(--texto-code);
+  padding: var(--espacio-md);
+  border-radius: var(--radio-md);
+  overflow-x: auto;
+  line-height: var(--linea-relajada);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* ────────────────────────────────────────────────────────────
+   LAYOUT Y CONTENEDORES
+   ──────────────────────────────────────────────────────────── */
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: 0 var(--espacio-md);
+}
+
+.contenedor-estrecho {
+  max-width: var(--ancho-contenido);
+}
+
+.seccion {
+  padding: var(--padding-seccion) 0;
+}
+
+.seccion-alternada {
+  background-color: var(--fondo-alternado);
+}
+
+.seccion-oscura {
+  background-color: var(--fondo-oscuro);
+  color: var(--texto-claro);
+}
+
+.seccion-oscura h2,
+.seccion-oscura h3 {
+  color: var(--texto-claro);
+}
+
+.seccion-oscura p {
+  color: var(--texto-en-oscuro);
+}
+
+/* ────────────────────────────────────────────────────────────
+   UTILIDADES
+   ──────────────────────────────────────────────────────────── */
+.texto-centrado { text-align: center; }
+.texto-derecha { text-align: right; }
+.texto-izquierda { text-align: left; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+.gap-xs { gap: var(--espacio-xs); }
+.gap-sm { gap: var(--espacio-sm); }
+.gap-md { gap: var(--espacio-md); }
+.gap-lg { gap: var(--espacio-lg); }
+
+.grid { display: grid; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.mt-sm { margin-top: var(--espacio-sm); }
+.mt-md { margin-top: var(--espacio-md); }
+.mt-lg { margin-top: var(--espacio-lg); }
+.mb-sm { margin-bottom: var(--espacio-sm); }
+.mb-md { margin-bottom: var(--espacio-md); }
+.mb-lg { margin-bottom: var(--espacio-lg); }
+
+.oculto { display: none !important; }
+
+/* ────────────────────────────────────────────────────────────
+   ANIMACIONES REVEAL-ON-SCROLL
+   ──────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ──────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  h1 { font-size: var(--texto-4xl); }
+  h2 { font-size: var(--texto-3xl); }
+  h3 { font-size: var(--texto-2xl); }
+
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: var(--texto-3xl); }
+  h2 { font-size: var(--texto-2xl); }
+  h3 { font-size: var(--texto-xl); }
+
+  .seccion { padding: var(--espacio-xl) 0; }
+
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .flex-col-movil { flex-direction: column; }
+}
