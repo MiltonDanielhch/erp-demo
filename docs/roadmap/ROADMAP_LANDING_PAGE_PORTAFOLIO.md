@@ -149,16 +149,16 @@ Construye la **primera impresión**: un hero oscuro e impactante que presenta el
 ## Tareas de la Fase 2
 
 ```text
-[ ] Crear sección hero con fondo oscuro y gradiente
-[ ] Título principal + tagline descriptivo
-[ ] Dos CTAs: "Ver ERP en vivo" y "Ver documentación"
-[ ] Barra de métricas con 4 números de impacto
-[ ] Animación de contador (los números suben al hacer scroll)
+[x] Crear sección hero con fondo oscuro y gradiente
+[x] Título principal + tagline descriptivo
+[x] Dos CTAs: "Ver ERP en vivo" y "Ver documentación"
+[x] Barra de métricas con 4 números de impacto
+[x] Animación de contador (los números suben al hacer scroll)
     → 🧠 Mini-Prompt para IA: "Escribe una función JS que anime
       contadores numéricos cuando entran en el viewport usando
       IntersectionObserver. Los números deben subir desde 0 hasta
       su valor final en 1.5 segundos con easing."
-[ ] Badge flotante "Prototipo Educativo v1.0"
+[x] Badge flotante "Prototipo Educativo v1.0"
 ```
 
 ---
