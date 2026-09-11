@@ -273,13 +273,6 @@ function iniciarERP() {
   console.log('📒 Módulo de Asientos de Nómina inicializado.');
    // ── NUEVO: Instanciar Módulo de Compras ──────────────────────
 
-  // ── Módulo 8: Contabilidad de Costos ──
-  const inventarioCapas = new InventarioCapasClase({ almacenamiento });
-  console.log('📦 Módulo Inventario por Capas inicializado (Módulo 8)');
-
-  const centrosCosto = new CentrosCostoClase({ almacenamiento });
-  console.log('🏢 Módulo Centros de Costo inicializado (Módulo 8)');
-
    const moduloCompras = new ModuloCompras({
     almacenamiento: almacenamiento,
     capaDocumentos: capaDocumentos,
@@ -303,6 +296,77 @@ function iniciarERP() {
     catalogoProductos: catalogoProductos
   });
   console.log('📦 Módulo de Inventario (Kardex) inicializado.');
+
+  // ══════════════════════════════════════════════════════════
+  // MÓDULO 8: CONTABILIDAD DE COSTOS (orden correcto de dependencias)
+  // ══════════════════════════════════════════════════════════
+
+  // ── 8.2: Inventario por Capas ──
+  const inventarioCapas = new InventarioCapasClase({ almacenamiento });
+  console.log('📦 Módulo Inventario por Capas inicializado (Módulo 8.2)');
+
+  // ── 8.4: Centros de Costo ──
+  const centrosCosto = new CentrosCostoClase({ almacenamiento });
+  console.log('🏢 Módulo Centros de Costo inicializado (Módulo 8.4)');
+
+  // ── 8.5: Costos CIF ── (usa centrosCosto + motorContable)
+  const costosCIF = new CostosCIFClase({
+    almacenamiento,
+    centrosCosto,
+    motorContable
+  });
+  console.log('🏭 Módulo Costos CIF inicializado (Módulo 8.5)');
+
+  // ── 8.6: Órdenes de Trabajo ── (usa inventarioCapas + costosCIF + motorContable)
+  const ordenesTrabajo = new OrdenesTrabajoClase({
+    almacenamiento,
+    inventarioCapas,
+    costosCIF,
+    motorContable
+  });
+  console.log('🛠️ Módulo Órdenes de Trabajo inicializado (Módulo 8.6)');
+
+  // ── 8.7: Análisis de Margen por Producto ── (usa inventarioCapas + ordenesTrabajo)
+  const analisisMargen = new AnalisisMargenClase({
+    almacenamiento,
+    inventarioCapas,
+    ordenesTrabajo
+  });
+  console.log('💰 Módulo Análisis de Margen inicializado (Módulo 8.7)');
+
+  // ── 8.8: Análisis de Clientes ──
+  const analisisClientes = new AnalisisClientesClase({
+    almacenamiento,
+    inventarioCapas
+  });
+  console.log('👥 Módulo Análisis de Clientes inicializado (Módulo 8.8)');
+
+  // ── 8.9: Punto de Equilibrio ──
+  const puntoEquilibrio = new PuntoEquilibrioClase({
+    almacenamiento,
+    centrosCosto
+  });
+  console.log('⚖️ Módulo Punto de Equilibrio inicializado (Módulo 8.9)');
+
+  // ── 8.11: Asientos de Costos ──
+  const asientosCostos = new AsientosCostosClase({
+    almacenamiento,
+    motorContable
+  });
+  console.log('📒 Módulo Asientos de Costos inicializado (Módulo 8.11)');
+
+  // ── 8.10: Dashboard de Costos (AL FINAL, usa todos los anteriores) ──
+  const dashboardCostos = new DashboardCostosClase({
+    almacenamiento,
+    inventarioCapas,
+    centrosCosto,
+    costosCIF,
+    ordenesTrabajo,
+    analisisMargen,
+    analisisClientes,
+    puntoEquilibrio
+  });
+  console.log('📊 Dashboard de Costos inicializado (Módulo 8.10)');
 
   // ── Instanciar Generador de Asientos Contables ───────────────
   const generadorAsientos = new GeneradorAsientos({
@@ -358,6 +422,10 @@ function iniciarERP() {
   window.costosCIF = costosCIF;
   window.ordenesTrabajo = ordenesTrabajo;
   window.analisisMargen = analisisMargen;
+  window.analisisClientes = analisisClientes;
+  window.puntoEquilibrio = puntoEquilibrio;
+  window.asientosCostos = asientosCostos;
+  window.dashboardCostos = dashboardCostos;
 
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
   window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
@@ -408,6 +476,10 @@ function iniciarERP() {
   window.ERP.ordenesTrabajo = ordenesTrabajo;
   window.ERP.analisisMargen = analisisMargen;
 
+  window.ERP.analisisClientes = analisisClientes;
+  window.ERP.puntoEquilibrio = puntoEquilibrio;
+  window.ERP.asientosCostos = asientosCostos;
+  window.ERP.dashboardCostos = dashboardCostos;
   // ── 6. Iniciar el enrutador (carga la vista inicial) ────────
   enrutador.iniciar();
 
