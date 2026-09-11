@@ -143,7 +143,7 @@ CÁLCULO DEL VENCIMIENTO:
 
 EJEMPLO:
 ─────────────────────────────────────────────────
-Empresa: Comercial Los Andes SRL
+Empresa: Distribuidora Mamoré SRL
 NIT: 123456789-1 (último dígito: 1)
 
 Período fiscal: Septiembre 2026

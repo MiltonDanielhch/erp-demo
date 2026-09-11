@@ -389,13 +389,13 @@ Aquí vive la **ley boliviana traducida a código**. Si mañana el SIN cambia el
 # FASE 0.6 — Datos de Ejemplo Precargados
 
 ## ¿Qué hace esta fase?
-Para que al abrir el ERP ya haya **algo que mostrar**. Una empresa ficticia ("Comercial Los Andes SRL") con 10 transacciones de ejemplo: 3 compras, 3 ventas, 2 pagos, 1 asiento de nómina, 1 depreciación. Esto permite exponer el prototipo sin tener que cargar datos a mano.
+Para que al abrir el ERP ya haya **algo que mostrar**. Una empresa ficticia ("Distribuidora Mamoré SRL") con 10 transacciones de ejemplo: 3 compras, 3 ventas, 2 pagos, 1 asiento de nómina, 1 depreciación. Esto permite exponer el prototipo sin tener que cargar datos a mano.
 
 ## Tareas de la Fase 0.6
 
 ```text
 [x] Crear datos/ejemplo.json
-    → Empresa ficticia: Comercial Los Andes SRL
+    → Empresa ficticia: Distribuidora Mamoré SRL
     → NIT: 123456789-1 (de prueba, no real)
     → 3 clientes de ejemplo
     → 3 proveedores de ejemplo
@@ -403,7 +403,7 @@ Para que al abrir el ERP ya haya **algo que mostrar**. Una empresa ficticia ("Co
     → 10 transacciones precargadas
     → 🧠 Mini-Prompt para IA: "Genera un JSON de datos de ejemplo 
       para un ERP contable boliviano. Incluye: una empresa ficticia 
-      (Comercial Los Andes SRL), 3 clientes con NIT válido de prueba, 
+      (Distribuidora Mamoré SRL), 3 clientes con NIT válido de prueba, 
       3 proveedores, 5 productos de inventario con precios en Bs, 
       y 10 transacciones variadas (compras con IVA, ventas con IVA, 
       pagos, asiento de nómina simple). Usar NITs ficticios pero con 
@@ -468,7 +468,7 @@ Una prueba rápida que verifica que **lo esencial funciona**. No probamos cada d
       - Estructura de carpetas alineada con las 5 capas del ERP
       - Núcleo JS: enrutador, almacenamiento, utilidades, validadores
       - Configuración del dominio boliviano (Ley 843, NC CTNAC)
-      - Datos de ejemplo precargados (Comercial Los Andes SRL)
+      - Datos de ejemplo precargados (Distribuidora Mamoré SRL)
       - Smoke test: todos los tests pasan
       
       Próximo paso: Módulo 1 - Capa 1 (Documentos Fuente)"

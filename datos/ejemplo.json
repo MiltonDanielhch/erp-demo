@@ -2,14 +2,14 @@
   "empresa": {
     "id": "emp-001",
     "nit": "123456789-7",
-    "razonSocial": "Comercial Los Andes SRL",
-    "direccion": "Av. 16 de Julio #1500, Edificio Handal, Piso 5",
-    "ciudad": "La Paz",
-    "telefono": "591-2-2441234",
-    "email": "info@comerciallosandes.com.bo",
+    "razonSocial": "Distribuidora Mamoré SRL",
+    "direccion": "Av. 6 de Agosto #234, Edificio Beni Plaza, Piso 2",
+    "ciudad": "Trinidad",
+    "telefono": "591-3-4662345",
+    "email": "info@distribuidoramamore.com.bo",
     "regimenTributario": "RG",
-    "actividadEconomica": "Venta al por mayor y menor de productos de oficina",
-    "representanteLegal": "María Elena Condori Vargas",
+    "actividadEconomica": "Venta al por mayor y menor de productos de oficina y tecnología",
+    "representanteLegal": "María Elena Vaca Justiniano",
     "fechaConstitucion": "2015-03-15",
     "capitalSocial": 150000,
     "moneda": "BOB",
@@ -20,10 +20,10 @@
     {
       "id": "cli-001",
       "nit": "100123456-9",
-      "razonSocial": "Constructora del Sur SA",
-      "telefono": "591-2-2771234",
-      "email": "compras@constructoradelsur.bo",
-      "direccion": "C. Mercado #234, La Paz",
+      "razonSocial": "Constructora del Beni SA",
+      "telefono": "591-3-4671234",
+      "email": "compras@constructoradelbeni.bo",
+      "direccion": "C. Nicolás Suárez #234, Trinidad",
       "limiteCredito": 50000,
       "saldoActual": 11300,
       "estado": "ACTIVO",
@@ -33,10 +33,10 @@
     {
       "id": "cli-002",
       "nit": "200987654-0",
-      "razonSocial": "Minera Illimani SRL",
-      "telefono": "591-2-2123456",
-      "email": "admin@minerailimani.bo",
-      "direccion": "Av. Arce #2500, La Paz",
+      "razonSocial": "Ganadera Yacuma SRL",
+      "telefono": "591-3-4623456",
+      "email": "admin@ganaderayacuma.bo",
+      "direccion": "Av. 9 de Abril #2500, Trinidad",
       "limiteCredito": 80000,
       "saldoActual": 5650,
       "estado": "ACTIVO",
@@ -46,10 +46,10 @@
     {
       "id": "cli-003",
       "nit": "300555123-9",
-      "razonSocial": "Restaurante Pachamama",
-      "telefono": "591-2-2334455",
-      "email": "pachamama@restaurant.bo",
-      "direccion": "C. Sagárnaga #450, La Paz",
+      "razonSocial": "Restaurante El Vaqueño",
+      "telefono": "591-3-4634455",
+      "email": "elvaqueno@restaurant.bo",
+      "direccion": "C. Bolívar #450, Trinidad",
       "limiteCredito": 20000,
       "saldoActual": 0,
       "estado": "ACTIVO",
@@ -62,10 +62,10 @@
     {
       "id": "prov-001",
       "nit": "400888777-5",
-      "razonSocial": "Importadora Bolívar SA",
-      "telefono": "591-2-2443322",
-      "email": "ventas@importadorabolivar.bo",
-      "direccion": "Av. Montes #800, La Paz",
+      "razonSocial": "Importadora Beni SA",
+      "telefono": "591-3-4643322",
+      "email": "ventas@importadorabeni.bo",
+      "direccion": "Av. 6 de Agosto #800, Trinidad",
       "condicionesPago": "30_DIAS",
       "saldoPorPagar": 16950,
       "estado": "ACTIVO",
@@ -88,10 +88,10 @@
     {
       "id": "prov-003",
       "nit": "600222111-9",
-      "razonSocial": "Tecnología Andina SRL",
-      "telefono": "591-2-2998877",
-      "email": "soporte@tecnologiaandina.bo",
-      "direccion": "C. Rosendo Gutiérrez #567, La Paz",
+      "razonSocial": "Tecnología Beni SRL",
+      "telefono": "591-3-4698877",
+      "email": "soporte@tecnologiabeni.bo",
+      "direccion": "C. Nicolás Suárez #567, Trinidad",
       "condicionesPago": "CONTADO",
       "saldoPorPagar": 0,
       "estado": "ACTIVO",
@@ -250,7 +250,7 @@
       "montoIT": 406.80,
       "estado": "FACTURADA",
       "creadoEn": "2026-09-03T11:20:00.000Z",
-      "concepto": "Venta de 2 laptops a Constructora del Sur"
+      "concepto": "Venta de 2 laptops a Constructora del Beni"
     },
     {
       "id": "trx-005",
@@ -271,7 +271,7 @@
       "montoIT": 127.13,
       "estado": "FACTURADA",
       "creadoEn": "2026-09-08T15:45:00.000Z",
-      "concepto": "Venta de impresora y cartuchos a Minera Illimani"
+      "concepto": "Venta de impresora y cartuchos a Ganadera Yacuma"
     },
     {
       "id": "trx-006",
@@ -291,7 +291,7 @@
       "montoIT": 16.95,
       "estado": "COBRADA",
       "creadoEn": "2026-09-15T16:30:00.000Z",
-      "concepto": "Venta de resmas al Restaurante Pachamama (cobrado al contado)"
+      "concepto": "Venta de resmas al Restaurante El Vaqueño (cobrado al contado)"
     },
     {
       "id": "trx-007",
@@ -305,7 +305,7 @@
       "metodoPago": "TRANSFERENCIA",
       "estado": "PAGADA",
       "creadoEn": "2026-09-20T10:00:00.000Z",
-      "concepto": "Pago total factura F-2026-003 a Tecnología Andina"
+      "concepto": "Pago total factura F-2026-003 a Tecnología Beni"
     },
     {
       "id": "trx-008",
@@ -328,8 +328,8 @@
       "periodo": "2026-09",
       "documento": "NOM-2026-09",
       "empleados": [
-        { "empleadoId": "emp-001", "nombres": "Juan Carlos", "apellidos": "Mamani Quispe", "salarioBase": 5000 },
-        { "empleadoId": "emp-002", "nombres": "Ana Lucía", "apellidos": "Torrez Flores", "salarioBase": 4500 }
+        { "empleadoId": "emp-001", "nombres": "Juan Carlos", "apellidos": "Menacho Vaca", "salarioBase": 5000 },
+        { "empleadoId": "emp-002", "nombres": "Ana Lucía", "apellidos": "Justiniano Torrez", "salarioBase": 4500 }
       ],
       "totalDevengado": 9500,
       "totalDeducciones": 1235,
@@ -362,7 +362,7 @@
       "ci": "9876543",
       "nit": "400111222-3",
       "nombres": "Juan Carlos",
-      "apellidos": "Mamani Quispe",
+      "apellidos": "Menacho Vaca",
       "fechaNacimiento": "1985-03-15",
       "genero": "MASCULINO",
       "estadoCivil": "CASADO",
@@ -380,7 +380,7 @@
       "ci": "8765432",
       "nit": "500222333-4",
       "nombres": "Ana Lucía",
-      "apellidos": "Torrez Flores",
+      "apellidos": "Justiniano Torrez",
       "fechaNacimiento": "1992-07-22",
       "genero": "FEMENINO",
       "estadoCivil": "SOLTERA",

@@ -19,8 +19,8 @@ const PROYECTO_INFO = {
     longitud: '-64.9000'
   },
   empresaEjemplo: {
-    nombre: 'Comercial Los Andes SRL',
-    nit: '123456789-1',
+    nombre: 'Distribuidora Mamoré SRL',
+    nit: '123456789-7',
     actividad: 'Comercio al por mayor y menor',
     regimen: 'Régimen General',
     municipio: 'Trinidad',
