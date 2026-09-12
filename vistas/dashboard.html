@@ -139,47 +139,76 @@
 
 <script>
   // ══════════════════════════════════════════════════════════════
-  // Funciones de UI para carga de datos de ejemplo
+  // Dashboard con detector de "primer uso"
   // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Lee datos directamente desde LocalStorage.
+   * Las claves usan el namespace 'erp_bolivia_' (definido en app.js).
+   */
+  function leerDesdeLocalStorage(coleccion) {
+    try {
+      return JSON.parse(localStorage.getItem(`erp_bolivia_${coleccion}`) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * Verifica si el sistema tiene datos cargados.
+   * Considera "vacío" si no hay transacciones ni empleados.
+   */
+  function sistemaEstaVacio() {
+    const transacciones = leerDesdeLocalStorage('transacciones');
+    const empleados = leerDesdeLocalStorage('empleados');
+    const clientes = leerDesdeLocalStorage('clientes');
+    return transacciones.length === 0 && empleados.length === 0 && clientes.length === 0;
+  }
 
   /**
    * Carga los datos de ejemplo (sobrescribe datos previos).
    */
-  async function cargarDatosEjemploUI() {
+  async function cargarDatosEjemploUI(silencioso = false) {
     const btn = document.getElementById('btn-cargar-ejemplo');
     const mensaje = document.getElementById('mensaje-ejemplo');
 
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Cargando...';
-    mensaje.innerHTML = '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Cargando...';
+    }
+    if (mensaje) mensaje.innerHTML = '';
 
     try {
       const resultado = await window.almacenamiento.cargarDatosEjemplo(true);
 
       if (resultado.exito) {
-        mensaje.innerHTML = `
-          <div style="background-color: var(--color-exito-light); color: #065F46;
-                      padding: var(--espacio-md); border-radius: var(--radio-md);">
-            <strong>✅ ${resultado.mensaje}</strong><br>
-            <small>Cargadas: ${resultado.coleccionesCargadas.join(', ') || 'ninguna'}</small><br>
-            <small>Sobreescritas: ${resultado.coleccionesSobreescritas.join(', ') || 'ninguna'}</small><br>
-            <small>Omitidas: ${resultado.coleccionesOmitidas.join(', ') || 'ninguna'}</small>
-          </div>
-        `;
+        if (!silencioso && mensaje) {
+          mensaje.innerHTML = `
+            <div style="background-color: var(--color-exito-light); color: #065F46;
+                        padding: var(--espacio-md); border-radius: var(--radio-md);">
+              <strong>✅ ${resultado.mensaje}</strong><br>
+              <small>Cargadas: ${resultado.coleccionesCargadas.join(', ') || 'ninguna'}</small>
+            </div>
+          `;
+        }
         await actualizarTarjetasDashboard();
       } else {
         throw new Error(resultado.mensaje);
       }
     } catch (error) {
-      mensaje.innerHTML = `
-        <div style="background-color: var(--color-error-light); color: #991B1B;
-                    padding: var(--espacio-md); border-radius: var(--radio-md);">
-          <strong>❌ ${error.message}</strong>
-        </div>
-      `;
+      if (mensaje) {
+        mensaje.innerHTML = `
+          <div style="background-color: var(--color-error-light); color: #991B1B;
+                      padding: var(--espacio-md); border-radius: var(--radio-md);">
+            <strong>❌ ${error.message}</strong>
+          </div>
+        `;
+      }
     } finally {
-      btn.disabled = false;
-      btn.innerHTML = '📥 Cargar datos de ejemplo';
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '📥 Cargar datos de ejemplo';
+      }
     }
   }
 
@@ -192,29 +221,37 @@
     }
     const btn = document.getElementById('btn-recargar-ejemplo');
     const mensaje = document.getElementById('mensaje-ejemplo');
-    btn.disabled = true;
-    btn.innerHTML = '🔄 Reiniciando...';
-    mensaje.innerHTML = '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '🔄 Reiniciando...';
+    }
+    if (mensaje) mensaje.innerHTML = '';
 
     try {
       const resultado = await window.almacenamiento.recargarDatosEjemplo();
-      mensaje.innerHTML = `
-        <div style="background-color: var(--color-exito-light); color: #065F46;
-                    padding: var(--espacio-md); border-radius: var(--radio-md);">
-          <strong>✅ ${resultado.mensaje}</strong>
-        </div>
-      `;
+      if (mensaje) {
+        mensaje.innerHTML = `
+          <div style="background-color: var(--color-exito-light); color: #065F46;
+                      padding: var(--espacio-md); border-radius: var(--radio-md);">
+            <strong>✅ ${resultado.mensaje}</strong>
+          </div>
+        `;
+      }
       await actualizarTarjetasDashboard();
     } catch (error) {
-      mensaje.innerHTML = `
-        <div style="background-color: var(--color-error-light); color: #991B1B;
-                    padding: var(--espacio-md); border-radius: var(--radio-md);">
-          <strong>❌ ${error.message}</strong>
-        </div>
-      `;
+      if (mensaje) {
+        mensaje.innerHTML = `
+          <div style="background-color: var(--color-error-light); color: #991B1B;
+                      padding: var(--espacio-md); border-radius: var(--radio-md);">
+            <strong>❌ ${error.message}</strong>
+          </div>
+        `;
+      }
     } finally {
-      btn.disabled = false;
-      btn.innerHTML = '🔄 Reiniciar datos';
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '🔄 Reiniciar datos';
+      }
     }
   }
 
@@ -226,66 +263,40 @@
       return;
     }
     window.almacenamiento.limpiarTodo();
-    document.getElementById('mensaje-ejemplo').innerHTML = `
-      <div style="background-color: var(--color-alerta-light); color: #92400E;
-                  padding: var(--espacio-md); border-radius: var(--radio-md);">
-        <strong>🧹 Todos los datos han sido eliminados.</strong>
-      </div>
-    `;
+    const mensaje = document.getElementById('mensaje-ejemplo');
+    if (mensaje) {
+      mensaje.innerHTML = `
+        <div style="background-color: var(--color-alerta-light); color: #92400E;
+                    padding: var(--espacio-md); border-radius: var(--radio-md);">
+          <strong>🧹 Todos los datos han sido eliminados.</strong>
+        </div>
+      `;
+    }
     actualizarTarjetasDashboard();
   }
 
   /**
-   * Lee datos directamente desde LocalStorage.
-   * Las claves usan el namespace 'erp_bolivia_' (definido en app.js).
-   */
-  function leerDesdeLocalStorage(coleccion) {
-    try {
-      // Namespace correcto: erp_bolivia_ (no erp_)
-      return JSON.parse(localStorage.getItem(`erp_bolivia_${coleccion}`) || '[]');
-    } catch (e) {
-      return [];
-    }
-  }
-  /**
    * Actualiza las tarjetas del dashboard con los datos cargados.
-   * Lee directamente de LocalStorage con namespace 'erp_bolivia_'.
    */
   function actualizarTarjetasDashboard() {
-    // Leer directamente de LocalStorage
     const transacciones = leerDesdeLocalStorage('transacciones');
     const empleados = leerDesdeLocalStorage('empleados');
-    const clientes = leerDesdeLocalStorage('clientes');
-    const productos = leerDesdeLocalStorage('productos');
-
-    // Filtrar transacciones por tipo
     const ventas = transacciones.filter(t => t.tipo === 'VENTA');
     const compras = transacciones.filter(t => t.tipo === 'COMPRA');
     const nomina = transacciones.filter(t => t.tipo === 'NOMINA');
 
-    // Total de ventas del mes
     const totalVentas = ventas.reduce((sum, v) => sum + (v.montoTotal || 0), 0);
-
-    // IVA débito (de ventas) y crédito (de compras)
     const ivaDebito = ventas.reduce((sum, v) => sum + (v.montoIVA || 0), 0);
     const ivaCredito = compras.reduce((sum, c) => sum + (c.montoIVA || 0), 0);
-
-    // IVA por pagar (si crédito > débito, hay saldo a favor, mostrar 0)
     const ivaPorPagar = Math.max(0, ivaDebito - ivaCredito);
     const saldoAFavor = Math.max(0, ivaCredito - ivaDebito);
-
-    // Total nómina del mes
     const totalNomina = nomina.reduce((sum, n) => sum + (n.netoAPagar || 0), 0);
 
-    // Actualizar tarjetas
     const elVentas = document.getElementById('dashboard-ventas');
     const elIVA = document.getElementById('dashboard-iva');
     const elEmpleados = document.getElementById('dashboard-empleados');
-    const elEmpleadosDetalle = elEmpleados?.parentElement.querySelector('.card-detalle');
 
-    if (elVentas) {
-      elVentas.textContent = window.utilidades.formatearBs(totalVentas);
-    }
+    if (elVentas) elVentas.textContent = window.utilidades.formatearBs(totalVentas);
 
     if (elIVA) {
       if (saldoAFavor > 0) {
@@ -303,27 +314,75 @@
 
     if (elEmpleados) {
       elEmpleados.textContent = empleados.length;
-    }
-
-    if (elEmpleadosDetalle) {
-      elEmpleadosDetalle.textContent = `Nómina mensual: ${window.utilidades.formatearBs(totalNomina)}`;
+      const detalle = elEmpleados.parentElement.querySelector('.card-detalle');
+      if (detalle) detalle.textContent = `Nómina mensual: ${window.utilidades.formatearBs(totalNomina)}`;
     }
 
     console.log('📊 Dashboard actualizado:', {
-      totalVentas,
-      totalCompras: compras.reduce((s, c) => s + (c.montoTotal || 0), 0),
-      ivaDebito,
-      ivaCredito,
-      ivaPorPagar,
-      saldoAFavor,
-      empleados: empleados.length,
-      totalNomina,
-      transacciones: transacciones.length,
-      clientes: clientes.length,
-      productos: productos.length
+      totalVentas, ivaDebito, ivaCredito, ivaPorPagar, saldoAFavor,
+      empleados: empleados.length, transacciones: transacciones.length
     });
   }
 
-  // Al cargar la vista, actualizar las tarjetas con los datos existentes
-  actualizarTarjetasDashboard();
+  /**
+   * Muestra el banner de "primer uso" si el sistema está vacío.
+   */
+  function mostrarBannerPrimerUso() {
+    // Buscar la sección de acciones rápidas y agregar banner al inicio
+    const contenedor = document.querySelector('.dashboard-grid')?.parentElement;
+    if (!contenedor) return;
+
+    // Evitar duplicados
+    if (document.getElementById('banner-primer-uso')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'banner-primer-uso';
+    banner.innerHTML = `
+      <div style="background: linear-gradient(135deg, var(--color-info-light) 0%, #dbeafe 100%);
+                  border: 2px solid var(--color-info);
+                  border-radius: var(--radio-lg);
+                  padding: var(--espacio-lg);
+                  margin-bottom: var(--espacio-lg);
+                  text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: var(--espacio-sm);">👋</div>
+        <h3 style="margin-bottom: var(--espacio-sm); color: #1e40af;">
+          ¡Bienvenido al ERP Contable Bolivia!
+        </h3>
+        <p style="color: var(--texto-principal); margin-bottom: var(--espacio-md); max-width: 600px; margin-left: auto; margin-right: auto;">
+          Este es tu primer acceso. Para explorar el sistema con datos reales,
+          carga nuestra <strong>empresa de ejemplo: Distribuidora Mamoré SRL</strong>
+          (Trinidad, Beni) con 10 transacciones, 3 clientes, 3 proveedores, 5 productos y 2 empleados.
+        </p>
+        <button id="btn-cargar-demo-auto" class="btn btn-primary btn-grande"
+                style="padding: 12px 32px; font-size: 1rem;">
+          🚀 Cargar datos de ejemplo ahora
+        </button>
+        <p style="font-size: var(--texto-xs); color: var(--texto-secundario); margin-top: var(--espacio-sm);">
+          Los datos se guardan en tu navegador. Puedes borrarlos en cualquier momento.
+        </p>
+      </div>
+    `;
+
+    // Insertar al inicio del contenedor
+    contenedor.insertBefore(banner, contenedor.firstChild);
+
+    // Conectar el botón
+    document.getElementById('btn-cargar-demo-auto').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-cargar-demo-auto');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Cargando...';
+      await cargarDatosEjemploUI(true);
+      banner.remove();
+    });
+  }
+
+  // ── Inicialización del dashboard ──
+  (function inicializarDashboard() {
+    actualizarTarjetasDashboard();
+
+    // Si el sistema está vacío, mostrar banner de bienvenida
+    if (sistemaEstaVacio()) {
+      mostrarBannerPrimerUso();
+    }
+  })();
 </script>
