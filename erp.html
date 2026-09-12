@@ -294,11 +294,6 @@
   </footer>
 
   <!-- ══════════════════════════════════════════════════════════
-       SCRIPTS DEL NÚCLEO (se cargan ANTES de app.js)
-       El orden importa: primero las dependencias, luego app.js
-       ══════════════════════════════════════════════════════════ -->
-
-  <!-- ══════════════════════════════════════════════════════════
        SCRIPTS — Orden correcto de carga
        ══════════════════════════════════════════════════════════ -->
 
@@ -328,14 +323,14 @@
   <script src="js/cargas/datos-ejemplo.js"></script>
 
   <script src="js/modulos/compras.js"></script>
-  <script src="js/modulos/catalogo-empleados.js"></script>   <!-- ← NUEVO Fase 4.2 -->
+  <script src="js/modulos/catalogo-empleados.js"></script>
   <script src="js/modulos/nomina.js"></script>
   <script src="js/modulos/provisiones.js"></script>
   <script src="js/modulos/ventas.js"></script>
   <script src="js/modulos/inventario.js"></script>
   <script src="js/modulos/asientos-contables.js"></script>
   <script src="js/modulos/lcv.js"></script>
-  <script src="js/modulos/bono-antiguedad.js"></script>   <!-- ← NUEVO Fase 4.5 -->
+  <script src="js/modulos/bono-antiguedad.js"></script>
   <script src="js/modulos/rc-iva.js"></script>
   <script src="js/modulos/asientos-nomina.js"></script>
   <script src="js/modulos/liquidaciones.js"></script>
@@ -358,6 +353,86 @@
 
   <!-- 4. Punto de entrada (último) -->
   <script src="js/app.js"></script>
+
+  <!-- ══════════════════════════════════════════════════════════
+       AUTO-FIX: Detecta desync entre localStorage y vistas
+       Si detecta datos en localStorage pero la vista muestra
+       tabla vacía, fuerza UN reload automático por sesión.
+       ══════════════════════════════════════════════════════════ -->
+  <script>
+    (function() {
+      'use strict';
+      
+      const KEY_FLAG = 'erp_auto_fix_reload_done_v1';
+      
+      // Solo ejecutar una vez por sesión
+      if (sessionStorage.getItem(KEY_FLAG)) return;
+      
+      // Esperar 1.5 segundos a que todo cargue (vistas, datos, listeners)
+      setTimeout(() => {
+        try {
+          // Verificar si localStorage tiene datos cargados
+          const tieneClientes = localStorage.getItem('erp_bolivia_clientes');
+          const tieneDocumentos = localStorage.getItem('erp_bolivia_documentos');
+          const tieneDatos = tieneClientes || tieneDocumentos;
+          
+          if (!tieneDatos) return; // No hay datos, no hay nada que arreglar
+          
+          // Verificar qué vista está activa
+          const hash = window.location.hash || '';
+          const enCatalogos = hash.includes('catalogos');
+          const enDocumentos = hash.includes('documentos');
+          
+          if (!enCatalogos && !enDocumentos) return; // No estamos en vista crítica
+          
+          // Detectar si la tabla está mostrando mensaje de "vacío"
+          const tablaCatalogosVacia = document.querySelector('#tabla-body tr td[colspan]');
+          const tablaDocumentosVacia = document.querySelector('#tabla-documentos-body tr td[colspan]');
+          
+          const vistaVacia = (enCatalogos && tablaCatalogosVacia) || 
+                             (enDocumentos && tablaDocumentosVacia);
+          
+          // Verificar que realmente hay datos en localStorage para esta vista
+          let tieneDatosParaVista = false;
+          if (enCatalogos) {
+            try {
+              const clientes = JSON.parse(tieneClientes || '[]');
+              const proveedores = JSON.parse(localStorage.getItem('erp_bolivia_proveedores') || '[]');
+              const productos = JSON.parse(localStorage.getItem('erp_bolivia_productos') || '[]');
+              tieneDatosParaVista = (clientes.length + proveedores.length + productos.length) > 0;
+            } catch (e) { tieneDatosParaVista = false; }
+          } else if (enDocumentos) {
+            try {
+              const documentos = JSON.parse(tieneDocumentos || '[]');
+              tieneDatosParaVista = documentos.length > 0;
+            } catch (e) { tieneDatosParaVista = false; }
+          }
+          
+          // Si hay datos pero la vista muestra vacío: DESYNC detectado
+          if (tieneDatosParaVista && vistaVacia) {
+            console.log('🔄 AUTO-FIX: Desync detectado, recargando una vez por sesión...');
+            console.log(`   Vista: ${enCatalogos ? 'catálogos' : 'documentos'}`);
+            console.log(`   Datos en localStorage: ✓`);
+            console.log(`   Tabla visible: vacía ✗`);
+            
+            sessionStorage.setItem(KEY_FLAG, Date.now().toString());
+            setTimeout(() => location.reload(), 300);
+          }
+        } catch (error) {
+          console.warn('⚠️ AUTO-FIX: Error en detección:', error.message);
+        }
+      }, 1500);
+      
+      // Limpiar flag cuando el usuario navega manualmente a otra vista
+      window.addEventListener('hashchange', () => {
+        const hash = window.location.hash || '';
+        if (!hash.includes('catalogos') && !hash.includes('documentos')) {
+          // Si sale de vistas críticas, permitir futuro auto-fix si vuelve
+          sessionStorage.removeItem(KEY_FLAG);
+        }
+      });
+    })();
+  </script>
 </body>
 
 </html>

@@ -317,6 +317,11 @@ class AlmacenamientoLocal {
       resumen.exito = true;
       resumen.mensaje = partes.join('. ') + '.';
 
+      // NUEVO: Disparar evento global para que las vistas se actualicen
+      window.dispatchEvent(new CustomEvent('erp:datos-ejemplo-cargados', {
+        detail: resumen
+      }));
+
       console.log('📥 Datos de ejemplo:', resumen);
       return resumen;
 
@@ -334,13 +339,16 @@ class AlmacenamientoLocal {
   limpiarTodo() {
     const colecciones = [
       'empresa', 'clientes', 'proveedores', 'productos',
-      'transacciones', 'empleados', 'documentos',    // ← NUEVO
+      'transacciones', 'empleados', 'documentos',
       'asientos', 'libroDiario', 'libroMayor',
       'periodosFiscales', 'iva_saldo_favor_acumulado',
       'segundo_aguinaldo_config', 'historial_smn'
     ];
     colecciones.forEach(c => this.vaciar(c));
     console.log('🧹 Todos los datos del ERP han sido eliminados.');
+
+    // NUEVO: Disparar evento global para que las vistas se actualicen
+    window.dispatchEvent(new CustomEvent('erp:datos-limpiados'));
   }
 
   /**
@@ -348,8 +356,10 @@ class AlmacenamientoLocal {
    * @returns {Object} Resumen de lo cargado
    */
   async recargarDatosEjemplo() {
+
     console.log('🔄 Recargando datos de ejemplo...');
     this.limpiarTodo();
+
     return await this.cargarDatosEjemplo(true);
   }
 }
