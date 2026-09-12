@@ -4,11 +4,18 @@
 // ══════════════════════════════════════════════════════════════
 
 /**
- * Carga datos de ejemplo en los catálogos maestros.
- * 
+ * Carga datos de ejemplo en los catálogos maestros y colecciones base.
+ *
  * Recibe los catálogos como PARÁMETROS (no depende de window).
  * Esto resuelve el problema de orden de ejecución.
- * 
+ *
+ * Colecciones cargadas:
+ * - empresa (catálogo maestro)
+ * - clientes, proveedores, productos (catálogos maestros)
+ * - empleados (catálogo de RRHH)
+ * - transacciones (eventos de negocio - Capa 2)
+ * - documentos (documentos fuente - Capa 1)
+ *
  * @param {Object} catalogs - { clientes, proveedores, productos, almacenamiento }
  * @returns {Promise<Object>} Resultado de la carga
  */
@@ -26,14 +33,19 @@ async function cargarDatosEjemplo(catalogs) {
     const conteos = {
         clientes: clientes.contar(),
         proveedores: proveedores.contar(),
-        productos: productos.contar()
+        productos: productos.contar(),
+        empleados: almacenamiento.obtener('empleados')?.length || 0,
+        transacciones: almacenamiento.obtener('transacciones')?.length || 0,
+        documentos: almacenamiento.obtener('documentos')?.length || 0
     };
 
     console.log('📊 Conteos actuales:', conteos);
 
-    if (conteos.clientes > 0 && conteos.proveedores > 0 && conteos.productos > 0) {
-        console.log('✅ Los catálogos ya tienen datos. No se cargan ejemplos.');
-        return { cargado: false, mensaje: 'Los catálogos ya tienen datos', conteos };
+    // Si ya hay datos en todas las colecciones clave, no recargar
+    if (conteos.clientes > 0 && conteos.proveedores > 0 && conteos.productos > 0
+        && conteos.empleados > 0 && conteos.transacciones > 0 && conteos.documentos > 0) {
+        console.log('✅ Todas las colecciones ya tienen datos. No se cargan ejemplos.');
+        return { cargado: false, mensaje: 'Todas las colecciones ya tienen datos', conteos };
     }
 
     console.log('📥 Cargando datos de ejemplo desde datos/ejemplo.json...');
@@ -50,7 +62,10 @@ async function cargarDatosEjemplo(catalogs) {
             empresa: false,
             clientes: { exitosos: 0, fallidos: 0 },
             proveedores: { exitosos: 0, fallidos: 0 },
-            productos: { exitosos: 0, fallidos: 0 }
+            productos: { exitosos: 0, fallidos: 0 },
+            empleados: { exitosos: 0, fallidos: 0 },
+            transacciones: { exitosos: 0, fallidos: 0 },
+            documentos: { exitosos: 0, fallidos: 0 }
         };
 
         // ── Mapeo de valores ──
@@ -147,11 +162,67 @@ async function cargarDatosEjemplo(catalogs) {
             }
         }
 
-        // ── Guardar datos pendientes (transacciones y empleados) ──
-        if (datos.transacciones || datos.empleados) {
-            console.log('⏭️  Transacciones y empleados se cargarán en los Módulos 2 y 4.');
-            console.log(`  📋 ${datos.transacciones?.length || 0} transacciones disponibles`);
-            console.log(`  👥 ${datos.empleados?.length || 0} empleados disponibles`);
+        // ── Cargar Empleados (Capa 2 / Módulo 4) ──
+        if (datos.empleados && Array.isArray(datos.empleados) && conteos.empleados === 0) {
+            console.log(`👥 Cargando ${datos.empleados.length} empleados...`);
+
+            for (const empleado of datos.empleados) {
+                try {
+                    const empleadoNormalizado = {
+                        ...empleado,
+                        actualizadoEn: new Date().toISOString()
+                    };
+
+                    almacenamiento.guardar('empleados', empleadoNormalizado);
+                    resultados.empleados.exitosos++;
+                    console.log(`  ✅ ${empleado.nombres} ${empleado.apellidos} (${empleado.cargo}, Bs ${empleado.salarioBase})`);
+                } catch (error) {
+                    resultados.empleados.fallidos++;
+                    console.error(`  ❌ ${empleado.nombres} ${empleado.apellidos}: ${error.message}`);
+                }
+            }
+        }
+
+        // ── Cargar Transacciones (Capa 2 - Módulos 2 y 4) ──
+        if (datos.transacciones && Array.isArray(datos.transacciones) && conteos.transacciones === 0) {
+            console.log(`💼 Cargando ${datos.transacciones.length} transacciones...`);
+
+            for (const trx of datos.transacciones) {
+                try {
+                    const trxNormalizada = {
+                        ...trx,
+                        actualizadoEn: new Date().toISOString()
+                    };
+
+                    almacenamiento.guardar('transacciones', trxNormalizada);
+                    resultados.transacciones.exitosos++;
+                    console.log(`  ✅ ${trx.tipo} ${trx.documento} — Bs ${trx.montoTotal || trx.totalDepreciacion || 0}`);
+                } catch (error) {
+                    resultados.transacciones.fallidos++;
+                    console.error(`  ❌ ${trx.documento}: ${error.message}`);
+                }
+            }
+        }
+
+        // ── Cargar Documentos Fuente (Capa 1) ──
+        if (datos.documentos && Array.isArray(datos.documentos) && conteos.documentos === 0) {
+            console.log(`📄 Cargando ${datos.documentos.length} documentos fuente...`);
+
+            for (const doc of datos.documentos) {
+                try {
+                    const docNormalizado = {
+                        ...doc,
+                        actualizadoEn: new Date().toISOString()
+                    };
+
+                    almacenamiento.guardar('documentos', docNormalizado);
+                    resultados.documentos.exitosos++;
+                    console.log(`  ✅ ${doc.tipo} ${doc.numero} (${doc.estado}) — Bs ${doc.montoTotal}`);
+                } catch (error) {
+                    resultados.documentos.fallidos++;
+                    console.error(`  ❌ ${doc.numero}: ${error.message}`);
+                }
+            }
         }
 
         // ── Resumen ──
@@ -162,6 +233,9 @@ async function cargarDatosEjemplo(catalogs) {
         console.log(`👤 Clientes: ${resultados.clientes.exitosos}/${datos.clientes?.length || 0}`);
         console.log(`🏭 Proveedores: ${resultados.proveedores.exitosos}/${datos.proveedores?.length || 0}`);
         console.log(`📦 Productos: ${resultados.productos.exitosos}/${datos.productos?.length || 0}`);
+        console.log(`👥 Empleados: ${resultados.empleados.exitosos}/${datos.empleados?.length || 0}`);
+        console.log(`💼 Transacciones: ${resultados.transacciones.exitosos}/${datos.transacciones?.length || 0}`);
+        console.log(`📄 Documentos: ${resultados.documentos.exitosos}/${datos.documentos?.length || 0}`);
         console.log('═══════════════════════════════════════════\n');
 
         return { cargado: true, mensaje: 'Datos cargados exitosamente', resultados };

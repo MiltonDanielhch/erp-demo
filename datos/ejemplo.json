@@ -393,5 +393,218 @@
       "estado": "ACTIVO",
       "creadoEn": "2022-06-01T08:00:00.000Z"
     }
+  ],
+
+  "documentos": [
+    {
+      "id": "doc-001",
+      "tipo": "FACTURA_COMPRA",
+      "numero": "F-2026-001",
+      "fechaEmision": "2026-09-01",
+      "periodoContable": "2026-09",
+      "nitProveedor": "400888777-5",
+      "razonSocialProveedor": "Importadora Beni SA",
+      "cuf": "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V",
+      "montoTotal": 16950,
+      "montoNeto": 15000,
+      "montoIVA": 1950,
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-01T10:30:00.000Z",
+      "creadoEn": "2026-09-01T10:30:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-01T10:30:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-01T10:35:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-002",
+      "tipo": "FACTURA_COMPRA",
+      "numero": "F-2026-002",
+      "fechaEmision": "2026-09-05",
+      "periodoContable": "2026-09",
+      "nitProveedor": "500333444-0",
+      "razonSocialProveedor": "Papelera del Oriente SRL",
+      "cuf": "B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W",
+      "montoTotal": 2530.80,
+      "montoNeto": 2240,
+      "montoIVA": 290.80,
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-05T14:15:00.000Z",
+      "creadoEn": "2026-09-05T14:15:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-05T14:15:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-05T14:20:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-003",
+      "tipo": "FACTURA_COMPRA",
+      "numero": "F-2026-003",
+      "fechaEmision": "2026-09-12",
+      "periodoContable": "2026-09",
+      "nitProveedor": "600222111-9",
+      "razonSocialProveedor": "Tecnología Beni SRL",
+      "cuf": "C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X",
+      "montoTotal": 5650,
+      "montoNeto": 5000,
+      "montoIVA": 650,
+      "estado": "PENDIENTE",
+      "fechaRegistro": "2026-09-12T09:45:00.000Z",
+      "creadoEn": "2026-09-12T09:45:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-12T09:45:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" }
+      ]
+    },
+    {
+      "id": "doc-004",
+      "tipo": "FACTURA_VENTA",
+      "numero": "F-2026-V-001",
+      "fechaEmision": "2026-09-03",
+      "periodoContable": "2026-09",
+      "nitCliente": "100123456-9",
+      "razonSocialCliente": "Constructora del Beni SA",
+      "cuf": "D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y",
+      "montoTotal": 13560,
+      "montoNeto": 12000,
+      "montoIVA": 1560,
+      "montoIT": 406.80,
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-03T11:20:00.000Z",
+      "creadoEn": "2026-09-03T11:20:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-03T11:20:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-03T11:25:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-005",
+      "tipo": "FACTURA_VENTA",
+      "numero": "F-2026-V-002",
+      "fechaEmision": "2026-09-08",
+      "periodoContable": "2026-09",
+      "nitCliente": "200987654-0",
+      "razonSocialCliente": "Ganadera Yacuma SRL",
+      "cuf": "E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z",
+      "montoTotal": 4237.50,
+      "montoNeto": 3750,
+      "montoIVA": 487.50,
+      "montoIT": 127.13,
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-08T15:45:00.000Z",
+      "creadoEn": "2026-09-08T15:45:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-08T15:45:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-08T15:50:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-006",
+      "tipo": "FACTURA_VENTA",
+      "numero": "F-2026-V-003",
+      "fechaEmision": "2026-09-15",
+      "periodoContable": "2026-09",
+      "nitCliente": "300555123-9",
+      "razonSocialCliente": "Restaurante El Vaqueño",
+      "cuf": "F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A",
+      "montoTotal": 565,
+      "montoNeto": 500,
+      "montoIVA": 65,
+      "montoIT": 16.95,
+      "estado": "PROCESADO",
+      "fechaRegistro": "2026-09-15T16:30:00.000Z",
+      "creadoEn": "2026-09-15T16:30:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-15T16:30:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-15T16:35:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" },
+        { "fecha": "2026-09-16T09:00:00.000Z", "estadoAnterior": "VALIDADO", "estadoNuevo": "PROCESADO", "usuario": "sistema", "motivo": "Generación de asiento contable" }
+      ]
+    },
+    {
+      "id": "doc-007",
+      "tipo": "COMPROBANTE_EGRESO",
+      "numero": "CE-2026-001",
+      "fechaEmision": "2026-09-20",
+      "periodoContable": "2026-09",
+      "pagadoA": "Tecnología Beni SRL",
+      "nitPagadoA": "600222111-9",
+      "concepto": "Pago total factura F-2026-003",
+      "formaPago": "TRANSFERENCIA",
+      "cuentaBancaria": "BNB-12345678",
+      "montoTotal": 5650,
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-20T10:00:00.000Z",
+      "creadoEn": "2026-09-20T10:00:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-20T10:00:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-20T10:05:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-008",
+      "tipo": "RECIBO_CAJA",
+      "numero": "RC-2026-001",
+      "fechaEmision": "2026-09-15",
+      "periodoContable": "2026-09",
+      "recibidoDe": "Restaurante El Vaqueño",
+      "nitRecibidoDe": "300555123-9",
+      "concepto": "Cobro al contado factura F-2026-V-003",
+      "formaPago": "EFECTIVO",
+      "montoTotal": 565,
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-15T16:30:00.000Z",
+      "creadoEn": "2026-09-15T16:30:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-15T16:30:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-15T16:35:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-009",
+      "tipo": "COMPROBANTE_NOMINA",
+      "numero": "NOM-2026-09",
+      "fechaEmision": "2026-09-30",
+      "periodoContable": "2026-09",
+      "periodoNomina": "2026-09",
+      "formaPago": "TRANSFERENCIA",
+      "montoTotal": 8265,
+      "concepto": "Planilla de sueldos septiembre 2026",
+      "estado": "VALIDADO",
+      "fechaRegistro": "2026-09-30T18:00:00.000Z",
+      "creadoEn": "2026-09-30T18:00:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-30T18:00:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-30T18:05:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "VALIDADO", "usuario": "sistema", "motivo": "Validación automática" }
+      ]
+    },
+    {
+      "id": "doc-010",
+      "tipo": "FACTURA_GASTOS_PERSONALES",
+      "numero": "FGP-2026-001",
+      "fechaEmision": "2026-09-25",
+      "periodoContable": "2026-09",
+      "nitProveedor": "300555123-9",
+      "razonSocialProveedor": "Restaurante El Vaqueño",
+      "cuf": "G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A7B",
+      "montoTotal": 226,
+      "montoNeto": 200,
+      "montoIVA": 26,
+      "estado": "RECHAZADO",
+      "fechaRegistro": "2026-09-25T12:00:00.000Z",
+      "creadoEn": "2026-09-25T12:00:00.000Z",
+      "creadoPor": "sistema",
+      "historial": [
+        { "fecha": "2026-09-25T12:00:00.000Z", "estadoAnterior": null, "estadoNuevo": "PENDIENTE", "usuario": "sistema", "motivo": "Registro inicial" },
+        { "fecha": "2026-09-25T12:05:00.000Z", "estadoAnterior": "PENDIENTE", "estadoNuevo": "RECHAZADO", "usuario": "sistema", "motivo": "CUF no coincide con el declarado en el portal del SIN" }
+      ]
+    }
   ]
 }

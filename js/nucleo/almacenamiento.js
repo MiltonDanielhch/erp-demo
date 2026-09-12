@@ -273,7 +273,8 @@ class AlmacenamientoLocal {
         'proveedores': datos.proveedores || [],
         'productos': datos.productos || [],
         'transacciones': datos.transacciones || [],
-        'empleados': datos.empleados || []
+        'empleados': datos.empleados || [],
+        'documentos': datos.documentos || []   // ← NUEVO: Capa 1 - Documentos Fuente
       };
 
       for (const [coleccion, registros] of Object.entries(colecciones)) {
@@ -333,8 +334,10 @@ class AlmacenamientoLocal {
   limpiarTodo() {
     const colecciones = [
       'empresa', 'clientes', 'proveedores', 'productos',
-      'transacciones', 'empleados', 'asientos',
-      'libroDiario', 'libroMayor', 'periodosFiscales'
+      'transacciones', 'empleados', 'documentos',    // ← NUEVO
+      'asientos', 'libroDiario', 'libroMayor',
+      'periodosFiscales', 'iva_saldo_favor_acumulado',
+      'segundo_aguinaldo_config', 'historial_smn'
     ];
     colecciones.forEach(c => this.vaciar(c));
     console.log('🧹 Todos los datos del ERP han sido eliminados.');
