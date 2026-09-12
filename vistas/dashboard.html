@@ -73,11 +73,47 @@
 <!-- Sección: Acciones rápidas -->
 <div class="card">
   <h3 style="margin-bottom: var(--espacio-md); font-size: 1rem;">⚡ Acciones Rápidas</h3>
-  <div style="display: flex; gap: var(--espacio-md); flex-wrap: wrap; margin-bottom: var(--espacio-lg);">
-    <button class="btn btn-primary" onclick="alert('Módulo 2: Compras — próximamente')">🛒 Nueva Compra</button>
-    <button class="btn btn-secondary" onclick="alert('Módulo 2: Ventas — próximamente')">💰 Nueva Venta</button>
-    <button class="btn btn-outline" onclick="alert('Módulo 1: Documentos — próximamente')">📄 Registrar Documento</button>
-    <button class="btn btn-outline" onclick="alert('Módulo 5: Impuestos — próximamente')">🧾 Calcular Impuestos</button>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: var(--espacio-lg);">
+    <a href="#/compras" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">🛒</span>
+      <span style="font-weight: 600;">Registrar Compra</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 2</span>
+    </a>
+    <a href="#/ventas" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">💰</span>
+      <span style="font-weight: 600;">Emitir Factura</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 2</span>
+    </a>
+    <a href="#/nomina" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">👥</span>
+      <span style="font-weight: 600;">Calcular Nómina</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 4</span>
+    </a>
+    <a href="#/impuestos" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">🧾</span>
+      <span style="font-weight: 600;">Liquidar IVA / IT</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 5</span>
+    </a>
+    <a href="#/estados-financieros" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">📈</span>
+      <span style="font-weight: 600;">Estados Financieros</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 6</span>
+    </a>
+    <a href="#/cumplimiento" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">✅</span>
+      <span style="font-weight: 600;">Formularios SIN</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 7</span>
+    </a>
+    <a href="#/costos" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">🏭</span>
+      <span style="font-weight: 600;">Analizar Costos</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Módulo 8</span>
+    </a>
+    <a href="#/asientos" class="btn btn-outline" style="text-decoration: none; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px;">
+      <span style="font-size: 1.5rem;">✍️</span>
+      <span style="font-weight: 600;">Nuevo Asiento</span>
+      <span style="font-size: 0.7rem; color: var(--texto-secundario);">Capa 3</span>
+    </a>
   </div>
 
   <hr class="separador">
@@ -200,12 +236,32 @@
   }
 
   /**
+   * Lee datos directamente desde LocalStorage.
+   * Las claves usan el namespace 'erp_bolivia_' (definido en app.js).
+   */
+  function leerDesdeLocalStorage(coleccion) {
+    try {
+      // Namespace correcto: erp_bolivia_ (no erp_)
+      return JSON.parse(localStorage.getItem(`erp_bolivia_${coleccion}`) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+  /**
    * Actualiza las tarjetas del dashboard con los datos cargados.
+   * Lee directamente de LocalStorage con namespace 'erp_bolivia_'.
    */
   function actualizarTarjetasDashboard() {
-    const ventas = window.almacenamiento.buscar('transacciones', t => t.tipo === 'VENTA');
-    const compras = window.almacenamiento.buscar('transacciones', t => t.tipo === 'COMPRA');
-    const empleados = window.almacenamiento.obtener('empleados');
+    // Leer directamente de LocalStorage
+    const transacciones = leerDesdeLocalStorage('transacciones');
+    const empleados = leerDesdeLocalStorage('empleados');
+    const clientes = leerDesdeLocalStorage('clientes');
+    const productos = leerDesdeLocalStorage('productos');
+
+    // Filtrar transacciones por tipo
+    const ventas = transacciones.filter(t => t.tipo === 'VENTA');
+    const compras = transacciones.filter(t => t.tipo === 'COMPRA');
+    const nomina = transacciones.filter(t => t.tipo === 'NOMINA');
 
     // Total de ventas del mes
     const totalVentas = ventas.reduce((sum, v) => sum + (v.montoTotal || 0), 0);
@@ -218,10 +274,14 @@
     const ivaPorPagar = Math.max(0, ivaDebito - ivaCredito);
     const saldoAFavor = Math.max(0, ivaCredito - ivaDebito);
 
+    // Total nómina del mes
+    const totalNomina = nomina.reduce((sum, n) => sum + (n.netoAPagar || 0), 0);
+
     // Actualizar tarjetas
     const elVentas = document.getElementById('dashboard-ventas');
     const elIVA = document.getElementById('dashboard-iva');
     const elEmpleados = document.getElementById('dashboard-empleados');
+    const elEmpleadosDetalle = elEmpleados?.parentElement.querySelector('.card-detalle');
 
     if (elVentas) {
       elVentas.textContent = window.utilidades.formatearBs(totalVentas);
@@ -230,13 +290,13 @@
     if (elIVA) {
       if (saldoAFavor > 0) {
         elIVA.textContent = window.utilidades.formatearBs(saldoAFavor);
-        elIVA.parentElement.querySelector('.card-detalle').textContent =
-          'Saldo a favor (Form. 200)';
+        const detalle = elIVA.parentElement.querySelector('.card-detalle');
+        if (detalle) detalle.textContent = 'Saldo a favor (Form. 200)';
         elIVA.style.color = 'var(--color-exito)';
       } else {
         elIVA.textContent = window.utilidades.formatearBs(ivaPorPagar);
-        elIVA.parentElement.querySelector('.card-detalle').textContent =
-          'Form. 200 — Vence: 10/10/2026';
+        const detalle = elIVA.parentElement.querySelector('.card-detalle');
+        if (detalle) detalle.textContent = 'Form. 200 — Vence: 10/10/2026';
         elIVA.style.color = '';
       }
     }
@@ -245,13 +305,22 @@
       elEmpleados.textContent = empleados.length;
     }
 
+    if (elEmpleadosDetalle) {
+      elEmpleadosDetalle.textContent = `Nómina mensual: ${window.utilidades.formatearBs(totalNomina)}`;
+    }
+
     console.log('📊 Dashboard actualizado:', {
       totalVentas,
+      totalCompras: compras.reduce((s, c) => s + (c.montoTotal || 0), 0),
       ivaDebito,
       ivaCredito,
       ivaPorPagar,
       saldoAFavor,
-      empleados: empleados.length
+      empleados: empleados.length,
+      totalNomina,
+      transacciones: transacciones.length,
+      clientes: clientes.length,
+      productos: productos.length
     });
   }
 

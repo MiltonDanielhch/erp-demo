@@ -1,52 +1,52 @@
 # 🛠️ Auditoría de Software — erp-contable-bo
 
-> Generado: `2026-09-11 09:15`
+> Generado: `2026-09-11 16:47`
 
 ## Resumen
 
 | Métrica | Valor |
 | :--- | :--- |
 | **Proyecto** | `erp-contable-bo` |
-| **Líneas de Código (Netas)** | 44694 LoC |
-| **Peso Total del Proyecto** | 2.25MB |
-| **Archivos analizados** | 137 |
-| **Timestamp** | 2026-09-11 09:15 |
+| **Líneas de Código (Netas)** | 45059 LoC |
+| **Peso Total del Proyecto** | 2.27MB |
+| **Archivos analizados** | 138 |
+| **Timestamp** | 2026-09-11 16:47 |
 | **Estado** | Activa |
 
 ## Breakdown por Capa
 
 | Capa | Archivos | LoC | Comentarios | Peso | % LoC |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| `modulos` | 26 | 10509 | 0 | 539.54KB | 23.5% ████ |
-| `roadmap` | 12 | 8817 | 0 | 490.71KB | 19.7% ███ |
-| `vistas` | 18 | 6466 | 0 | 334.20KB | 14.5% ██ |
-| `vistas` | 19 | 3880 | 300 | 205.58KB | 8.7% █ |
-| `config` | 10 | 2944 | 0 | 160.15KB | 6.6% █ |
-| `capas` | 3 | 2351 | 0 | 116.16KB | 5.3% █ |
-| `aprendizaje` | 17 | 2263 | 0 | 111.15KB | 5.1% █ |
-| `css` | 4 | 1612 | 0 | 54.29KB | 3.6%  |
-| `js` | 3 | 1200 | 0 | 63.77KB | 2.7%  |
-| `css` | 4 | 1183 | 157 | 42.07KB | 2.6%  |
-| `nucleo` | 4 | 660 | 0 | 47.19KB | 1.5%  |
+| `modulos` | 26 | 10509 | 0 | 539.54KB | 23.3% ████ |
+| `roadmap` | 12 | 8817 | 0 | 490.72KB | 19.6% ███ |
+| `vistas` | 18 | 6466 | 0 | 334.20KB | 14.4% ██ |
+| `vistas` | 19 | 3880 | 300 | 205.58KB | 8.6% █ |
+| `config` | 10 | 2944 | 0 | 160.15KB | 6.5% █ |
+| `capas` | 3 | 2351 | 0 | 116.16KB | 5.2% █ |
+| `aprendizaje` | 17 | 2263 | 0 | 111.15KB | 5.0% █ |
+| `css` | 4 | 1886 | 0 | 63.71KB | 4.2%  |
+| `css` | 4 | 1253 | 165 | 44.29KB | 2.8%  |
+| `js` | 3 | 1099 | 0 | 57.96KB | 2.4%  |
+| `nucleo` | 5 | 727 | 0 | 50.59KB | 1.6%  |
 | `js` | 1 | 485 | 89 | 30.13KB | 1.1%  |
-| `datos` | 1 | 392 | 0 | 12.10KB | 0.9%  |
+| `datos` | 1 | 392 | 0 | 12.15KB | 0.9%  |
 | `cargas` | 1 | 127 | 0 | 8.29KB | 0.3%  |
 | `adr` | 2 | 121 | 0 | 6.51KB | 0.3%  |
 | `practica` | 3 | 94 | 12 | 3.08KB | 0.2%  |
 | `docs` | 1 | 59 | 0 | 4.19KB | 0.1%  |
 | `assets` | 1 | 14 | 0 | 791.00B | 0.0%  |
-| **TOTAL** | — | **44694** | — | **2.25MB** | 100% |
+| **TOTAL** | — | **45059** | — | **2.27MB** | 100% |
 
 ## Desglose por Extensión
 
 | Extensión | Archivos | LoC | Peso |
 | :--- | ---: | ---: | ---: |
-| `.js` | 67 | 24798 | 1.27MB |
-| `.md` | 35 | 11860 | 639.95KB |
-| `.html` | 21 | 4318 | 231.16KB |
-| `.css` | 8 | 2795 | 96.35KB |
+| `.js` | 68 | 24764 | 1.27MB |
+| `.md` | 35 | 11859 | 639.90KB |
+| `.html` | 21 | 4374 | 234.28KB |
+| `.css` | 8 | 3139 | 108.00KB |
 | `.py` | 1 | 435 | 23.00KB |
-| `.json` | 3 | 430 | 12.92KB |
+| `.json` | 3 | 430 | 12.97KB |
 | `(sin extensión)` | 1 | 44 | 3.19KB |
 | `.svg` | 1 | 14 | 791.00B |
 
@@ -55,9 +55,9 @@
 | Archivo | LoC | Comentarios | En blanco | Peso |
 | :--- | ---: | ---: | ---: | ---: |
 | `js/modulos/impuestos.js` | 2024 | 717 | 401 | 100.59KB |
+| `landing/css/secciones.css` | 1364 | 113 | 240 | 40.24KB |
 | `docs/roadmap/ROADMAP_MODULO_9_MIGRACION_SAAS.md` | 1240 | 0 | 255 | 62.90KB |
 | `js/modulos/modulo-cumplimiento.js` | 1228 | 166 | 271 | 51.36KB |
-| `landing/css/secciones.css` | 1090 | 69 | 194 | 30.82KB |
 | `docs/roadmap/ROADMAP_MODULO_8_COSTOS.md` | 991 | 0 | 208 | 53.62KB |
 | `js/capas/capa4-estados.js` | 950 | 130 | 158 | 43.17KB |
 | `js/capas/capa3-motor.js` | 905 | 366 | 209 | 51.04KB |
@@ -71,19 +71,19 @@
 erp-contable-bo/
 ├── .editorconfig (44 LoC | 3.19KB)
 ├── audit.py (435 LoC | 23.00KB) [157 comentarios]
-├── AUDITORIA_MASTER.md (219 LoC | 12.88KB)
-├── erp.html (227 LoC | 12.66KB) [35 comentarios]
-├── index.html (211 LoC | 12.92KB) [44 comentarios]
+├── AUDITORIA_MASTER.md (218 LoC | 12.83KB)
+├── erp.html (296 LoC | 16.10KB) [39 comentarios]
+├── index.html (198 LoC | 12.60KB) [44 comentarios]
 ├── README.md (25 LoC | 1.25KB)
 ├── siguiente.md (356 LoC | 13.26KB)
-├── css/ [42.07KB]
+├── css/ [44.29KB]
 │   ├── componentes.css (505 LoC | 16.99KB) [50 comentarios]
 │   ├── dashboard.css (235 LoC | 8.42KB) [22 comentarios]
-│   ├── estilos.css (180 LoC | 8.16KB) [42 comentarios]
+│   ├── estilos.css (250 LoC | 10.38KB) [50 comentarios]
 │   └── reportes.css (263 LoC | 8.49KB) [43 comentarios]
-├── datos/ [12.10KB]
-│   └── ejemplo.json (392 LoC | 12.10KB)
-├── docs/ [612.56KB]
+├── datos/ [12.15KB]
+│   └── ejemplo.json (392 LoC | 12.15KB)
+├── docs/ [612.57KB]
 │   ├── estructura.md (59 LoC | 4.19KB)
 │   ├── adr/ [6.51KB]
 │   │   ├── ADR-001-stack-vanilla-sin-backend.md (50 LoC | 2.69KB)
@@ -106,9 +106,9 @@ erp-contable-bo/
 │   │   ├── 17-impuestos-bolivianos-explicados.md (163 LoC | 8.62KB)
 │   │   ├── 18-calendario-tributario.md (214 LoC | 10.76KB)
 │   │   └── 19-compensacion-it-iue.md (118 LoC | 7.04KB)
-│   └── roadmap/ [490.71KB]
+│   └── roadmap/ [490.72KB]
 │       ├── ROADMAP_LANDING_PAGE_PORTAFOLIO.md (522 LoC | 31.86KB)
-│       ├── ROADMAP_MODULO_0_SETUP.md (421 LoC | 22.55KB)
+│       ├── ROADMAP_MODULO_0_SETUP.md (421 LoC | 22.56KB)
 │       ├── ROADMAP_MODULO_1_DOCUMENTOS_FUENTE.md (478 LoC | 25.03KB)
 │       ├── ROADMAP_MODULO_2_COMPRAS_VENTAS.md (665 LoC | 35.90KB)
 │       ├── ROADMAP_MODULO_3_MOTOR_CONTABLE.md (716 LoC | 42.99KB)
@@ -165,9 +165,10 @@ erp-contable-bo/
 │   │   ├── punto-equilibrio.js (330 LoC | 15.37KB) [59 comentarios]
 │   │   ├── rc-iva.js (167 LoC | 9.89KB) [83 comentarios]
 │   │   └── ventas.js (473 LoC | 25.75KB) [109 comentarios]
-│   ├── nucleo/ [47.19KB]
+│   ├── nucleo/ [50.59KB]
 │   │   ├── almacenamiento.js (190 LoC | 11.46KB) [124 comentarios]
 │   │   ├── enrutador.js (126 LoC | 7.80KB) [69 comentarios]
+│   │   ├── sidebar-colapsable.js (67 LoC | 3.39KB) [8 comentarios]
 │   │   ├── utilidades.js (173 LoC | 14.40KB) [181 comentarios]
 │   │   └── validadores.js (171 LoC | 13.53KB) [135 comentarios]
 │   └── vistas/ [334.20KB]
@@ -189,19 +190,19 @@ erp-contable-bo/
 │       ├── nomina-vista.js (316 LoC | 17.65KB) [39 comentarios]
 │       ├── rc-iva-vista.js (175 LoC | 8.67KB) [10 comentarios]
 │       └── ventas-vista.js (406 LoC | 20.47KB) [33 comentarios]
-├── landing/ [118.83KB]
+├── landing/ [122.44KB]
 │   ├── assets/ [791.00B]
 │   │   ├── logo.svg (14 LoC | 791.00B)
 │   │   └── imagenes/ [0.00B]
-│   ├── css/ [54.29KB]
+│   ├── css/ [63.71KB]
 │   │   ├── base.css (169 LoC | 6.86KB) [21 comentarios]
 │   │   ├── componentes.css (258 LoC | 9.22KB) [27 comentarios]
-│   │   ├── secciones.css (1090 LoC | 30.82KB) [69 comentarios]
+│   │   ├── secciones.css (1364 LoC | 40.24KB) [113 comentarios]
 │   │   └── variables.css (95 LoC | 7.39KB) [38 comentarios]
-│   └── js/ [63.77KB]
+│   └── js/ [57.96KB]
 │       ├── comparador.js (304 LoC | 15.99KB) [44 comentarios]
-│       ├── datos.js (427 LoC | 22.62KB) [46 comentarios]
-│       └── landing.js (469 LoC | 25.16KB) [73 comentarios]
+│       ├── datos.js (370 LoC | 19.30KB) [37 comentarios]
+│       └── landing.js (425 LoC | 22.67KB) [59 comentarios]
 ├── practica/ [3.08KB]
 │   ├── package-lock.json (22 LoC | 542.00B)
 │   ├── package.json (16 LoC | 296.00B)
