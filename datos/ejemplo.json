@@ -607,4 +607,192 @@
       ]
     }
   ]
+    ,
+  "solicitudes_compra": [
+    {
+      "id": "sol-001",
+      "numero": "SOL-2026-0001",
+      "estado": "SOLICITADA",
+      "solicitante": "Juan Carlos Menacho Vaca",
+      "departamento": "VENTAS",
+      "justificacion": "Reabastecimiento de material de oficina para ventas del mes",
+      "productos": [
+        { "productoId": "prod-003", "codigo": "PAP-001", "nombre": "Resma Papel Bond A4 (500 hojas)", "cantidad": 50, "justificacion": "Stock mínimo alcanzado", "cantidadRecibida": 0, "cantidadOrdenada": 0 },
+        { "productoId": "prod-005", "codigo": "CAR-001", "nombre": "Cartucho de Tinta HP 664 Negro", "cantidad": 10, "justificacion": "Consumo mensual estimado", "cantidadRecibida": 0, "cantidadOrdenada": 0 }
+      ],
+      "fechaSolicitud": "2026-09-02T08:30:00.000Z",
+      "fechaAprobacion": null,
+      "aprobadaPor": null,
+      "ordenesGeneradas": [],
+      "creadoEn": "2026-09-02T08:30:00.000Z"
+    },
+    {
+      "id": "sol-002",
+      "numero": "SOL-2026-0002",
+      "estado": "APROBADA",
+      "solicitante": "Ana Lucía Justiniano Torrez",
+      "departamento": "CONTABILIDAD",
+      "justificacion": "Renovación de mobiliario para área contable",
+      "productos": [
+        { "productoId": "prod-004", "codigo": "SIL-001", "nombre": "Silla Ergonómica de Oficina", "cantidad": 3, "justificacion": "Reemplazo de sillas deterioradas", "cantidadRecibida": 0, "cantidadOrdenada": 0 }
+      ],
+      "fechaSolicitud": "2026-09-04T09:15:00.000Z",
+      "fechaAprobacion": "2026-09-05T10:00:00.000Z",
+      "aprobadaPor": "María Elena Vaca Justiniano",
+      "ordenesGeneradas": [],
+      "creadoEn": "2026-09-04T09:15:00.000Z"
+    },
+    {
+      "id": "sol-003",
+      "numero": "SOL-2026-0003",
+      "estado": "APROBADA",
+      "solicitante": "Juan Carlos Menacho Vaca",
+      "departamento": "VENTAS",
+      "justificacion": "Equipos de cómputo para nuevos vendedores",
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "nombre": "Laptop Lenovo ThinkPad E14", "cantidad": 2, "justificacion": "Incorporación de 2 nuevos vendedores", "cantidadRecibida": 2, "cantidadOrdenada": 2 }
+      ],
+      "fechaSolicitud": "2026-09-07T11:20:00.000Z",
+      "fechaAprobacion": "2026-09-08T09:00:00.000Z",
+      "aprobadaPor": "María Elena Vaca Justiniano",
+      "ordenesGeneradas": [
+        { "ordenId": "oc-001", "ordenNumero": "OC-2026-0001", "fechaGeneracion": "2026-09-08T10:30:00.000Z" }
+      ],
+      "creadoEn": "2026-09-07T11:20:00.000Z"
+    }
+  ],
+
+  "ordenes_compra": [
+    {
+      "id": "oc-001",
+      "numero": "OC-2026-0001",
+      "solicitudId": "sol-003",
+      "solicitudNumero": "SOL-2026-0003",
+      "estado": "FACTURADA",
+      "proveedorId": "prov-003",
+      "proveedorNit": "600222111-9",
+      "proveedorRazonSocial": "Tecnología Beni SRL",
+      "condicionesPago": "CONTADO",
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "nombre": "Laptop Lenovo ThinkPad E14", "cantidad": 2, "precioUnitario": 5000, "subtotal": 10000, "cantidadRecibida": 2 }
+      ],
+      "subtotal": 10000,
+      "montoIVA": 1300,
+      "montoTotal": 11300,
+      "fechaOrden": "2026-09-08T10:30:00.000Z",
+      "fechaRecepcion": "2026-09-14T15:20:00.000Z",
+      "fechaFactura": "2026-09-14T16:00:00.000Z",
+      "fechaPago": null,
+      "recibidoPor": "Almacén Central",
+      "facturaId": "doc-cp-001",
+      "facturaNumero": "F-TEC-2026-042",
+      "cuentaPorPagarId": "cp-001",
+      "creadoEn": "2026-09-08T10:30:00.000Z"
+    },
+    {
+      "id": "oc-002",
+      "numero": "OC-2026-0002",
+      "solicitudId": "sol-001",
+      "solicitudNumero": "SOL-2026-0001",
+      "estado": "RECIBIDA",
+      "proveedorId": "prov-002",
+      "proveedorNit": "500333444-0",
+      "proveedorRazonSocial": "Papelera del Oriente SRL",
+      "condicionesPago": "CREDITO_15",
+      "productos": [
+        { "productoId": "prod-003", "codigo": "PAP-001", "nombre": "Resma Papel Bond A4 (500 hojas)", "cantidad": 50, "precioUnitario": 40, "subtotal": 2000, "cantidadRecibida": 50 },
+        { "productoId": "prod-005", "codigo": "CAR-001", "nombre": "Cartucho de Tinta HP 664 Negro", "cantidad": 10, "precioUnitario": 120, "subtotal": 1200, "cantidadRecibida": 10 }
+      ],
+      "subtotal": 3200,
+      "montoIVA": 416,
+      "montoTotal": 3616,
+      "fechaOrden": "2026-09-10T09:45:00.000Z",
+      "fechaRecepcion": "2026-09-18T14:30:00.000Z",
+      "fechaFactura": null,
+      "fechaPago": null,
+      "recibidoPor": "Almacén Central",
+      "creadoEn": "2026-09-10T09:45:00.000Z"
+    },
+    {
+      "id": "oc-003",
+      "numero": "OC-2026-0003",
+      "solicitudId": "sol-002",
+      "solicitudNumero": "SOL-2026-0002",
+      "estado": "PARCIALMENTE_RECIBIDA",
+      "proveedorId": "prov-001",
+      "proveedorNit": "400888777-5",
+      "proveedorRazonSocial": "Importadora Beni SA",
+      "condicionesPago": "CREDITO_30",
+      "productos": [
+        { "productoId": "prod-004", "codigo": "SIL-001", "nombre": "Silla Ergonómica de Oficina", "cantidad": 3, "precioUnitario": 1200, "subtotal": 3600, "cantidadRecibida": 2 }
+      ],
+      "subtotal": 3600,
+      "montoIVA": 468,
+      "montoTotal": 4068,
+      "fechaOrden": "2026-09-12T11:00:00.000Z",
+      "fechaRecepcion": "2026-09-20T10:15:00.000Z",
+      "fechaFactura": null,
+      "fechaPago": null,
+      "recibidoPor": "Almacén Central",
+      "creadoEn": "2026-09-12T11:00:00.000Z"
+    }
+  ],
+
+  "cuentas_por_pagar": [
+    {
+      "id": "cp-001",
+      "ordenCompraId": "oc-001",
+      "ordenCompraNumero": "OC-2026-0001",
+      "documentoId": "doc-cp-001",
+      "documentoNumero": "F-TEC-2026-042",
+      "proveedorId": "prov-003",
+      "proveedorNit": "600222111-9",
+      "proveedorRazonSocial": "Tecnología Beni SRL",
+      "numeroFactura": "F-TEC-2026-042",
+      "cuf": "H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6X7Y8Z9A0B1C",
+      "fechaEmision": "2026-09-14",
+      "fechaVencimiento": "2026-09-14",
+      "montoTotal": 11300,
+      "montoNeto": 10000,
+      "montoIVA": 1300,
+      "montoPagado": 0,
+      "saldoPendiente": 11300,
+      "estado": "PENDIENTE",
+      "condicionesPago": "CONTADO",
+      "pagos": [],
+      "creadoEn": "2026-09-14T16:00:00.000Z"
+    },
+    {
+      "id": "cp-002",
+      "ordenCompraId": "oc-002",
+      "ordenCompraNumero": "OC-2026-0002",
+      "documentoId": "doc-cp-002",
+      "documentoNumero": "F-PAO-2026-187",
+      "proveedorId": "prov-002",
+      "proveedorNit": "500333444-0",
+      "proveedorRazonSocial": "Papelera del Oriente SRL",
+      "numeroFactura": "F-PAO-2026-187",
+      "cuf": "I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6X7Y8Z9A0B1C2D",
+      "fechaEmision": "2026-09-19",
+      "fechaVencimiento": "2026-10-04",
+      "montoTotal": 3616,
+      "montoNeto": 3200,
+      "montoIVA": 416,
+      "montoPagado": 1500,
+      "saldoPendiente": 2116,
+      "estado": "PARCIAL",
+      "condicionesPago": "CREDITO_15",
+      "pagos": [
+        {
+          "id": "pago-001",
+          "fecha": "2026-09-22",
+          "monto": 1500,
+          "metodoPago": "TRANSFERENCIA",
+          "referencia": "TRF-45782",
+          "registradoEn": "2026-09-22T11:30:00.000Z"
+        }
+      ],
+      "creadoEn": "2026-09-19T14:00:00.000Z"
+    }
+  ]
 }

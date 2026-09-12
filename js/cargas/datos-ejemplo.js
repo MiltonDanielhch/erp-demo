@@ -36,7 +36,10 @@ async function cargarDatosEjemplo(catalogs) {
         productos: productos.contar(),
         empleados: almacenamiento.obtener('empleados')?.length || 0,
         transacciones: almacenamiento.obtener('transacciones')?.length || 0,
-        documentos: almacenamiento.obtener('documentos')?.length || 0
+        documentos: almacenamiento.obtener('documentos')?.length || 0,
+        solicitudes_compra: almacenamiento.obtener('solicitudes_compra')?.length || 0,
+        ordenes_compra: almacenamiento.obtener('ordenes_compra')?.length || 0,
+        cuentas_por_pagar: almacenamiento.obtener('cuentas_por_pagar')?.length || 0
     };
 
     console.log('📊 Conteos actuales:', conteos);
@@ -65,7 +68,10 @@ async function cargarDatosEjemplo(catalogs) {
             productos: { exitosos: 0, fallidos: 0 },
             empleados: { exitosos: 0, fallidos: 0 },
             transacciones: { exitosos: 0, fallidos: 0 },
-            documentos: { exitosos: 0, fallidos: 0 }
+            documentos: { exitosos: 0, fallidos: 0 },
+            solicitudes_compra: { exitosos: 0, fallidos: 0 },
+            ordenes_compra: { exitosos: 0, fallidos: 0 },
+            cuentas_por_pagar: { exitosos: 0, fallidos: 0 }
         };
 
         // ── Mapeo de valores ──
@@ -225,6 +231,51 @@ async function cargarDatosEjemplo(catalogs) {
             }
         }
 
+        // ── Cargar Solicitudes de Compra ──
+        if (datos.solicitudes_compra && Array.isArray(datos.solicitudes_compra) && conteos.solicitudes_compra === 0) {
+            console.log(`📋 Cargando ${datos.solicitudes_compra.length} solicitudes de compra...`);
+            for (const sol of datos.solicitudes_compra) {
+                try {
+                    almacenamiento.guardar('solicitudes_compra', { ...sol, actualizadoEn: new Date().toISOString() });
+                    resultados.solicitudes_compra.exitosos++;
+                    console.log(`  ✅ ${sol.numero} (${sol.estado})`);
+                } catch (error) {
+                    resultados.solicitudes_compra.fallidos++;
+                    console.error(`  ❌ ${sol.numero}: ${error.message}`);
+                }
+            }
+        }
+
+        // ── Cargar Órdenes de Compra ──
+        if (datos.ordenes_compra && Array.isArray(datos.ordenes_compra) && conteos.ordenes_compra === 0) {
+            console.log(`📝 Cargando ${datos.ordenes_compra.length} órdenes de compra...`);
+            for (const oc of datos.ordenes_compra) {
+                try {
+                    almacenamiento.guardar('ordenes_compra', { ...oc, actualizadoEn: new Date().toISOString() });
+                    resultados.ordenes_compra.exitosos++;
+                    console.log(`  ✅ ${oc.numero} → ${oc.proveedorRazonSocial} (${oc.estado})`);
+                } catch (error) {
+                    resultados.ordenes_compra.fallidos++;
+                    console.error(`  ❌ ${oc.numero}: ${error.message}`);
+                }
+            }
+        }
+
+        // ── Cargar Cuentas por Pagar ──
+        if (datos.cuentas_por_pagar && Array.isArray(datos.cuentas_por_pagar) && conteos.cuentas_por_pagar === 0) {
+            console.log(`💳 Cargando ${datos.cuentas_por_pagar.length} cuentas por pagar...`);
+            for (const cp of datos.cuentas_por_pagar) {
+                try {
+                    almacenamiento.guardar('cuentas_por_pagar', { ...cp, actualizadoEn: new Date().toISOString() });
+                    resultados.cuentas_por_pagar.exitosos++;
+                    console.log(`  ✅ ${cp.numeroFactura} → ${cp.proveedorRazonSocial} (${cp.estado}, saldo: Bs ${cp.saldoPendiente})`);
+                } catch (error) {
+                    resultados.cuentas_por_pagar.fallidos++;
+                    console.error(`  ❌ ${cp.numeroFactura}: ${error.message}`);
+                }
+            }
+        }
+
         // ── Resumen ──
         console.log('\n═══════════════════════════════════════════');
         console.log('📊 RESUMEN DE CARGA DE DATOS DE EJEMPLO');
@@ -236,6 +287,9 @@ async function cargarDatosEjemplo(catalogs) {
         console.log(`👥 Empleados: ${resultados.empleados.exitosos}/${datos.empleados?.length || 0}`);
         console.log(`💼 Transacciones: ${resultados.transacciones.exitosos}/${datos.transacciones?.length || 0}`);
         console.log(`📄 Documentos: ${resultados.documentos.exitosos}/${datos.documentos?.length || 0}`);
+        console.log(`📋 Solicitudes Compra: ${resultados.solicitudes_compra.exitosos}/${datos.solicitudes_compra?.length || 0}`);
+        console.log(`📝 Órdenes Compra: ${resultados.ordenes_compra.exitosos}/${datos.ordenes_compra?.length || 0}`);
+        console.log(`💳 Cuentas por Pagar: ${resultados.cuentas_por_pagar.exitosos}/${datos.cuentas_por_pagar?.length || 0}`);
         console.log('═══════════════════════════════════════════\n');
 
         return { cargado: true, mensaje: 'Datos cargados exitosamente', resultados };
