@@ -470,23 +470,43 @@ window.ImpuestosVista = {
   // REGÍMENES TRIBUTARIOS
   // ══════════════════════════════════════════════════════════
 
+  // ══════════════════════════════════════════════════════════
+  // REGÍMENES TRIBUTARIOS
+  // ══════════════════════════════════════════════════════════
+
   cargarRegimenes() {
-    const resumen = window.moduloImpuestos ? window.moduloImpuestos.obtenerResumenRegimenes() : [];
-    if (resumen.length === 0) {
-      this.elementos.regTabla.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">No se pudieron cargar los regímenes</td></tr>';
+    // Acceso directo y DEFENSIVO a REGIMENES_TRIBUTARIOS.
+    // Acepta tanto objeto { RG: {...}, RTS: {...} } como array [{...}].
+    const fuente = window.REGIMENES_TRIBUTARIOS;
+    const lista = Array.isArray(fuente)
+      ? fuente
+      : (fuente && typeof fuente === 'object' ? Object.values(fuente) : []);
+
+    if (lista.length === 0) {
+      this.elementos.regTabla.innerHTML =
+        '<tr><td colspan="6" style="text-align:center; padding:24px;">No se pudieron cargar los regímenes</td></tr>';
       return;
     }
 
-    this.elementos.regTabla.innerHTML = resumen.map(r => `
-      <tr>
-        <td><code>${r.codigo}</code></td>
-        <td><strong>${r.nombre}</strong>${r.esNuevo ? ' <span style="background:#10b981; color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">NUEVO</span>' : ''}</td>
-        <td>${this._escapeHTML(r.descripcion.substring(0, 80))}${r.descripcion.length > 80 ? '...' : ''}</td>
-        <td>${r.impuestos.join(', ')}</td>
-        <td>${r.emiteCreditoFiscal ? '✅ Sí' : '❌ No'}</td>
-        <td class="texto-derecha">${r.limiteIngresos ? window.utilidades.formatearBs(r.limiteIngresos) : 'Sin límite'}</td>
-      </tr>
-    `).join('');
+    this.elementos.regTabla.innerHTML = lista.map(r => {
+      // Valores por defecto en TODOS los campos (evita crashes por undefined)
+      const impuestos = Array.isArray(r.impuestos)
+        ? r.impuestos.join(', ')
+        : (r.impuestos || '—');
+      const descripcion = r.descripcion || '';
+      const limite = (r.limites && r.limites.ingresosAnuales) || r.limiteIngresos || null;
+
+      return `
+        <tr>
+          <td><code>${r.codigo || '—'}</code></td>
+          <td><strong>${r.nombre || '—'}</strong>${r.esNuevo ? ' <span style="background:#10b981; color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">NUEVO</span>' : ''}</td>
+          <td>${this._escapeHTML(descripcion.substring(0, 80))}${descripcion.length > 80 ? '...' : ''}</td>
+          <td>${impuestos}</td>
+          <td>${r.emiteCreditoFiscal ? '✅ Sí' : '❌ No'}</td>
+          <td class="texto-derecha">${limite ? window.utilidades.formatearBs(limite) : 'Sin límite'}</td>
+        </tr>
+      `;
+    }).join('');
   },
 
   // ══════════════════════════════════════════════════════════

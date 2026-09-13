@@ -431,7 +431,8 @@ function iniciarERP() {
   window.dashboardCostos = dashboardCostos;
 
   window.ESTADOS_CATALOGO = ESTADOS_CATALOGO;
-  window.REGIMENES_TRIBUTARIOS = REGIMENES_TRIBUTARIOS;
+  // window.REGIMENES_TRIBUTARIOS eliminado: usa la versión canónica
+  // de js/config/regimenes-tributarios.js (5 regímenes con SIETE-RG)
   window.CONDICIONES_PAGO = CONDICIONES_PAGO;
   window.UNIDADES_MEDIDA = UNIDADES_MEDIDA;
   window.CATEGORIAS_PRODUCTO = CATEGORIAS_PRODUCTO;

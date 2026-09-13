@@ -62,16 +62,18 @@ class ModuloImpuestos {
     const [anio, mes] = periodo.split('-').map(Number);
 
     return todosDocs.filter(doc => {
-      // Filtrar por tipo de documento de venta
-      const esVenta = doc.tipoDocumento === 'FACTURA_VENTA' ||
-                      doc.tipoDocumento === 'NOTA_VENTA' ||
-                      (doc.tipoDocumento && doc.tipoDocumento.includes('VENTA'));
+      // Filtrar por tipo de documento de venta (acepta tanto tipoDocumento como tipo)
+      const tipoDoc = doc.tipoDocumento || doc.tipo || '';
+      const esVenta = tipoDoc === 'FACTURA_VENTA' ||
+                      tipoDoc === 'NOTA_VENTA' ||
+                      tipoDoc.includes('VENTA');
 
       if (!esVenta) return false;
 
-      // Filtrar por fecha dentro del período
-      if (!doc.fecha) return false;
-      const fechaDoc = new Date(doc.fecha);
+      // Filtrar por fecha dentro del período (acepta tanto fecha como fechaEmision)
+      const fechaStr = doc.fecha || doc.fechaEmision;
+      if (!fechaStr) return false;
+      const fechaDoc = new Date(fechaStr);
       return fechaDoc.getFullYear() === anio && (fechaDoc.getMonth() + 1) === mes;
     });
   }
@@ -89,16 +91,18 @@ class ModuloImpuestos {
     const [anio, mes] = periodo.split('-').map(Number);
 
     return todosDocs.filter(doc => {
-      // Filtrar por tipo de documento de compra
-      const esCompra = doc.tipoDocumento === 'FACTURA_COMPRA' ||
-                       doc.tipoDocumento === 'NOTA_COMPRA' ||
-                       (doc.tipoDocumento && doc.tipoDocumento.includes('COMPRA'));
+      // Filtrar por tipo de documento de compra (acepta tanto tipoDocumento como tipo)
+      const tipoDoc = doc.tipoDocumento || doc.tipo || '';
+      const esCompra = tipoDoc === 'FACTURA_COMPRA' ||
+                      tipoDoc === 'NOTA_COMPRA' ||
+                      tipoDoc.includes('COMPRA');
 
       if (!esCompra) return false;
 
-      // Filtrar por fecha dentro del período
-      if (!doc.fecha) return false;
-      const fechaDoc = new Date(doc.fecha);
+      // Filtrar por fecha dentro del período (acepta tanto fecha como fechaEmision)
+      const fechaStr = doc.fecha || doc.fechaEmision;
+      if (!fechaStr) return false;
+      const fechaDoc = new Date(fechaStr);
       return fechaDoc.getFullYear() === anio && (fechaDoc.getMonth() + 1) === mes;
     });
   }
@@ -125,7 +129,7 @@ class ModuloImpuestos {
     const detalle = [];
 
     ventas.forEach(v => {
-      const monto = Number(v.monto || v.total || 0);
+      const monto = Number(v.monto || v.total || v.montoTotal || 0);
       const neto = this._r2(monto / 1.13);
       const iva = this._r2(monto - neto);
 
@@ -136,8 +140,8 @@ class ModuloImpuestos {
       detalle.push({
         documentoId: v.id,
         numero: v.numeroDocumento || v.numero || 'S/N',
-        fecha: v.fecha,
-        cliente: v.clienteNombre || v.razonSocial || '—',
+        fecha: v.fecha || v.fechaEmision || v.fechaRegistro || '—',
+        cliente: v.clienteNombre || v.razonSocialCliente || v.razonSocial || '—',
         monto,
         neto,
         iva
@@ -209,7 +213,7 @@ class ModuloImpuestos {
     const detalle = [];
 
     compras.forEach(c => {
-      const monto = Number(c.monto || c.total || 0);
+      const monto = Number(c.monto || c.total || c.montoTotal || 0);
       const validacion = this._validarFacturaParaCredito(c);
       const neto = this._r2(monto / 1.13);
       const iva = this._r2(monto - neto);
@@ -225,8 +229,8 @@ class ModuloImpuestos {
       detalle.push({
         documentoId: c.id,
         numero: c.numeroDocumento || c.numero || 'S/N',
-        fecha: c.fecha,
-        proveedor: c.proveedorNombre || c.razonSocial || '—',
+        fecha: c.fecha || c.fechaEmision || c.fechaRegistro || '—',
+        proveedor: c.proveedorNombre || c.razonSocialProveedor || c.razonSocial || '—',
         nit: c.proveedorNIT || c.nitProveedor || c.nit || '—',
         cuf: c.cuf || '—',
         monto,
@@ -509,14 +513,14 @@ class ModuloImpuestos {
 
     ventas.forEach(v => {
       // El IT se calcula sobre el MONTO BRUTO (con IVA incluido)
-      const monto = Number(v.monto || v.total || 0);
+      const monto = Number(v.monto || v.total || v.montoTotal || 0);
       ingresosBrutos += monto;
 
       detalle.push({
         documentoId: v.id,
         numero: v.numeroDocumento || v.numero || 'S/N',
-        fecha: v.fecha,
-        cliente: v.clienteNombre || v.razonSocial || '—',
+        fecha: v.fecha || v.fechaEmision || v.fechaRegistro || '—',
+        cliente: v.clienteNombre || v.razonSocialCliente || v.razonSocial || '—',
         montoBruto: monto
       });
     });
@@ -2275,7 +2279,7 @@ class ModuloImpuestos {
   /**
    * Genera número correlativo para comprobantes de remesa exterior.
    * @private
-   * 
+   *
    */
   _generarNumeroRemesaExterior() {
     const COLLECCION = 'remesas_exterior';
@@ -3122,7 +3126,7 @@ class ModuloImpuestos {
     const [anio, mes] = periodo.split('-').map(Number);
     const ultimoDia = new Date(anio, mes, 0).getDate();
     return `${periodo}-${String(ultimoDia).padStart(2, '0')}`;
-  } 
+  }
 
   // ══════════════════════════════════════════════════════════
   // UTILIDADES PRIVADAS
