@@ -471,6 +471,9 @@
       "montoNeto": 12000,
       "montoIVA": 1560,
       "montoIT": 406.80,
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "nombre": "Laptop Lenovo ThinkPad E14", "cantidad": 2, "precioUnitario": 6780, "subtotal": 13560, "costoUnitario": 5000 }
+      ],
       "estado": "VALIDADO",
       "fechaRegistro": "2026-09-03T11:20:00.000Z",
       "creadoEn": "2026-09-03T11:20:00.000Z",
@@ -493,6 +496,10 @@
       "montoNeto": 3750,
       "montoIVA": 487.50,
       "montoIT": 127.13,
+      "productos": [
+        { "productoId": "prod-002", "codigo": "IMP-001", "nombre": "Impresora HP LaserJet Pro M404dn", "cantidad": 1, "precioUnitario": 3390, "subtotal": 3390, "costoUnitario": 2500 },
+        { "productoId": "prod-005", "codigo": "CAR-001", "nombre": "Cartucho de Tinta HP 664 Negro", "cantidad": 5, "precioUnitario": 169.50, "subtotal": 847.50, "costoUnitario": 120 }
+      ],
       "estado": "VALIDADO",
       "fechaRegistro": "2026-09-08T15:45:00.000Z",
       "creadoEn": "2026-09-08T15:45:00.000Z",
@@ -515,6 +522,9 @@
       "montoNeto": 500,
       "montoIVA": 65,
       "montoIT": 16.95,
+      "productos": [
+        { "productoId": "prod-003", "codigo": "PAP-001", "nombre": "Resma Papel Bond A4 (500 hojas)", "cantidad": 10, "precioUnitario": 56.50, "subtotal": 565, "costoUnitario": 40 }
+      ],
       "estado": "PROCESADO",
       "fechaRegistro": "2026-09-15T16:30:00.000Z",
       "creadoEn": "2026-09-15T16:30:00.000Z",
@@ -947,5 +957,156 @@
       ],
       "creadoEn": "2026-09-08T15:45:00.000Z"
     }
+  ],
+
+  "capas_inventario": {
+    "prod-001": {
+      "productoId": "prod-001",
+      "metodo": "FIFO",
+      "capas": [
+        {
+          "id": "capa-lap-001",
+          "fechaEntrada": "2026-07-10",
+          "documentoOrigen": "OC-2026-0001",
+          "cantidadInicial": 2,
+          "cantidadDisponible": 2,
+          "costoUnitario": 4800,
+          "valorTotal": 9600
+        },
+        {
+          "id": "capa-lap-002",
+          "fechaEntrada": "2026-08-15",
+          "documentoOrigen": "OC-2026-0002",
+          "cantidadInicial": 3,
+          "cantidadDisponible": 3,
+          "costoUnitario": 5000,
+          "valorTotal": 15000
+        },
+        {
+          "id": "capa-lap-003",
+          "fechaEntrada": "2026-09-01",
+          "documentoOrigen": "OC-2026-0003",
+          "cantidadInicial": 5,
+          "cantidadDisponible": 5,
+          "costoUnitario": 5200,
+          "valorTotal": 26000
+        }
+      ],
+      "totalUnidades": 10,
+      "valorTotal": 50600
+    },
+    "prod-003": {
+      "productoId": "prod-003",
+      "metodo": "FIFO",
+      "capas": [
+        {
+          "id": "capa-pap-001",
+          "fechaEntrada": "2026-07-05",
+          "documentoOrigen": "OC-2026-0004",
+          "cantidadInicial": 50,
+          "cantidadDisponible": 50,
+          "costoUnitario": 38,
+          "valorTotal": 1900
+        },
+        {
+          "id": "capa-pap-002",
+          "fechaEntrada": "2026-08-20",
+          "documentoOrigen": "OC-2026-0005",
+          "cantidadInicial": 30,
+          "cantidadDisponible": 30,
+          "costoUnitario": 40,
+          "valorTotal": 1200
+        },
+        {
+          "id": "capa-pap-003",
+          "fechaEntrada": "2026-09-10",
+          "documentoOrigen": "OC-2026-0006",
+          "cantidadInicial": 40,
+          "cantidadDisponible": 40,
+          "costoUnitario": 42,
+          "valorTotal": 1680
+        }
+      ],
+      "totalUnidades": 120,
+      "valorTotal": 4780
+    },
+    "prod-004": {
+      "productoId": "prod-004",
+      "metodo": "FIFO",
+      "capas": [
+        {
+          "id": "capa-sil-001",
+          "fechaEntrada": "2026-06-15",
+          "documentoOrigen": "OC-2026-0007",
+          "cantidadInicial": 5,
+          "cantidadDisponible": 5,
+          "costoUnitario": 1150,
+          "valorTotal": 5750
+        },
+        {
+          "id": "capa-sil-002",
+          "fechaEntrada": "2026-08-01",
+          "documentoOrigen": "OC-2026-0008",
+          "cantidadInicial": 5,
+          "cantidadDisponible": 5,
+          "costoUnitario": 1200,
+          "valorTotal": 6000
+        },
+        {
+          "id": "capa-sil-003",
+          "fechaEntrada": "2026-09-05",
+          "documentoOrigen": "OC-2026-0009",
+          "cantidadInicial": 5,
+          "cantidadDisponible": 5,
+          "costoUnitario": 1250,
+          "valorTotal": 6250
+        }
+      ],
+      "totalUnidades": 15,
+      "valorTotal": 18000
+    }
+  },
+
+  "centros_costo": [
+    {
+      "id": "cc-admin",
+      "codigo": "ADMIN",
+      "nombre": "Administración",
+      "tipo": "ADMINISTRATIVO",
+      "responsable": "María Elena Vaca",
+      "departamento": "Gerencia",
+      "presupuestoAnual": 120000,
+      "gastosAcumulados": 0,
+      "porcentajeEjecucion": 0,
+      "estado": "ACTIVO",
+      "creadoEn": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "cc-ventas",
+      "codigo": "VENTAS",
+      "nombre": "Ventas",
+      "tipo": "PRODUCTIVO",
+      "responsable": "Juan Carlos Menacho",
+      "departamento": "Comercial",
+      "presupuestoAnual": 180000,
+      "gastosAcumulados": 0,
+      "porcentajeEjecucion": 0,
+      "estado": "ACTIVO",
+      "creadoEn": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "cc-almacen",
+      "codigo": "ALMACEN",
+      "nombre": "Almacén Central",
+      "tipo": "SERVICIO",
+      "responsable": "Ana Lucía Justiniano",
+      "departamento": "Operaciones",
+      "presupuestoAnual": 80000,
+      "gastosAcumulados": 0,
+      "porcentajeEjecucion": 0,
+      "estado": "ACTIVO",
+      "creadoEn": "2026-01-01T00:00:00.000Z"
+    }
   ]
+
 }

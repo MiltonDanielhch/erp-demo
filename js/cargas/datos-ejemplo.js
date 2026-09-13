@@ -40,9 +40,11 @@ async function cargarDatosEjemplo(catalogs) {
       solicitudes_compra: almacenamiento.obtener('solicitudes_compra')?.length || 0,
       ordenes_compra: almacenamiento.obtener('ordenes_compra')?.length || 0,
       cuentas_por_pagar: almacenamiento.obtener('cuentas_por_pagar')?.length || 0,
-      cotizaciones: almacenamiento.obtener('cotizaciones')?.length || 0,          // ← NUEVO
-      pedidos_venta: almacenamiento.obtener('pedidos_venta')?.length || 0,        // ← NUEVO
-      cuentas_por_cobrar: almacenamiento.obtener('cuentas_por_cobrar')?.length || 0  // ← NUEVO
+      cotizaciones: almacenamiento.obtener('cotizaciones')?.length || 0,
+      pedidos_venta: almacenamiento.obtener('pedidos_venta')?.length || 0,
+      cuentas_por_cobrar: almacenamiento.obtener('cuentas_por_cobrar')?.length || 0,
+      capas_inventario: Object.keys(almacenamiento.obtener('capas_inventario') || {}).length,  // ← NUEVO
+      centros_costo: almacenamiento.obtener('centros_costo')?.length || 0                      // ← NUEVO
     };
 
     console.log('📊 Conteos actuales:', conteos);
@@ -75,9 +77,11 @@ async function cargarDatosEjemplo(catalogs) {
           solicitudes_compra: { exitosos: 0, fallidos: 0 },
           ordenes_compra: { exitosos: 0, fallidos: 0 },
           cuentas_por_pagar: { exitosos: 0, fallidos: 0 },
-          cotizaciones: { exitosos: 0, fallidos: 0 },          // ← NUEVO
-          pedidos_venta: { exitosos: 0, fallidos: 0 },        // ← NUEVO
-          cuentas_por_cobrar: { exitosos: 0, fallidos: 0 }    // ← NUEVO
+          cotizaciones: { exitosos: 0, fallidos: 0 },
+          pedidos_venta: { exitosos: 0, fallidos: 0 },
+          cuentas_por_cobrar: { exitosos: 0, fallidos: 0 },
+          capas_inventario: { exitosos: 0, fallidos: 0 },  // ← NUEVO
+          centros_costo: { exitosos: 0, fallidos: 0 }      // ← NUEVO
         };
 
         // ── Mapeo de valores ──
@@ -327,6 +331,51 @@ async function cargarDatosEjemplo(catalogs) {
             }
         }
 
+        // ── Cargar Capas de Inventario (vía API del módulo) ──
+        // Se usa la API del módulo porque guarda con su clave interna propia.
+        if (window.inventarioCapas && datos.capas_inventario && typeof datos.capas_inventario === 'object') {
+            const capasActuales = Object.keys(
+                (window.inventarioCapas._leerCapas ? window.inventarioCapas._leerCapas() : {})
+            ).length;
+
+            if (capasActuales === 0) {
+                console.log('📦 Cargando capas de inventario vía API...');
+                for (const [productoId, data] of Object.entries(datos.capas_inventario)) {
+                    (data.capas || []).forEach(capa => {
+                        const res = window.inventarioCapas.agregarCapa(productoId, {
+                            cantidad: capa.cantidadInicial,
+                            costoUnitario: capa.costoUnitario,
+                            fecha: capa.fechaEntrada,
+                            documentoOrigen: capa.documentoOrigen,
+                            metodo: data.metodo || 'FIFO'
+                        });
+                        if (res.exito) resultados.capas_inventario.exitosos++;
+                        else resultados.capas_inventario.fallidos++;
+                    });
+                }
+                console.log(`  ✅ ${resultados.capas_inventario.exitosos} capas en ${Object.keys(datos.capas_inventario).length} productos`);
+            }
+        }
+
+        // ── Cargar Centros de Costo (vía API del módulo) ──
+        if (window.centrosCosto && datos.centros_costo && Array.isArray(datos.centros_costo)) {
+            const centrosActuales = (window.centrosCosto.obtenerTodos ? window.centrosCosto.obtenerTodos() : []).length;
+
+            if (centrosActuales === 0) {
+                console.log(`🏢 Cargando ${datos.centros_costo.length} centros de costo vía API...`);
+                for (const cc of datos.centros_costo) {
+                    const res = window.centrosCosto.crearCentro(cc);
+                    if (res.exito) {
+                        resultados.centros_costo.exitosos++;
+                        console.log(`  ✅ ${cc.codigo} - ${cc.nombre} (Bs ${cc.presupuestoAnual})`);
+                    } else {
+                        resultados.centros_costo.fallidos++;
+                        console.error(`  ❌ ${cc.codigo}: ${(res.errores || []).join(', ')}`);
+                    }
+                }
+            }
+        }
+
         // ── Resumen ──
         console.log('\n═══════════════════════════════════════════');
         console.log('📊 RESUMEN DE CARGA DE DATOS DE EJEMPLO');
@@ -348,6 +397,15 @@ async function cargarDatosEjemplo(catalogs) {
         console.log(`📄 Cotizaciones: ${resultados.cotizaciones.exitosos}/${datos.cotizaciones?.length || 0}`);
         console.log(`🛍️ Pedidos Venta: ${resultados.pedidos_venta.exitosos}/${datos.pedidos_venta?.length || 0}`);
         console.log(`💳 Cuentas por Cobrar: ${resultados.cuentas_por_cobrar.exitosos}/${datos.cuentas_por_cobrar?.length || 0}`);
+        console.log('═══════════════════════════════════════════\n');
+        console.log(`📋 Solicitudes Compra: ${resultados.solicitudes_compra.exitosos}/${datos.solicitudes_compra?.length || 0}`);
+        console.log(`📝 Órdenes Compra: ${resultados.ordenes_compra.exitosos}/${datos.ordenes_compra?.length || 0}`);
+        console.log(`💳 Cuentas por Pagar: ${resultados.cuentas_por_pagar.exitosos}/${datos.cuentas_por_pagar?.length || 0}`);
+        console.log(`📄 Cotizaciones: ${resultados.cotizaciones.exitosos}/${datos.cotizaciones?.length || 0}`);
+        console.log(`🛍️ Pedidos Venta: ${resultados.pedidos_venta.exitosos}/${datos.pedidos_venta?.length || 0}`);
+        console.log(`💳 Cuentas por Cobrar: ${resultados.cuentas_por_cobrar.exitosos}/${datos.cuentas_por_cobrar?.length || 0}`);
+        console.log(`📦 Capas Inventario: ${resultados.capas_inventario.exitosos}/${Object.keys(datos.capas_inventario || {}).length}`);  // ← NUEVO
+        console.log(`🏢 Centros Costo: ${resultados.centros_costo.exitosos}/${datos.centros_costo?.length || 0}`);                      // ← NUEVO
         console.log('═══════════════════════════════════════════\n');
 
         return { cargado: true, mensaje: 'Datos cargados exitosamente', resultados };

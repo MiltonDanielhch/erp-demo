@@ -409,24 +409,28 @@ class AnalisisMargen {
   }
 
   _obtenerDocumentosVenta() {
-    const colecciones = ['ventas', 'facturas', 'erp_ventas', 'documentos', 'documentosFuente'];
-    let todos = [];
-
-    colecciones.forEach(nombre => {
-      try {
-        const arr = JSON.parse(localStorage.getItem(nombre) || '[]');
-        if (Array.isArray(arr)) {
-          const ventas = arr.filter(d => {
-            const tipo = (d.tipo || d.tipoDocumento || '').toString().toUpperCase();
-            return tipo.includes('VENTA') || tipo.includes('FACTURA') ||
-                   d.clienteNombre || d.clienteNit || d.clienteId;
-          });
-          todos = todos.concat(ventas);
-        }
-      } catch (e) {}
-    });
-
-    return todos;
+    try {
+      const docs = JSON.parse(localStorage.getItem('erp_bolivia_documentos') || '[]');
+      return docs.filter(d => {
+        const tipo = (d.tipo || d.tipoDocumento || '').toString();
+        return tipo === 'FACTURA_VENTA' || tipo.includes('VENTA');
+      }).map(d => ({
+        id: d.id,
+        numero: d.numero,
+        fecha: d.fechaEmision || d.fecha,
+        fechaEmision: d.fechaEmision || d.fecha,
+        periodoContable: d.periodoContable || (d.fechaEmision || '').slice(0, 7),
+        monto: d.montoTotal || d.monto || 0,
+        montoTotal: d.montoTotal || d.monto || 0,
+        montoNeto: d.montoNeto || 0,
+        montoIVA: d.montoIVA || 0,
+        clienteNombre: d.razonSocialCliente || d.clienteNombre || '',
+        clienteNit: d.nitCliente || d.clienteNit || '',
+        productos: d.productos || []
+      }));
+    } catch (e) {
+      return [];
+    }
   }
 
   _interpretarABC(claseA, claseB, claseC, margenTotal) {

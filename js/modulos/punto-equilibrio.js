@@ -352,12 +352,14 @@ class PuntoEquilibrio {
     let costoVariable = 0;
 
     ventas.forEach(v => {
-      ingresos += Number(v.total || v.monto || 0);
-      if (v.detalle && Array.isArray(v.detalle)) {
-        v.detalle.forEach(item => {
+      ingresos += Number(v.montoTotal || v.total || v.monto || 0);
+      
+      // Aceptar tanto 'detalle' como 'productos' (ambos son arrays de ítems)
+      const items = v.detalle || v.productos || [];
+      if (Array.isArray(items)) {
+        items.forEach(item => {
           const cant = Number(item.cantidad) || 0;
           unidades += cant;
-          // Costo variable aproximado
           costoVariable += cant * (Number(item.costoUnitario) || 0);
         });
       }
@@ -375,7 +377,7 @@ class PuntoEquilibrio {
       costoVariablePromedio: unidades > 0 ? this._r2(costoVariable / unidades) : 0
     };
   }
-
+  
   _calcularMargenSeguridad(ventasReales, peBs) {
     const margenBs = this._r2(ventasReales - peBs);
     const margenPct = ventasReales > 0
@@ -421,17 +423,28 @@ class PuntoEquilibrio {
   }
 
   _obtenerDocumentosVenta() {
-    const colecciones = ['ventas', 'facturas', 'erp_ventas'];
-    let todos = [];
-
-    colecciones.forEach(nombre => {
-      try {
-        const arr = JSON.parse(localStorage.getItem(nombre) || '[]');
-        if (Array.isArray(arr)) todos = todos.concat(arr);
-      } catch (e) {}
-    });
-
-    return todos;
+    try {
+      const docs = JSON.parse(localStorage.getItem('erp_bolivia_documentos') || '[]');
+      return docs.filter(d => {
+        const tipo = (d.tipo || d.tipoDocumento || '').toString();
+        return tipo === 'FACTURA_VENTA' || tipo.includes('VENTA');
+      }).map(d => ({
+        id: d.id,
+        numero: d.numero,
+        fecha: d.fechaEmision || d.fecha,
+        fechaEmision: d.fechaEmision || d.fecha,
+        periodoContable: d.periodoContable || (d.fechaEmision || '').slice(0, 7),
+        monto: d.montoTotal || d.monto || 0,
+        montoTotal: d.montoTotal || d.monto || 0,
+        montoNeto: d.montoNeto || 0,
+        montoIVA: d.montoIVA || 0,
+        clienteNombre: d.razonSocialCliente || d.clienteNombre || '',
+        clienteNit: d.nitCliente || d.clienteNit || '',
+        productos: d.productos || []
+      }));
+    } catch (e) {
+      return [];
+    }
   }
 
   _r2(n) {

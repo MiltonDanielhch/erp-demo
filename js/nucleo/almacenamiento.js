@@ -278,9 +278,11 @@ class AlmacenamientoLocal {
         'solicitudes_compra': datos.solicitudes_compra || [],
         'ordenes_compra': datos.ordenes_compra || [],
         'cuentas_por_pagar': datos.cuentas_por_pagar || [],
-        'cotizaciones': datos.cotizaciones || [],          // ← NUEVO
-        'pedidos_venta': datos.pedidos_venta || [],        // ← NUEVO
-        'cuentas_por_cobrar': datos.cuentas_por_cobrar || []  // ← NUEVO
+        'cotizaciones': datos.cotizaciones || [],
+        'pedidos_venta': datos.pedidos_venta || [],
+        'cuentas_por_cobrar': datos.cuentas_por_cobrar || [],
+        // 'capas_inventario': datos.capas_inventario || {},      // ← NUEVO (objeto, no array)
+        // 'centros_costo': datos.centros_costo || []            // ← NUEVO
       };
 
       for (const [coleccion, registros] of Object.entries(colecciones)) {
@@ -347,7 +349,8 @@ class AlmacenamientoLocal {
       'empresa', 'clientes', 'proveedores', 'productos',
       'transacciones', 'empleados', 'documentos',
       'solicitudes_compra', 'ordenes_compra', 'cuentas_por_pagar',
-      'cotizaciones', 'pedidos_venta', 'cuentas_por_cobrar',  // ← NUEVO
+      'cotizaciones', 'pedidos_venta', 'cuentas_por_cobrar',
+      'capas_inventario', 'centros_costo',              // ← NUEVO
       'asientos', 'libroDiario', 'libroMayor',
       'periodosFiscales', 'iva_saldo_favor_acumulado',
       'segundo_aguinaldo_config', 'historial_smn'
