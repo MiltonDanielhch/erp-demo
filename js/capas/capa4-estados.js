@@ -222,7 +222,31 @@ class CapaEstadosFinancieros {
     const totalPasivoCorriente = this._r2(clasificacion.pasivoCorriente);
     const totalPasivoNoCorriente = this._r2(clasificacion.pasivoNoCorriente);
     const totalPasivos = this._r2(totalPasivoCorriente + totalPasivoNoCorriente);
-    const totalPatrimonio = this._r2(clasificacion.patrimonio);
+
+    // ── Incorporar resultado del ejercicio al patrimonio ──
+    // Ecuación contable completa: Activo = Pasivo + Patrimonio + (Ingresos − Gastos)
+    // El resultado se presenta en la cuenta 3.2.04 "Utilidad (Pérdida) del Ejercicio".
+    let utilidadEjercicio = 0;
+    if (Array.isArray(mayor.cuentas)) {
+      const ingresos = mayor.cuentas
+        .filter(c => (c.cuentaCodigo || '').startsWith('4.'))
+        .reduce((s, c) => s + (Number(c.saldo) || 0), 0);
+      const gastos = mayor.cuentas
+        .filter(c => (c.cuentaCodigo || '').startsWith('5.'))
+        .reduce((s, c) => s + (Number(c.saldo) || 0), 0);
+      utilidadEjercicio = this._r2(ingresos - gastos);
+    }
+
+    const detallePatrimonioConResultado = [
+      ...(clasificacion.detallePatrimonio || []),
+      {
+        codigo: '3.2.04',
+        nombre: utilidadEjercicio >= 0 ? 'Utilidad del Ejercicio' : 'Pérdida del Ejercicio',
+        monto: utilidadEjercicio
+      }
+    ];
+
+    const totalPatrimonio = this._r2(clasificacion.patrimonio + utilidadEjercicio);
     const totalPasivoPatrimonio = this._r2(totalPasivos + totalPatrimonio);
 
     const ecuacion = this.verificarEcuacionContable({
@@ -244,7 +268,7 @@ class CapaEstadosFinancieros {
         activoNoCorriente: clasificacion.detalleActivoNoCorriente,
         pasivoCorriente: clasificacion.detallePasivoCorriente,
         pasivoNoCorriente: clasificacion.detallePasivoNoCorriente,
-        patrimonio: clasificacion.detallePatrimonio
+        patrimonio: detallePatrimonioConResultado
       },
 
       activoCorriente: totalActivoCorriente,

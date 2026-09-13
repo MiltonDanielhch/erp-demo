@@ -322,10 +322,10 @@ window.EstadosVista = {
       <h4>ACTIVIDADES OPERATIVAS</h4>
       <table class="tabla" style="width: 100%; margin-bottom: 16px;">
         <tbody>
-          <tr><td>Utilidad Neta del Período</td><td class="texto-derecha">${this.fmt(flujo.actividadesOperativas.utilidadNeta)}</td></tr>
-          <tr><td>(+) Depreciación</td><td class="texto-derecha">${this.fmt(flujo.actividadesOperativas.ajustes.depreciacion)}</td></tr>
+          <tr><td>Utilidad Neta del Período</td><td class="texto-derecha">${this.fmt(flujo.actividadesOperativas?.utilidadNeta || 0)}</td></tr>
+          <tr><td>(+) Depreciación</td><td class="texto-derecha">${this.fmt(flujo.actividadesOperativas?.ajustes?.depreciacion || 0)}</td></tr>
           <tr style="font-weight: bold; background: var(--color-fondo-claro);">
-            <td>Flujo Neto Operativo</td><td class="texto-derecha">${this.fmt(flujo.actividadesOperativas.flujoNetoOperativo)}</td>
+            <td>Flujo Neto Operativo</td><td class="texto-derecha">${this.fmt(flujo.actividadesOperativas?.flujoNetoOperativo || 0)}</td>
           </tr>
         </tbody>
       </table>
@@ -334,7 +334,7 @@ window.EstadosVista = {
       <table class="tabla" style="width: 100%; margin-bottom: 16px;">
         <tbody>
           <tr style="font-weight: bold; background: var(--color-fondo-claro);">
-            <td>Flujo Neto de Inversión</td><td class="texto-derecha">${this.fmt(flujo.actividadesInversion.flujoNetoInversion)}</td>
+            <td>Flujo Neto de Inversión</td><td class="texto-derecha">${this.fmt(flujo.actividadesInversion?.flujoNetoInversion || 0)}</td>
           </tr>
         </tbody>
       </table>
@@ -343,7 +343,7 @@ window.EstadosVista = {
       <table class="tabla" style="width: 100%; margin-bottom: 16px;">
         <tbody>
           <tr style="font-weight: bold; background: var(--color-fondo-claro);">
-            <td>Flujo Neto de Financiamiento</td><td class="texto-derecha">${this.fmt(flujo.actividadesFinanciamiento.flujoNetoFinanciamiento)}</td>
+            <td>Flujo Neto de Financiamiento</td><td class="texto-derecha">${this.fmt(flujo.actividadesFinanciamiento?.flujoNetoFinanciamiento || 0)}</td>
           </tr>
         </tbody>
       </table>
