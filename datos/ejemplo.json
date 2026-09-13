@@ -794,5 +794,158 @@
       ],
       "creadoEn": "2026-09-19T14:00:00.000Z"
     }
+  ],
+  "cotizaciones": [
+    {
+      "id": "cot-001",
+      "numero": "COT-2026-0001",
+      "clienteId": "cli-001",
+      "clienteNombre": "Constructora del Beni SA",
+      "clienteNit": "100123456-9",
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "nombre": "Laptop Lenovo ThinkPad E14", "cantidad": 2, "precioUnitario": 6780, "descuento": 0, "subtotal": 13560 }
+      ],
+      "subtotal": 13560,
+      "totalDescuentos": 0,
+      "montoTotal": 13560,
+      "fechaEmision": "2026-09-01",
+      "fechaVencimiento": "2026-09-08",
+      "estado": "PEDIDO_GENERADO",
+      "pedidoId": "pv-001",
+      "pedidoNumero": "PV-2026-0001",
+      "observaciones": "Cotización para equipamiento de oficina",
+      "creadoEn": "2026-09-01T09:00:00.000Z"
+    },
+    {
+      "id": "cot-002",
+      "numero": "COT-2026-0002",
+      "clienteId": "cli-002",
+      "clienteNombre": "Ganadera Yacuma SRL",
+      "clienteNit": "200987654-0",
+      "productos": [
+        { "productoId": "prod-002", "codigo": "IMP-001", "nombre": "Impresora HP LaserJet Pro M404dn", "cantidad": 1, "precioUnitario": 3390, "descuento": 0, "subtotal": 3390 },
+        { "productoId": "prod-005", "codigo": "CAR-001", "nombre": "Cartucho de Tinta HP 664 Negro", "cantidad": 5, "precioUnitario": 169.50, "descuento": 0, "subtotal": 847.50 }
+      ],
+      "subtotal": 4237.50,
+      "totalDescuentos": 0,
+      "montoTotal": 4237.50,
+      "fechaEmision": "2026-09-06",
+      "fechaVencimiento": "2026-09-13",
+      "estado": "COTIZADA",
+      "observaciones": "Equipamiento para área administrativa",
+      "creadoEn": "2026-09-06T14:30:00.000Z"
+    },
+    {
+      "id": "cot-003",
+      "numero": "COT-2026-0003",
+      "clienteId": "cli-003",
+      "clienteNombre": "Restaurante El Vaqueño",
+      "clienteNit": "300555123-9",
+      "productos": [
+        { "productoId": "prod-003", "codigo": "PAP-001", "nombre": "Resma Papel Bond A4 (500 hojas)", "cantidad": 20, "precioUnitario": 56.50, "descuento": 0, "subtotal": 1130 }
+      ],
+      "subtotal": 1130,
+      "totalDescuentos": 0,
+      "montoTotal": 1130,
+      "fechaEmision": "2026-08-25",
+      "fechaVencimiento": "2026-09-01",
+      "estado": "COTIZADA",
+      "observaciones": "Material de oficina mensual",
+      "creadoEn": "2026-08-25T11:00:00.000Z"
+    }
+  ],
+
+  "pedidos_venta": [
+    {
+      "id": "pv-001",
+      "numero": "PV-2026-0001",
+      "cotizacionId": "cot-001",
+      "cotizacionNumero": "COT-2026-0001",
+      "clienteId": "cli-001",
+      "clienteNombre": "Constructora del Beni SA",
+      "clienteNit": "100123456-9",
+      "productos": [
+        { "productoId": "prod-001", "codigo": "LAP-001", "nombre": "Laptop Lenovo ThinkPad E14", "cantidad": 2, "precioUnitario": 6780, "descuento": 0, "subtotal": 13560, "cantidadDespachada": 2 }
+      ],
+      "subtotal": 13560,
+      "totalDescuentos": 0,
+      "montoTotal": 13560,
+      "montoIVA": 1560,
+      "montoIT": 406.80,
+      "fechaPedido": "2026-09-02",
+      "fechaDespacho": "2026-09-03",
+      "costoVenta": 10000,
+      "estado": "FACTURADO",
+      "facturaId": "doc-004",
+      "facturaNumero": "F-2026-V-001",
+      "cuentaPorCobrarId": "cxc-001",
+      "creadoEn": "2026-09-02T10:00:00.000Z"
+    },
+    {
+      "id": "pv-002",
+      "numero": "PV-2026-0002",
+      "cotizacionId": null,
+      "cotizacionNumero": null,
+      "clienteId": "cli-002",
+      "clienteNombre": "Ganadera Yacuma SRL",
+      "clienteNit": "200987654-0",
+      "productos": [
+        { "productoId": "prod-004", "codigo": "SIL-001", "nombre": "Silla Ergonómica de Oficina", "cantidad": 4, "precioUnitario": 1695, "descuento": 0, "subtotal": 6780, "cantidadDespachada": 0 }
+      ],
+      "subtotal": 6780,
+      "totalDescuentos": 0,
+      "montoTotal": 6780,
+      "fechaPedido": "2026-09-10",
+      "estado": "PEDIDO",
+      "creadoEn": "2026-09-10T09:15:00.000Z"
+    }
+  ],
+
+  "cuentas_por_cobrar": [
+    {
+      "id": "cxc-001",
+      "facturaId": "doc-004",
+      "facturaNumero": "F-2026-V-001",
+      "pedidoId": "pv-001",
+      "pedidoNumero": "PV-2026-0001",
+      "clienteId": "cli-001",
+      "clienteNombre": "Constructora del Beni SA",
+      "clienteNit": "100123456-9",
+      "montoTotal": 13560,
+      "montoPagado": 0,
+      "saldoPendiente": 13560,
+      "fechaEmision": "2026-09-03",
+      "fechaVencimiento": "2026-10-03",
+      "estado": "PENDIENTE",
+      "pagos": [],
+      "creadoEn": "2026-09-03T11:20:00.000Z"
+    },
+    {
+      "id": "cxc-002",
+      "facturaId": "doc-005",
+      "facturaNumero": "F-2026-V-002",
+      "pedidoId": null,
+      "pedidoNumero": null,
+      "clienteId": "cli-002",
+      "clienteNombre": "Ganadera Yacuma SRL",
+      "clienteNit": "200987654-0",
+      "montoTotal": 4237.50,
+      "montoPagado": 2000,
+      "saldoPendiente": 2237.50,
+      "fechaEmision": "2026-09-08",
+      "fechaVencimiento": "2026-10-08",
+      "estado": "PARCIALMENTE_COBRADA",
+      "pagos": [
+        {
+          "id": "cobro-001",
+          "monto": 2000,
+          "metodoPago": "TRANSFERENCIA",
+          "referencia": "TRF-78234",
+          "fecha": "2026-09-15T16:30:00.000Z",
+          "reciboId": "doc-008"
+        }
+      ],
+      "creadoEn": "2026-09-08T15:45:00.000Z"
+    }
   ]
 }

@@ -31,15 +31,18 @@ async function cargarDatosEjemplo(catalogs) {
     }
 
     const conteos = {
-        clientes: clientes.contar(),
-        proveedores: proveedores.contar(),
-        productos: productos.contar(),
-        empleados: almacenamiento.obtener('empleados')?.length || 0,
-        transacciones: almacenamiento.obtener('transacciones')?.length || 0,
-        documentos: almacenamiento.obtener('documentos')?.length || 0,
-        solicitudes_compra: almacenamiento.obtener('solicitudes_compra')?.length || 0,
-        ordenes_compra: almacenamiento.obtener('ordenes_compra')?.length || 0,
-        cuentas_por_pagar: almacenamiento.obtener('cuentas_por_pagar')?.length || 0
+      clientes: clientes.contar(),
+      proveedores: proveedores.contar(),
+      productos: productos.contar(),
+      empleados: almacenamiento.obtener('empleados')?.length || 0,
+      transacciones: almacenamiento.obtener('transacciones')?.length || 0,
+      documentos: almacenamiento.obtener('documentos')?.length || 0,
+      solicitudes_compra: almacenamiento.obtener('solicitudes_compra')?.length || 0,
+      ordenes_compra: almacenamiento.obtener('ordenes_compra')?.length || 0,
+      cuentas_por_pagar: almacenamiento.obtener('cuentas_por_pagar')?.length || 0,
+      cotizaciones: almacenamiento.obtener('cotizaciones')?.length || 0,          // ← NUEVO
+      pedidos_venta: almacenamiento.obtener('pedidos_venta')?.length || 0,        // ← NUEVO
+      cuentas_por_cobrar: almacenamiento.obtener('cuentas_por_cobrar')?.length || 0  // ← NUEVO
     };
 
     console.log('📊 Conteos actuales:', conteos);
@@ -62,16 +65,19 @@ async function cargarDatosEjemplo(catalogs) {
 
         const datos = await respuesta.json();
         const resultados = {
-            empresa: false,
-            clientes: { exitosos: 0, fallidos: 0 },
-            proveedores: { exitosos: 0, fallidos: 0 },
-            productos: { exitosos: 0, fallidos: 0 },
-            empleados: { exitosos: 0, fallidos: 0 },
-            transacciones: { exitosos: 0, fallidos: 0 },
-            documentos: { exitosos: 0, fallidos: 0 },
-            solicitudes_compra: { exitosos: 0, fallidos: 0 },
-            ordenes_compra: { exitosos: 0, fallidos: 0 },
-            cuentas_por_pagar: { exitosos: 0, fallidos: 0 }
+          empresa: false,
+          clientes: { exitosos: 0, fallidos: 0 },
+          proveedores: { exitosos: 0, fallidos: 0 },
+          productos: { exitosos: 0, fallidos: 0 },
+          empleados: { exitosos: 0, fallidos: 0 },
+          transacciones: { exitosos: 0, fallidos: 0 },
+          documentos: { exitosos: 0, fallidos: 0 },
+          solicitudes_compra: { exitosos: 0, fallidos: 0 },
+          ordenes_compra: { exitosos: 0, fallidos: 0 },
+          cuentas_por_pagar: { exitosos: 0, fallidos: 0 },
+          cotizaciones: { exitosos: 0, fallidos: 0 },          // ← NUEVO
+          pedidos_venta: { exitosos: 0, fallidos: 0 },        // ← NUEVO
+          cuentas_por_cobrar: { exitosos: 0, fallidos: 0 }    // ← NUEVO
         };
 
         // ── Mapeo de valores ──
@@ -276,6 +282,51 @@ async function cargarDatosEjemplo(catalogs) {
             }
         }
 
+        // ── Cargar Cotizaciones ──
+        if (datos.cotizaciones && Array.isArray(datos.cotizaciones) && conteos.cotizaciones === 0) {
+            console.log(`📄 Cargando ${datos.cotizaciones.length} cotizaciones...`);
+            for (const cot of datos.cotizaciones) {
+                try {
+                    almacenamiento.guardar('cotizaciones', { ...cot, actualizadoEn: new Date().toISOString() });
+                    resultados.cotizaciones.exitosos++;
+                    console.log(`  ✅ ${cot.numero} → ${cot.clienteNombre} (${cot.estado})`);
+                } catch (error) {
+                    resultados.cotizaciones.fallidos++;
+                    console.error(`  ❌ ${cot.numero}: ${error.message}`);
+                }
+            }
+        }
+
+        // ── Cargar Pedidos de Venta ──
+        if (datos.pedidos_venta && Array.isArray(datos.pedidos_venta) && conteos.pedidos_venta === 0) {
+            console.log(`🛍️ Cargando ${datos.pedidos_venta.length} pedidos de venta...`);
+            for (const pv of datos.pedidos_venta) {
+                try {
+                    almacenamiento.guardar('pedidos_venta', { ...pv, actualizadoEn: new Date().toISOString() });
+                    resultados.pedidos_venta.exitosos++;
+                    console.log(`  ✅ ${pv.numero} → ${pv.clienteNombre} (${pv.estado})`);
+                } catch (error) {
+                    resultados.pedidos_venta.fallidos++;
+                    console.error(`  ❌ ${pv.numero}: ${error.message}`);
+                }
+            }
+        }
+
+        // ── Cargar Cuentas por Cobrar ──
+        if (datos.cuentas_por_cobrar && Array.isArray(datos.cuentas_por_cobrar) && conteos.cuentas_por_cobrar === 0) {
+            console.log(`💳 Cargando ${datos.cuentas_por_cobrar.length} cuentas por cobrar...`);
+            for (const cxc of datos.cuentas_por_cobrar) {
+                try {
+                    almacenamiento.guardar('cuentas_por_cobrar', { ...cxc, actualizadoEn: new Date().toISOString() });
+                    resultados.cuentas_por_cobrar.exitosos++;
+                    console.log(`  ✅ ${cxc.facturaNumero} → ${cxc.clienteNombre} (${cxc.estado}, saldo: Bs ${cxc.saldoPendiente})`);
+                } catch (error) {
+                    resultados.cuentas_por_cobrar.fallidos++;
+                    console.error(`  ❌ ${cxc.facturaNumero}: ${error.message}`);
+                }
+            }
+        }
+
         // ── Resumen ──
         console.log('\n═══════════════════════════════════════════');
         console.log('📊 RESUMEN DE CARGA DE DATOS DE EJEMPLO');
@@ -290,6 +341,13 @@ async function cargarDatosEjemplo(catalogs) {
         console.log(`📋 Solicitudes Compra: ${resultados.solicitudes_compra.exitosos}/${datos.solicitudes_compra?.length || 0}`);
         console.log(`📝 Órdenes Compra: ${resultados.ordenes_compra.exitosos}/${datos.ordenes_compra?.length || 0}`);
         console.log(`💳 Cuentas por Pagar: ${resultados.cuentas_por_pagar.exitosos}/${datos.cuentas_por_pagar?.length || 0}`);
+        console.log('═══════════════════════════════════════════\n');
+        console.log(`📋 Solicitudes Compra: ${resultados.solicitudes_compra.exitosos}/${datos.solicitudes_compra?.length || 0}`);
+        console.log(`📝 Órdenes Compra: ${resultados.ordenes_compra.exitosos}/${datos.ordenes_compra?.length || 0}`);
+        console.log(`💳 Cuentas por Pagar: ${resultados.cuentas_por_pagar.exitosos}/${datos.cuentas_por_pagar?.length || 0}`);
+        console.log(`📄 Cotizaciones: ${resultados.cotizaciones.exitosos}/${datos.cotizaciones?.length || 0}`);
+        console.log(`🛍️ Pedidos Venta: ${resultados.pedidos_venta.exitosos}/${datos.pedidos_venta?.length || 0}`);
+        console.log(`💳 Cuentas por Cobrar: ${resultados.cuentas_por_cobrar.exitosos}/${datos.cuentas_por_cobrar?.length || 0}`);
         console.log('═══════════════════════════════════════════\n');
 
         return { cargado: true, mensaje: 'Datos cargados exitosamente', resultados };
