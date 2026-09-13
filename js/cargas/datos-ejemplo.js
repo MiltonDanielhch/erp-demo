@@ -408,6 +408,102 @@ async function cargarDatosEjemplo(catalogs) {
         console.log(`🏢 Centros Costo: ${resultados.centros_costo.exitosos}/${datos.centros_costo?.length || 0}`);                      // ← NUEVO
         console.log('═══════════════════════════════════════════\n');
 
+                // ── Generar asientos contables del período de ejemplo ──
+        // Idempotente: solo si el Libro Diario está vacío (evita
+        // duplicados en recargas). Flujo real: documento → asiento → libro.
+        try {
+            const asientosExistentes = JSON.parse(
+                localStorage.getItem('erp_bolivia_asientos_contabilizados') || '[]'
+            );
+            if (asientosExistentes.length === 0) {
+                              // ── 1) Asiento de apertura (evita saldos acreedores en activos) ──
+                // Coherente con el capital social sembrado: 69.900 + 80.100 = 150.000
+                if (window.motorContable) {
+                    const apertura = window.motorContable.crearAsientoManual({
+                        fecha: '2026-01-01',
+                        concepto: 'Asiento de apertura — aporte de capital (Bancos + Inventario = Capital Social)',
+                        lineas: [
+                            { cuentaCodigo: '1.1.02', cuentaNombre: 'Bancos', debe: 69900, haber: 0 },
+                            { cuentaCodigo: '1.1.06', cuentaNombre: 'Inventario de Mercancías', debe: 80100, haber: 0 },
+                            { cuentaCodigo: '3.1.01', cuentaNombre: 'Capital Social', debe: 0, haber: 150000 }
+                        ]
+                    });
+                    console.log(apertura.exito
+                        ? `🏦 Asiento de apertura: ${apertura.asiento.numero} (Bs 150.000)`
+                        : `⚠️ Apertura no generada: ${(apertura.errores || []).join(', ')}`);
+                }
+                // ── 2) Contabilización manual de Capa 1 ──
+                // Crea asientos de compra y venta directamente (el generador automático
+                // no valida correctamente los documentos sembrados).
+                if (window.motorContable) {
+                    const docs = JSON.parse(localStorage.getItem('erp_bolivia_documentos') || '[]');
+                    let contabilizados = 0;
+
+                    // FACTURAS DE COMPRA: Inventario + IVA Crédito Fiscal → Proveedores
+                    docs.filter(d => d.tipo === 'FACTURA_COMPRA').forEach(doc => {
+                        const montoTotal = Number(doc.montoTotal) || 0;
+                        const montoNeto = Number(doc.montoNeto) || Math.round(montoTotal / 1.13 * 100) / 100;
+                        const montoIVA = Number(doc.montoIVA) || Math.round((montoTotal - montoNeto) * 100) / 100;
+
+                        const asiento = window.motorContable.crearAsientoManual({
+                            fecha: doc.fechaEmision || '2026-09-01',
+                            concepto: `Compra ${doc.numero} — ${doc.razonSocialProveedor || 'Proveedor'}`,
+                            lineas: [
+                                { cuentaCodigo: '1.1.06', cuentaNombre: 'Inventario de Mercancías', debe: montoNeto, haber: 0 },
+                                { cuentaCodigo: '1.1.07', cuentaNombre: 'IVA Crédito Fiscal', debe: montoIVA, haber: 0 },
+                                { cuentaCodigo: '2.1.01', cuentaNombre: 'Proveedores', debe: 0, haber: montoTotal }
+                            ]
+                        });
+
+                        if (asiento.exito) {
+                            contabilizados++;
+                            console.log(`📄 Compra ${doc.numero}: ${asiento.asiento.numero} (Bs ${montoTotal})`);
+                        } else {
+                            console.warn(`⚠️ Compra ${doc.numero} no contabilizada: ${(asiento.errores || []).join(', ')}`);
+                        }
+                    });
+
+                    // FACTURAS DE VENTA: Clientes → Ventas + IVA Débito Fiscal
+                    docs.filter(d => d.tipo === 'FACTURA_VENTA').forEach(doc => {
+                        const montoTotal = Number(doc.montoTotal) || 0;
+                        const montoNeto = Number(doc.montoNeto) || Math.round(montoTotal / 1.13 * 100) / 100;
+                        const montoIVA = Number(doc.montoIVA) || Math.round((montoTotal - montoNeto) * 100) / 100;
+
+                        const asiento = window.motorContable.crearAsientoManual({
+                            fecha: doc.fechaEmision || '2026-09-01',
+                            concepto: `Venta ${doc.numero} — ${doc.razonSocialCliente || 'Cliente'}`,
+                            lineas: [
+                                { cuentaCodigo: '1.1.04', cuentaNombre: 'Clientes / Cuentas por Cobrar', debe: montoTotal, haber: 0 },
+                                { cuentaCodigo: '4.1.01', cuentaNombre: 'Ventas', debe: 0, haber: montoNeto },
+                                { cuentaCodigo: '2.1.03', cuentaNombre: 'IVA Débito Fiscal', debe: 0, haber: montoIVA }
+                            ]
+                        });
+
+                        if (asiento.exito) {
+                            contabilizados++;
+                            console.log(`📄 Venta ${doc.numero}: ${asiento.asiento.numero} (Bs ${montoTotal})`);
+                        } else {
+                            console.warn(`⚠️ Venta ${doc.numero} no contabilizada: ${(asiento.errores || []).join(', ')}`);
+                        }
+                    });
+
+                    console.log(`📚 Capa 1 contabilizada: ${contabilizados} asientos de facturas`);
+                }
+                if (window.moduloAsientosNomina) {
+                    window.moduloAsientosNomina.generarAsientosMensuales('2026-09');
+                }
+                if (window.moduloImpuestos) {
+                    window.moduloImpuestos.generarAsientosPeriodo('2026-09');
+                }
+                if (window.motorContable) {
+                    window.motorContable.procesarAsientosPendientes();
+                }
+                console.log('📖 Asientos contables generados automáticamente para la demo');
+            }
+        } catch (e) {
+            console.warn('⚠️ Auto-generación de asientos omitida:', e.message);
+        }
+
         return { cargado: true, mensaje: 'Datos cargados exitosamente', resultados };
 
     } catch (error) {
