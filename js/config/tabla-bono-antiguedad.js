@@ -6,6 +6,9 @@
 /**
  * Tabla oficial del Bono de Antigüedad según DS 21060 (Bolivia).
  *
+ * REFERENCIA NORMATIVA: Decreto Supremo 21060, Artículo 5
+ * https://www.mintrabajo.gob.bo/normativa/decretos-supremos/
+ *
  * Particularidad boliviana única: la base SIEMPRE es 3 × SMN,
  * no el salario real del empleado. Dos empleados con la misma
  * antigüedad cobran el mismo bono, sin importar cuánto ganen.
@@ -18,11 +21,11 @@ const TABLA_BONO_ANTIGUEDAD = [
   { aniosMin: 0,  aniosMax: 1.99, porcentaje: 0,   tramo: 'Menos de 2 años' },
   { aniosMin: 2,  aniosMax: 4.99, porcentaje: 5,   tramo: '2 a 4 años' },
   { aniosMin: 5,  aniosMax: 7.99, porcentaje: 11,  tramo: '5 a 7 años' },
-  { aniosMin: 8,  aniosMax: 10.99, porcentaje: 18,  tramo: '8 a 10 años' },
-  { aniosMin: 11, aniosMax: 14.99, porcentaje: 26,  tramo: '11 a 14 años' },
-  { aniosMin: 15, aniosMax: 19.99, porcentaje: 34,  tramo: '15 a 19 años' },
-  { aniosMin: 20, aniosMax: 24.99, porcentaje: 42,  tramo: '20 a 24 años' },
-  { aniosMin: 25, aniosMax: 999,   porcentaje: 50,  tramo: '25+ años' }
+  { aniosMin: 8,  aniosMax: 10.99, porcentaje: 19,  tramo: '8 a 10 años' },      // DS 21060 Art. 5: 19%
+  { aniosMin: 11, aniosMax: 14.99, porcentaje: 29,  tramo: '11 a 14 años' },     // DS 21060 Art. 5: 29%
+  { aniosMin: 15, aniosMax: 19.99, porcentaje: 41,  tramo: '15 a 19 años' },     // DS 21060 Art. 5: 41%
+  { aniosMin: 20, aniosMax: 24.99, porcentaje: 55,  tramo: '20 a 24 años' },     // DS 21060 Art. 5: 55%
+  { aniosMin: 25, aniosMax: 999,   porcentaje: 71,  tramo: '25+ años' }          // DS 21060 Art. 5: 71%
 ];
 
 const TablaBonoAntiguedad = {
@@ -44,7 +47,7 @@ const TablaBonoAntiguedad = {
   /**
    * Obtiene el porcentaje del bono según años de servicio.
    * @param {number} aniosServicio
-   * @returns {number} Porcentaje (0, 5, 11, 18, 26, 34, 42, 50)
+   * @returns {number} Porcentaje (0, 5, 11, 19, 29, 41, 55, 71)
    */
   obtenerPorcentaje(aniosServicio) {
     return this.obtenerTramo(aniosServicio).porcentaje;
