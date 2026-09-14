@@ -1,49 +1,49 @@
 # 🛠️ Auditoría de Software — erp-contable-bo
 
-> Generado: `2026-09-13 23:38`
+> Generado: `2026-09-14 12:03`
 
 ## Resumen
 
 | Métrica | Valor |
 | :--- | :--- |
 | **Proyecto** | `erp-contable-bo` |
-| **Líneas de Código (Netas)** | 48175 LoC |
-| **Peso Total del Proyecto** | 2.43MB |
-| **Archivos analizados** | 141 |
-| **Timestamp** | 2026-09-13 23:38 |
+| **Líneas de Código (Netas)** | 49509 LoC |
+| **Peso Total del Proyecto** | 2.50MB |
+| **Archivos analizados** | 155 |
+| **Timestamp** | 2026-09-14 12:03 |
 | **Estado** | Activa |
 
 ## Breakdown por Capa
 
 | Capa | Archivos | LoC | Comentarios | Peso | % LoC |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| `modulos` | 26 | 10554 | 0 | 541.90KB | 21.9% ████ |
-| `roadmap` | 12 | 8817 | 0 | 490.72KB | 18.3% ███ |
-| `vistas` | 18 | 6627 | 0 | 342.07KB | 13.8% ██ |
-| `vistas` | 20 | 4440 | 309 | 231.93KB | 9.2% █ |
-| `config` | 10 | 2944 | 0 | 160.42KB | 6.1% █ |
-| `capas` | 3 | 2369 | 0 | 117.12KB | 4.9%  |
-| `aprendizaje` | 17 | 2263 | 0 | 111.15KB | 4.7%  |
-| `css` | 4 | 1886 | 0 | 63.71KB | 3.9%  |
-| `css` | 4 | 1253 | 165 | 44.29KB | 2.6%  |
-| `datos` | 1 | 1099 | 0 | 37.91KB | 2.3%  |
-| `js` | 3 | 1099 | 0 | 57.96KB | 2.3%  |
+| `modulos` | 26 | 10554 | 0 | 541.90KB | 21.3% ████ |
+| `roadmap` | 12 | 8817 | 0 | 490.72KB | 17.8% ███ |
+| `vistas` | 18 | 6627 | 0 | 342.07KB | 13.4% ██ |
+| `vistas` | 20 | 4440 | 309 | 231.93KB | 9.0% █ |
+| `aprendizaje` | 31 | 3555 | 0 | 187.19KB | 7.2% █ |
+| `config` | 10 | 2944 | 0 | 160.42KB | 5.9% █ |
+| `capas` | 3 | 2369 | 0 | 117.12KB | 4.8%  |
+| `css` | 4 | 1886 | 0 | 63.71KB | 3.8%  |
+| `css` | 4 | 1253 | 165 | 44.29KB | 2.5%  |
+| `js` | 3 | 1125 | 0 | 59.56KB | 2.3%  |
+| `datos` | 1 | 1099 | 0 | 37.91KB | 2.2%  |
 | `nucleo` | 5 | 743 | 0 | 51.74KB | 1.5%  |
 | `docs` | 2 | 536 | 0 | 27.73KB | 1.1%  |
 | `js` | 1 | 484 | 91 | 30.21KB | 1.0%  |
-| `cargas` | 1 | 412 | 0 | 28.38KB | 0.9%  |
-| `adr` | 2 | 121 | 0 | 6.51KB | 0.3%  |
+| `cargas` | 1 | 412 | 0 | 28.38KB | 0.8%  |
+| `adr` | 2 | 121 | 0 | 6.51KB | 0.2%  |
 | `practica` | 3 | 94 | 12 | 3.08KB | 0.2%  |
 | `assets` | 1 | 14 | 0 | 791.00B | 0.0%  |
-| **TOTAL** | — | **48175** | — | **2.43MB** | 100% |
+| **TOTAL** | — | **49509** | — | **2.50MB** | 100% |
 
 ## Desglose por Extensión
 
 | Extensión | Archivos | LoC | Peso |
 | :--- | ---: | ---: | ---: |
-| `.js` | 68 | 25288 | 1.30MB |
-| `.md` | 36 | 12509 | 674.96KB |
-| `.html` | 23 | 5609 | 302.84KB |
+| `.js` | 68 | 25314 | 1.30MB |
+| `.md` | 49 | 13698 | 744.32KB |
+| `.html` | 24 | 5728 | 310.62KB |
 | `.css` | 8 | 3139 | 108.00KB |
 | `.json` | 3 | 1137 | 38.72KB |
 | `.py` | 1 | 435 | 23.00KB |
@@ -71,7 +71,7 @@
 erp-contable-bo/
 ├── .editorconfig (44 LoC | 3.19KB)
 ├── audit.py (435 LoC | 23.00KB) [157 comentarios]
-├── AUDITORIA_MASTER.md (219 LoC | 12.91KB)
+├── AUDITORIA_MASTER.md (235 LoC | 14.00KB)
 ├── erp.html (359 LoC | 19.62KB) [41 comentarios]
 ├── guia.html (611 LoC | 38.56KB) [13 comentarios]
 ├── index.html (199 LoC | 12.73KB) [44 comentarios]
@@ -84,13 +84,13 @@ erp-contable-bo/
 │   └── reportes.css (263 LoC | 8.49KB) [43 comentarios]
 ├── datos/ [37.91KB]
 │   └── ejemplo.json (1099 LoC | 37.91KB)
-├── docs/ [636.10KB]
+├── docs/ [712.15KB]
 │   ├── estructura.md (59 LoC | 4.19KB)
 │   ├── GUIA_MAESTRA.md (477 LoC | 23.54KB)
 │   ├── adr/ [6.51KB]
 │   │   ├── ADR-001-stack-vanilla-sin-backend.md (50 LoC | 2.69KB)
 │   │   └── ADR-002-normas-contables-bolivianas.md (71 LoC | 3.82KB)
-│   ├── aprendizaje/ [111.15KB]
+│   ├── aprendizaje/ [187.19KB]
 │   │   ├── 01-documentos-fuente.md (76 LoC | 5.88KB)
 │   │   ├── 02-tipos-documentos-tabla.md (14 LoC | 706.00B)
 │   │   ├── 03-modelo-datos-documentos.md (28 LoC | 1.37KB)
@@ -105,9 +105,23 @@ erp-contable-bo/
 │   │   ├── 12-cierre-ejercicio.md (167 LoC | 7.75KB)
 │   │   ├── 13-nomina-boliviana-explicada.md (107 LoC | 5.72KB)
 │   │   ├── 14-particularidades-bolivianas.md (172 LoC | 9.87KB)
+│   │   ├── 15-bono-antiguedad-explicado.md (189 LoC | 8.58KB)
+│   │   ├── 16-indemnizacion-boliviana.md (155 LoC | 9.23KB)
 │   │   ├── 17-impuestos-bolivianos-explicados.md (163 LoC | 8.62KB)
 │   │   ├── 18-calendario-tributario.md (214 LoC | 10.76KB)
-│   │   └── 19-compensacion-it-iue.md (118 LoC | 7.04KB)
+│   │   ├── 19-compensacion-it-iue.md (118 LoC | 7.04KB)
+│   │   ├── 20-compensacion-it-iue-ejemplos.md (219 LoC | 11.43KB)
+│   │   ├── 21-estados-financieros-explicados.md (69 LoC | 4.80KB)
+│   │   ├── 22-normas-contables-bolivianas.md (45 LoC | 3.68KB)
+│   │   ├── 23-ufv-inflacion-suspendida.md (34 LoC | 2.62KB)
+│   │   ├── 24-cumplimiento-sin-explicado.md (63 LoC | 4.27KB)
+│   │   ├── 25-formularios-sin-detallados.md (69 LoC | 3.97KB)
+│   │   ├── 26-consecuencias-incumplimiento.md (56 LoC | 4.10KB)
+│   │   ├── 27-contabilidad-costos-explicada.md (60 LoC | 3.44KB)
+│   │   ├── 28-metodos-valuacion-inventarios.md (56 LoC | 3.79KB)
+│   │   ├── 29-centros-de-costos.md (55 LoC | 2.88KB)
+│   │   ├── 30-caso-integral-un-mes.md (103 LoC | 5.47KB)
+│   │   └── leer.html (119 LoC | 7.78KB)
 │   └── roadmap/ [490.72KB]
 │       ├── ROADMAP_LANDING_PAGE_PORTAFOLIO.md (522 LoC | 31.86KB)
 │       ├── ROADMAP_MODULO_0_SETUP.md (421 LoC | 22.56KB)
@@ -192,7 +206,7 @@ erp-contable-bo/
 │       ├── nomina-vista.js (316 LoC | 17.65KB) [39 comentarios]
 │       ├── rc-iva-vista.js (175 LoC | 8.67KB) [10 comentarios]
 │       └── ventas-vista.js (406 LoC | 20.47KB) [33 comentarios]
-├── landing/ [122.44KB]
+├── landing/ [124.05KB]
 │   ├── assets/ [791.00B]
 │   │   ├── logo.svg (14 LoC | 791.00B)
 │   │   └── imagenes/ [0.00B]
@@ -201,10 +215,10 @@ erp-contable-bo/
 │   │   ├── componentes.css (258 LoC | 9.22KB) [27 comentarios]
 │   │   ├── secciones.css (1364 LoC | 40.24KB) [113 comentarios]
 │   │   └── variables.css (95 LoC | 7.39KB) [38 comentarios]
-│   └── js/ [57.96KB]
-│       ├── comparador.js (304 LoC | 15.99KB) [44 comentarios]
+│   └── js/ [59.56KB]
+│       ├── comparador.js (312 LoC | 16.49KB) [46 comentarios]
 │       ├── datos.js (370 LoC | 19.30KB) [37 comentarios]
-│       └── landing.js (425 LoC | 22.67KB) [59 comentarios]
+│       └── landing.js (443 LoC | 23.78KB) [64 comentarios]
 ├── practica/ [3.08KB]
 │   ├── package-lock.json (22 LoC | 542.00B)
 │   ├── package.json (16 LoC | 296.00B)

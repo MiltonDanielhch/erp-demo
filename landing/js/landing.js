@@ -196,7 +196,8 @@ function renderizarGuias() {
   // Contar guías totales y destacadas
   const todasLasGuias = [
     ...GUIAS_APRENDIZAJE.fundamentos,
-    ...GUIAS_APRENDIZAJE.normativa
+    ...GUIAS_APRENDIZAJE.normativa,
+    ...GUIAS_APRENDIZAJE.costos
   ];
   const guiasDestacadas = todasLasGuias.filter(g => g.destacada).length;
 
@@ -213,7 +214,7 @@ function renderizarGuias() {
           <span class="aprendizaje-stat-label">⭐ Imprescindibles</span>
         </div>
         <div class="aprendizaje-stat">
-          <span class="aprendizaje-stat-valor">2</span>
+          <span class="aprendizaje-stat-valor">3</span>
           <span class="aprendizaje-stat-label">Categorías</span>
         </div>
       </div>
@@ -230,7 +231,8 @@ function renderizarGuias() {
     <div id="guias-resultados-busqueda" class="oculto"></div>
     <div id="guias-listado-completo">
       ${renderizarGrupoGuias('📘 Fundamentos (Guías 01-10)', GUIAS_APRENDIZAJE.fundamentos)}
-      ${renderizarGrupoGuias('🇧🇴 Normativa Boliviana (Guías 11-19)', GUIAS_APRENDIZAJE.normativa)}
+      ${renderizarGrupoGuias('🇧🇴 Normativa Boliviana (Guías 11-26)', GUIAS_APRENDIZAJE.normativa)}
+      ${renderizarGrupoGuias('🏭 Costos y Caso Integral (Guías 27-30)', GUIAS_APRENDIZAJE.costos)}
     </div>
   `;
 
@@ -252,19 +254,56 @@ function renderizarGrupoGuias(titulo, guias) {
   `;
 }
 
+// ────────────────────────────────────────────────────────────────
+// MAPA: número de guía → nombre REAL del archivo .md
+// (Los slugs generados desde el título NO coinciden con los
+//  nombres reales; esa era la causa de los 404)
+// ────────────────────────────────────────────────────────────────
+const ARCHIVOS_GUIAS = {
+  '01': '01-documentos-fuente',
+  '02': '02-tipos-documentos-tabla',
+  '03': '03-modelo-datos-documentos',
+  '04': '04-ciclo-compra-venta',
+  '05': '05-iva-boliviano-explicado',
+  '06': '06-funciones-iva-it',
+  '07': '07-partida-doble-explicada',
+  '08': '08-ciclo-contable-pasos',
+  '09': '09-cuentas-naturaleza',
+  '10': '10-estructura-asiento',
+  '11': '11-provisiones-bolivianas',
+  '12': '12-cierre-ejercicio',
+  '13': '13-nomina-boliviana-explicada',
+  '14': '14-particularidades-bolivianas',
+  '15': '15-bono-antiguedad-explicado',
+  '16': '16-indemnizacion-boliviana',
+  '17': '17-impuestos-bolivianos-explicados',
+  '18': '18-calendario-tributario',
+  '19': '19-compensacion-it-iue',
+  '20': '20-compensacion-it-iue-ejemplos',
+  '21': '21-estados-financieros-explicados',
+  '22': '22-normas-contables-bolivianas',
+  '23': '23-ufv-inflacion-suspendida',
+  '24': '24-cumplimiento-sin-explicado',
+  '25': '25-formularios-sin-detallados',
+  '26': '26-consecuencias-incumplimiento',
+  '27': '27-contabilidad-costos-explicada',
+  '28': '28-metodos-valuacion-inventarios',
+  '29': '29-centros-de-costos',
+  '30': '30-caso-integral-un-mes'
+};
+
 // Renderiza una card individual de guía
 function renderizarGuiaCard(guia) {
-  const slug = guia.titulo.toLowerCase().replace(/\s+/g, '-');
-  const urlGitHub = `https://github.com/tu-usuario/erp-contable-bo/blob/main/docs/aprendizaje/${guia.numero}-${slug}.md`;
+  const numero = String(guia.numero).padStart(2, '0');
+  const archivo = ARCHIVOS_GUIAS[numero] || numero;
+  const url = `docs/aprendizaje/leer.html?g=${archivo}`;
 
   return `
-    <a href="${urlGitHub}"
+    <a href="${url}"
        class="guia-card ${guia.destacada ? 'guia-destacada' : ''}"
        data-guia="${guia.numero}"
        data-titulo="${guia.titulo.toLowerCase()}"
-       data-descripcion="${guia.descripcion.toLowerCase()}"
-       target="_blank"
-       rel="noopener">
+       data-descripcion="${guia.descripcion.toLowerCase()}">
 
       <div class="guia-card-header">
         <span class="guia-numero">Guía ${guia.numero}</span>
@@ -301,10 +340,11 @@ function conectarBuscadorGuias() {
       return;
     }
 
-    // Filtrar guías
+    // Filtrar guías de las 3 categorías
     const todasLasGuias = [
       ...GUIAS_APRENDIZAJE.fundamentos.map(g => ({ ...g, categoria: 'Fundamentos' })),
-      ...GUIAS_APRENDIZAJE.normativa.map(g => ({ ...g, categoria: 'Normativa' }))
+      ...GUIAS_APRENDIZAJE.normativa.map(g => ({ ...g, categoria: 'Normativa' })),
+      ...GUIAS_APRENDIZAJE.costos.map(g => ({ ...g, categoria: 'Costos' }))
     ];
 
     const guiasFiltradas = todasLasGuias.filter(guia =>
@@ -322,7 +362,7 @@ function conectarBuscadorGuias() {
         <div class="busqueda-vacia">
           <p>🔍 No se encontraron guías para "<strong>${termino}</strong>"</p>
           <p style="font-size: var(--texto-sm); color: var(--texto-secundario);">
-            Intenta con: IVA, nómina, partida doble, IUE, calendario...
+            Intenta con: IVA, nómina, partida doble, IUE, calendario, costos...
           </p>
         </div>
       `;
@@ -488,10 +528,10 @@ function renderizarUbicacionFooter() {
   const { ubicacion, empresaEjemplo } = PROYECTO_INFO;
 
   contenedor.innerHTML = `
-    <p style="color: var(--texto-en-oscuro); font-size: var(--texto-sm); margin-bottom: var(--espacio-xs);">
+    <p style="color: rgba(255,255,255,.75); font-size: var(--texto-sm); margin-bottom: var(--espacio-xs);">
       📍 Desarrollado en <strong>${ubicacion.ciudad}, ${ubicacion.departamento}</strong> — ${ubicacion.pais}
     </p>
-    <p style="color: var(--texto-secundario); font-size: var(--texto-xs);">
+    <p style="color: rgba(255,255,255,.55); font-size: var(--texto-xs);">
       Empresa de ejemplo: ${empresaEjemplo.nombre} · NIT ${empresaEjemplo.nit}
     </p>
   `;

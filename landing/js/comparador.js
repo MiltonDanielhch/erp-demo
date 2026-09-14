@@ -241,7 +241,7 @@ function renderizarComparador() {
 
       <!-- Historial de movimientos -->
       <div class="comparador-historial" id="comparador-historial">
-        <p style="color: var(--texto-en-oscuro); font-size: var(--texto-sm);">
+        <p style="color: var(--texto); font-size: var(--texto-sm);">
           Sin movimientos aún. Agrega compras y ventas para comparar.
         </p>
       </div>
@@ -353,7 +353,7 @@ function actualizarHistorial() {
   const ventas = SimuladorInventario.ventas;
 
   if (compras.length === 0 && ventas.length === 0) {
-    historial.innerHTML = `<p style="color: var(--texto-en-oscuro); font-size: var(--texto-sm);">
+    historial.innerHTML = `<p style="color: var(--texto); font-size: var(--texto-sm);">
       Sin movimientos aún. Agrega compras y ventas para comparar.</p>`;
     return;
   }
@@ -413,7 +413,7 @@ function mostrarMensajeEducativo(promedio, fifo, lifo) {
         <li>La utilidad bruta en <strong>${formatearBolivianos(diferenciaUtilidad)}</strong></li>
         <li>El IUE a pagar en <strong>${formatearBolivianos(diferenciaIUE)}</strong></li>
       </ul>
-      <p style="margin-top: var(--espacio-sm); font-size: var(--texto-sm); color: var(--texto-en-oscuro);">
+      <p style="margin-top: var(--espacio-sm); font-size: var(--texto-sm); color: var(--texto);">
         💡 <strong>Por esto las NIIF prohibieron LIFO en 2005:</strong>
         en entornos inflacionarios permite manipular utilidades reduciendo impuestos artificialmente.
         En Bolivia, el SIN solo acepta <strong>Promedio Ponderado</strong> y <strong>FIFO</strong>.

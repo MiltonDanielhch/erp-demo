@@ -234,7 +234,7 @@ const MODULOS_ERP = [
   }
 ];
 // ────────────────────────────────────────────────────────────────
-// GUÍAS DE APRENDIZAJE
+// GUÍAS DE APRENDIZAJE (30 guías completas)
 // ────────────────────────────────────────────────────────────────
 const GUIAS_APRENDIZAJE = {
   fundamentos: [
@@ -254,9 +254,24 @@ const GUIAS_APRENDIZAJE = {
     { numero: '12', titulo: 'Cierre de ejercicio', descripcion: 'El proceso de cierre anual' },
     { numero: '13', titulo: 'Nómina boliviana', descripcion: 'Cálculo de sueldos con normativa local' },
     { numero: '14', titulo: 'Particularidades BO', descripcion: 'Lo que hace única la contabilidad boliviana', destacada: true },
+    { numero: '15', titulo: 'Bono de antigüedad', descripcion: 'Tabla DS 21060 con ejemplos numéricos' },
+    { numero: '16', titulo: 'Indemnización boliviana', descripcion: 'Aplica también en renuncia (DS 28699)' },
     { numero: '17', titulo: 'Impuestos explicados', descripcion: 'IVA, IT, IUE, RC-IVA e IUE-BE' },
     { numero: '18', titulo: 'Calendario tributario', descripcion: 'Vencimientos según dígito de NIT' },
-    { numero: '19', titulo: 'Compensación IT-IUE', descripcion: 'Art. 77 Ley 843: la joya del sistema', destacada: true }
+    { numero: '19', titulo: 'Compensación IT-IUE', descripcion: 'Art. 77 Ley 843: la joya del sistema', destacada: true },
+    { numero: '20', titulo: 'IT-IUE: 3 ejemplos', descripcion: 'Casos numéricos de compensación completa' },
+    { numero: '21', titulo: 'Estados financieros', descripcion: 'Los 5 estados según NC del CTNAC' },
+    { numero: '22', titulo: 'Normas contables BO', descripcion: 'NC del CTNAC vs NIIF internacionales' },
+    { numero: '23', titulo: 'UFV suspendida', descripcion: 'Ajuste por inflación desde dic/2020' },
+    { numero: '24', titulo: 'Cumplimiento SIN', descripcion: 'Qué es el SIN y qué exige' },
+    { numero: '25', titulo: 'Formularios del SIN', descripcion: 'Tabla completa: 200, 400, 500, 605...' },
+    { numero: '26', titulo: 'Sanciones tributarias', descripcion: 'Multas, prescripción y consecuencias' }
+  ],
+  costos: [
+    { numero: '27', titulo: 'Contabilidad de costos', descripcion: 'Fundamentos: MP + MOD + CIF' },
+    { numero: '28', titulo: 'Valuación inventarios', descripcion: 'Promedio, FIFO y LIFO comparados' },
+    { numero: '29', titulo: 'Centros de costo', descripcion: 'Asignación y control gerencial' },
+    { numero: '30', titulo: 'Caso integral', descripcion: 'Un mes completo de Distribuidora Mamoré', destacada: true }
   ]
 };
 

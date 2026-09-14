@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📖 Guía — ERP Contable Bolivia</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{--fondo:#f7f8fc;--tarjeta:#fff;--texto:#1e2433;--suave:#5b6478;--primario:#2f4bd7;--borde:#e3e7f2;--codigo:#1e2433}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.75}
+  .topbar{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#22389f,#2f4bd7);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+  .topbar a{color:#fff;text-decoration:none;font-weight:600;font-size:.9rem}
+  .topbar a:hover{text-decoration:underline}
+  .topbar .titulo-guia{font-weight:700;flex:1;text-align:center;font-size:1rem}
+  .layout{display:grid;grid-template-columns:260px 1fr;gap:32px;max-width:1200px;margin:0 auto;padding:32px 24px}
+  aside.toc{position:sticky;top:76px;align-self:start;background:var(--tarjeta);border:1px solid var(--borde);border-radius:12px;padding:18px;max-height:calc(100vh - 100px);overflow:auto}
+  aside.toc h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--suave);margin-bottom:10px}
+  aside.toc a{display:block;padding:5px 8px;color:var(--texto);text-decoration:none;font-size:.85rem;border-radius:6px}
+  aside.toc a:hover{background:#eef1fb;color:var(--primario)}
+  aside.toc a.nivel3{padding-left:20px;color:var(--suave)}
+  article{background:var(--tarjeta);border:1px solid var(--borde);border-radius:14px;padding:40px 48px;box-shadow:0 4px 20px rgba(30,40,80,.06);min-width:0}
+  article h1{font-size:2rem;color:var(--primario);margin-bottom:8px}
+  article h2{font-size:1.5rem;color:#22389f;margin:36px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--borde)}
+  article h3{font-size:1.2rem;color:var(--primario);margin:26px 0 10px}
+  article p{margin-bottom:14px}
+  article ul,article ol{margin:0 0 14px 26px}
+  article li{margin-bottom:6px}
+  article strong{color:#22389f}
+  article hr{border:none;border-top:2px solid var(--borde);margin:28px 0}
+  article a{color:var(--primario)}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 24px}
+  .badge{background:#eef1fb;color:var(--primario);padding:5px 14px;border-radius:999px;font-size:.8rem;font-weight:600}
+  article table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.92rem;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(30,40,80,.06)}
+  article th{background:var(--primario);color:#fff;padding:10px 14px;text-align:left;font-weight:600}
+  article td{padding:10px 14px;border-bottom:1px solid var(--borde);background:#fff}
+  article tr:nth-child(even) td{background:#f8f9fd}
+  article code{background:#eef1fb;color:#22389f;padding:2px 7px;border-radius:5px;font-family:Consolas,monospace;font-size:.88em}
+  article pre{background:var(--codigo);color:#e6e9f5;padding:18px 20px;border-radius:10px;overflow-x:auto;margin:18px 0}
+  article pre code{background:transparent;color:inherit;padding:0}
+  article blockquote{border-left:4px solid var(--primario);background:#f0f4ff;padding:14px 18px;border-radius:0 8px 8px 0;margin:18px 0}
+  .nav-guias{display:flex;justify-content:space-between;gap:16px;margin-top:40px;padding-top:24px;border-top:2px solid var(--borde)}
+  .nav-guias a{flex:1;padding:14px 18px;background:#f8f9fd;border:1px solid var(--borde);border-radius:10px;text-decoration:none;color:var(--texto);font-size:.9rem;transition:all .2s}
+  .nav-guias a:hover{border-color:var(--primario);background:#eef1fb;transform:translateY(-2px)}
+  .nav-guias a .dir{display:block;font-size:.75rem;color:var(--suave);margin-bottom:4px}
+  .nav-guias a .nom{font-weight:700;color:var(--primario)}
+  .nav-guias a.sig{text-align:right}
+  .cargando{text-align:center;padding:60px;color:var(--suave)}
+  .error{background:#fef2f2;border:1px solid #dc2626;color:#991b1b;padding:20px;border-radius:10px}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}aside.toc{display:none}article{padding:24px 20px}}
+  @media print{.topbar,aside.toc,.nav-guias{display:none}article{box-shadow:none;border:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="../../index.html">← Inicio</a>
+  <span class="titulo-guia" id="titulo-top">Cargando…</span>
+  <a href="#" onclick="window.print();return false;">🖨️ Imprimir</a>
+</div>
+<div class="layout">
+  <aside class="toc" id="toc" style="display:none;">
+    <h4>📑 En esta guía</h4>
+    <div id="toc-lista"></div>
+  </aside>
+  <article id="contenido"><p class="cargando">📖 Cargando guía…</p></article>
+</div>
+<script>
+const GUIAS=[
+  {archivo:'01-documentos-fuente',titulo:'Documentos fuente'},
+  {archivo:'02-tipos-documentos-tabla',titulo:'Tipos de documentos'},
+  {archivo:'03-modelo-datos-documentos',titulo:'Modelo de datos'},
+  {archivo:'04-ciclo-compra-venta',titulo:'Ciclo compra-venta'},
+  {archivo:'05-iva-boliviano-explicado',titulo:'IVA boliviano'},
+  {archivo:'06-funciones-iva-it',titulo:'Funciones IVA e IT'},
+  {archivo:'07-partida-doble-explicada',titulo:'Partida doble'},
+  {archivo:'08-ciclo-contable-pasos',titulo:'Ciclo contable'},
+  {archivo:'09-cuentas-naturaleza',titulo:'Cuentas y naturaleza'},
+  {archivo:'10-estructura-asiento',titulo:'Estructura de asiento'},
+  {archivo:'11-provisiones-bolivianas',titulo:'Provisiones laborales'},
+  {archivo:'12-cierre-ejercicio',titulo:'Cierre de ejercicio'},
+  {archivo:'13-nomina-boliviana-explicada',titulo:'Nómina boliviana'},
+  {archivo:'14-particularidades-bolivianas',titulo:'Particularidades BO'},
+  {archivo:'15-bono-antiguedad-explicado',titulo:'Bono de antigüedad'},
+  {archivo:'16-indemnizacion-boliviana',titulo:'Indemnización boliviana'},
+  {archivo:'17-impuestos-bolivianos-explicados',titulo:'Impuestos explicados'},
+  {archivo:'18-calendario-tributario',titulo:'Calendario tributario'},
+  {archivo:'19-compensacion-it-iue',titulo:'Compensación IT-IUE'},
+  {archivo:'20-compensacion-it-iue-ejemplos',titulo:'IT-IUE: 3 ejemplos'},
+  {archivo:'21-estados-financieros-explicados',titulo:'Estados financieros'},
+  {archivo:'22-normas-contables-bolivianas',titulo:'Normas contables BO'},
+  {archivo:'23-ufv-inflacion-suspendida',titulo:'UFV suspendida'},
+  {archivo:'24-cumplimiento-sin-explicado',titulo:'Cumplimiento SIN'},
+  {archivo:'25-formularios-sin-detallados',titulo:'Formularios del SIN'},
+  {archivo:'26-consecuencias-incumplimiento',titulo:'Sanciones tributarias'},
+  {archivo:'27-contabilidad-costos-explicada',titulo:'Contabilidad de costos'},
+  {archivo:'28-metodos-valuacion-inventarios',titulo:'Valuación inventarios'},
+  {archivo:'29-centros-de-costos',titulo:'Centros de costo'},
+  {archivo:'30-caso-integral-un-mes',titulo:'Caso integral'}
+];
+
+const params=new URLSearchParams(window.location.search);
+const clave=params.get('g')||GUIAS[0].archivo;
+const indice=GUIAS.findIndex(g=>g.archivo===clave);
+async function cargarGuia(){
+  const cont=document.getElementById('contenido');
+  try{
+    const r=await fetch(clave+'.md');
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    let md=await r.text();
+    const badges=[];
+    md=md.replace(/\*\*(Módulo|Tiempo de lectura|Nivel):\*\*\s*(.+)/g,(m,k,v)=>{badges.push(k+': '+v.trim());return ''});
+    cont.innerHTML=marked.parse(md);
+    const h1=cont.querySelector('h1');
+    if(h1&&badges.length){const d=document.createElement('div');d.className='badges';d.innerHTML=badges.map(b=>`<span class="badge">${b}</span>`).join('');h1.after(d)}
+    document.getElementById('titulo-top').textContent=(indice>=0?GUIAS[indice].titulo:clave)+' — ERP Contable Bolivia';
+    document.title='📖 '+(indice>=0?GUIAS[indice].titulo:clave);
+    const hs=cont.querySelectorAll('h2,h3');
+    if(hs.length>2){
+      const toc=document.getElementById('toc'),lista=document.getElementById('toc-lista');
+      hs.forEach((h,i)=>{h.id='sec-'+i;const a=document.createElement('a');a.href='#sec-'+i;a.textContent=h.textContent;if(h.tagName==='H3')a.className='nivel3';lista.appendChild(a)});
+      toc.style.display='block';
+    }
+    const nav=document.createElement('div');nav.className='nav-guias';
+    const prev=indice>0?GUIAS[indice-1]:null;
+    const next=indice>=0&&indice<GUIAS.length-1?GUIAS[indice+1]:null;
+    nav.innerHTML=(prev?`<a href="leer.html?g=${prev.archivo}"><span class="dir">← Anterior</span><span class="nom">${prev.titulo}</span></a>`:'<span></span>')+(next?`<a class="sig" href="leer.html?g=${next.archivo}"><span class="dir">Siguiente →</span><span class="nom">${next.titulo}</span></a>`:'<span></span>');
+    cont.appendChild(nav);
+  }catch(e){cont.innerHTML=`<div class="error"><strong>⚠️ No se pudo cargar "${clave}.md"</strong><br>${e.message}</div>`}
+}
+cargarGuia();
+</script>
+</body>
+</html>
