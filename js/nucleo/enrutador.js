@@ -112,27 +112,27 @@ class Enrutador {
       const html = await respuesta.text();
       contenedor.innerHTML = html;
 
-      // ────────────────────────────────────────────────────────
-      // 🔥 EJECUTAR SCRIPTS DE LA VISTA
-      // 1. Scripts externos (<script src="...">): cargarlos dinámicamente
-      // 2. Scripts inline (<script>...</script>): recrear el tag
-      // ────────────────────────────────────────────────────────
-      const scripts = Array.from(contenedor.querySelectorAll('script'));
+      // ════════════════════════════════════════════════════════
+      // 🔥 EJECUTAR SCRIPTS DE LA VISTA (VERSIÓN SEGURA)
+      //
+      // Problema anterior: scriptOriginal.parentNode.replaceChild()
+      // fallaba con "Cannot read properties of null" cuando el
+      // parentNode era null (script ya removido/reemplazado).
+      //
+      // Solución:
+      // 1. Copia estática del NodeList (no se invalida al mutar DOM)
+      // 2. Remover scripts originales del contenedor
+      // 3. Crear scripts nuevos y appendChild al document.body
+      // 4. Carga SECUENCIAL: esperar cada script antes del siguiente
+      // ════════════════════════════════════════════════════════
+      const scriptsOriginales = Array.from(contenedor.querySelectorAll('script'));
 
-      for (const scriptOriginal of scripts) {
-        if (scriptOriginal.src) {
-          // Script EXTERNO: cargarlo y esperar
-          await this.cargarScriptExterno(scriptOriginal.src);
-          scriptOriginal.remove();
-        } else {
-          // Script INLINE: recrear el tag para forzar ejecución
-          const scriptNuevo = document.createElement('script');
-          Array.from(scriptOriginal.attributes).forEach(attr => {
-            scriptNuevo.setAttribute(attr.name, attr.value);
-          });
-          scriptNuevo.textContent = scriptOriginal.textContent;
-          scriptOriginal.parentNode.replaceChild(scriptNuevo, scriptOriginal);
-        }
+      // Quitar todos los scripts del contenedor primero
+      scriptsOriginales.forEach(s => s.remove());
+
+      // Procesar cada script en orden, esperando que termine
+      for (const scriptOriginal of scriptsOriginales) {
+        await this.ejecutarScript(scriptOriginal);
       }
 
       this.vistaActual = ruta;
@@ -143,7 +143,7 @@ class Enrutador {
         window.history.pushState(null, '', `#/${ruta}`);
       }
 
-      console.log(`📄 Vista cargada: ${ruta} → ${archivoVista} (${scripts.length} scripts ejecutados)`);
+      console.log(`📄 Vista cargada: ${ruta} → ${archivoVista} (${scriptsOriginales.length} scripts ejecutados)`);
 
     } catch (error) {
       console.error(`❌ Error al cargar la vista "${ruta}":`, error);
@@ -162,6 +162,54 @@ class Enrutador {
         </div>
       `;
     }
+  }
+
+  /**
+   * Ejecuta un script (externo o inline) de forma segura.
+   * Usa appendChild al body en lugar de replaceChild.
+   * @param {HTMLScriptElement} scriptOriginal - El script a ejecutar
+   * @returns {Promise} Se resuelve cuando el script termina de ejecutarse
+   */
+  async ejecutarScript(scriptOriginal) {
+    return new Promise((resolve) => {
+      const nuevo = document.createElement('script');
+
+      // Copiar atributos (src, type, async, defer, etc.)
+      Array.from(scriptOriginal.attributes).forEach(attr => {
+        nuevo.setAttribute(attr.name, attr.value);
+      });
+      nuevo.textContent = scriptOriginal.textContent;
+
+      const src = scriptOriginal.getAttribute('src') || scriptOriginal.src;
+
+      if (src) {
+        // ─── Script EXTERNO: verificar si ya está cargado ───
+        const yaCargado = Array.from(document.querySelectorAll('script[src]'))
+          .some(s => s.getAttribute('src') === src);
+
+        if (yaCargado) {
+          // Ya está en el DOM (por ejemplo, chart.js de una visita previa)
+          resolve();
+          return;
+        }
+
+        nuevo.onload = () => {
+          console.log(`✓ Script externo cargado: ${src}`);
+          resolve();
+        };
+        nuevo.onerror = () => {
+          console.warn(`⚠️ No se pudo cargar el script: ${src}`);
+          resolve(); // No bloquear la cadena
+        };
+
+        document.body.appendChild(nuevo);
+      } else {
+        // ─── Script INLINE: appendChild para que se ejecute ───
+        document.body.appendChild(nuevo);
+        // Ceder el control al navegador para que lo ejecute
+        requestAnimationFrame(() => resolve());
+      }
+    });
   }
 
   /**

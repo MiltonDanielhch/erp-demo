@@ -64,6 +64,46 @@ window.RCIVAVista = {
     this.elementos.periodo.value = periodo;
   },
 
+  // ══════════════════════════════════════════════════════════
+  // UTILIDAD: Parsear números con formato boliviano/internacional
+  // Acepta: "1500", "1,500", "1.500", "1500,00", "1500.00"
+  // ══════════════════════════════════════════════════════════
+  parsearMonto(valor) {
+    if (valor === null || valor === undefined || valor === '') return 0;
+
+    let str = String(valor).trim();
+
+    // Detectar formato: si tiene coma Y punto, el último es el decimal
+    const tieneComa = str.includes(',');
+    const tienePunto = str.includes('.');
+
+    if (tieneComa && tienePunto) {
+      const ultimaComa = str.lastIndexOf(',');
+      const ultimoPunto = str.lastIndexOf('.');
+      if (ultimaComa > ultimoPunto) {
+        // "1.500,00" → coma es decimal
+        str = str.replace(/\./g, '').replace(',', '.');
+      } else {
+        // "1,500.00" → punto es decimal
+        str = str.replace(/,/g, '');
+      }
+    } else if (tieneComa && !tienePunto) {
+      // Solo coma: si hay exactamente 3 dígitos después, es miles
+      const partes = str.split(',');
+      if (partes.length === 2 && partes[1].length === 3) {
+        // "1,500" → miles
+        str = str.replace(',', '');
+      } else {
+        // "1500,50" o "1,5" → decimal
+        str = str.replace(',', '.');
+      }
+    }
+    // Si solo tiene punto o ninguno, ya está en formato JS
+
+    const num = parseFloat(str);
+    return isNaN(num) ? 0 : Math.round(num * 100) / 100;
+  },
+
   // ── Renderizado ──────────────────────────────────────────────
   renderizar() {
     const periodo = this.elementos.periodo.value;
@@ -147,20 +187,28 @@ window.RCIVAVista = {
 
   // ── Acciones ─────────────────────────────────────────────────
   actualizarPreviewIVA() {
-    const monto = parseFloat(this.elementos.facturaMonto.value) || 0;
-    const iva = window.BOLIVIA.redondear2(monto * 0.13 / 1.13);
+    const monto = this.parsearMonto(this.elementos.facturaMonto.value);
+    const iva = window.BOLIVIA.redondear2(monto - monto / 1.13);
     this.elementos.facturaIVACalculado.textContent = window.utilidades.formatearBs(iva);
   },
 
   registrarFactura(e) {
     e.preventDefault();
 
+    const monto = this.parsearMonto(this.elementos.facturaMonto.value);
+
+    // Validación de monto
+    if (!monto || monto <= 0) {
+      this.mostrarToast('⚠️ El monto debe ser mayor a 0', 'error');
+      return;
+    }
+
     const datos = {
       empleadoId: this.elementos.facturaEmpleado.value,
       numeroFactura: this.elementos.facturaNumero.value,
       nitEmisor: this.elementos.facturaNIT.value,
       cuf: this.elementos.facturaCUF.value,
-      monto: parseFloat(this.elementos.facturaMonto.value),
+      monto: monto,  // ← Ya parseado correctamente
       fecha: this.elementos.facturaFecha.value,
       descripcion: this.elementos.facturaDescripcion.value
     };
@@ -171,6 +219,7 @@ window.RCIVAVista = {
       this.mostrarToast(`✅ Factura registrada: ${resultado.factura.numeroFactura} — IVA ${window.utilidades.formatearBs(resultado.factura.iva)}`, 'exito');
       this.elementos.formFactura.reset();
       this.elementos.facturaFecha.value = new Date().toISOString().split('T')[0];
+      this.elementos.facturaIVACalculado.textContent = 'Bs 0';
       this.renderizar();
     } else {
       this.mostrarToast(`❌ ${(resultado.errores || []).join(' | ')}`, 'error');
