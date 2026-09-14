@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundamentos de Costos</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f4f6fb;
+    color: #1e2433;
+    line-height: 1.65;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 { color: #22389f; margin-bottom: 8px; }
+  h2 { color: #22389f; margin-top: 32px; margin-bottom: 12px; font-size: 1.3rem; }
+  h3 { color: #2f4bd7; margin-top: 16px; margin-bottom: 8px; font-size: 1.15rem; }
+  h4 { color: #2f4bd7; margin-bottom: 8px; font-size: 1.05rem; }
+  p { margin-bottom: 10px; color: #3a4256; }
+  .intro {
+    background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border-left: 4px solid #2f4bd7;
+  }
+  .card {
+    background: white;
+    border: 1px solid #e3e7f2;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 14px rgba(30,40,80,.06);
+  }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 12px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 12px; }
+  .mini-card { padding: 14px; background: #f8f9fd; border-radius: 8px; border: 1px solid #e3e7f2; }
+  .destacado {
+    background: #fff8ec;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: .93rem;
+  }
+  .destacado.verde { background: #f0fdf4; border-color: #16a34a; }
+  .destacado.rojo  { background: #fef2f2; border-color: #dc2626; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; margin: 10px 0; background: white; border-radius: 8px; overflow: hidden; }
+  th { background: #2f4bd7; color: white; padding: 9px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e3e7f2; }
+  tr:last-child td { border-bottom: none; }
+  tr.total td { font-weight: 700; background: #f0f4ff; }
+  .calc {
+    background: #f0f4ff;
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 12px;
+  }
+  .calc label { display: block; font-size: .85rem; color: #5b6478; margin: 10px 0 4px; font-weight: 500; }
+  .calc input, .calc select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d4daea;
+    border-radius: 8px;
+    font-size: .95rem;
+    background: white;
+  }
+  .calc input:focus, .calc select:focus { outline: 2px solid #2f4bd7; border-color: transparent; }
+  .calc-result {
+    margin-top: 14px;
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #d4daea;
+  }
+  .calc-total {
+    font-size: 1.6em;
+    font-weight: 800;
+    color: #2f4bd7;
+    text-align: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e3e7f2;
+  }
+  .calc-linea { display: flex; justify-content: space-between; padding: 5px 0; font-size: .95rem; }
+  .clasificador { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .clasificador .item {
+    padding: 10px 16px;
+    border: 2px solid #d4daea;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    user-select: none;
+    font-size: .9rem;
+  }
+  .clasificador .item:hover { background: #eef1fb; border-color: #2f4bd7; transform: translateY(-2px); }
+  .clasificador .item.correcto { background: #f0fdf4; border-color: #16a34a; color: #065f46; font-weight: 600; cursor: default; }
+  #feedback {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f0f4ff;
+    border-radius: 8px;
+    font-size: .9rem;
+    min-height: 20px;
+  }
+  .quiz-item {
+    background: #f8f9fd;
+    border: 1px solid #e3e7f2;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .quiz-item .pregunta { font-weight: 600; margin-bottom: 10px; }
+  .quiz-item .opciones button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin: 6px 0;
+    padding: 10px 14px;
+    border: 1px solid #d4daea;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .95rem;
+    transition: all .15s;
+  }
+  .quiz-item .opciones button:hover:not(:disabled) { background: #eef1fb; border-color: #2f4bd7; }
+  .quiz-item .opciones button:disabled { cursor: default; }
+  .quiz-item .opciones button.correcta  { background: #f0fdf4; border-color: #16a34a; color: #065f46; font-weight: 600; }
+  .quiz-item .opciones button.incorrecta { background: #fef2f2; border-color: #dc2626; color: #991b1b; }
+  .quiz-item .explicacion {
+    display: none;
+    margin-top: 10px;
+    background: #fff8ec;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: .88rem;
+    line-height: 1.5;
+  }
+  .quiz-item.hecha .explicacion { display: block; }
+  .btn {
+    background: #2f4bd7;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: .9rem;
+  }
+  .btn:hover { background: #22389f; }
+  .btn-outline { background: white; color: #2f4bd7; border: 1px solid #2f4bd7; }
+  .btn-outline:hover { background: #eef1fb; }
+  #puntaje { font-weight: 600; color: #2f4bd7; }
+  code { background: #f0f4ff; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: .9em; color: #22389f; }
+</style>
+</head>
+<body>
+
+<h1>🎓 Fundamentos de Contabilidad de Costos</h1>
+<div class="intro">
+  <p><strong>Aprende los conceptos fundamentales</strong> que todo contador debe dominar. Esta guía incluye calculadoras interactivas, un clasificador práctico y un quiz para poner a prueba lo aprendido.</p>
+</div>
+
+<!-- 1. QUÉ ES EL COSTO -->
+<h2>1. ¿Qué es el costo en contabilidad?</h2>
+<div class="card">
+  <p>El <strong>costo</strong> es el valor monetario de los recursos económicos invertidos para <strong>producir un bien o prestar un servicio</strong>.</p>
+  <div class="destacado">🔑 <strong>Clave:</strong> El costo es una <strong>inversión</strong> que se recupera al vender el producto.</div>
+</div>
+
+<!-- 2. LOS 3 ELEMENTOS -->
+<h2>2. Los 3 elementos del costo de producción</h2>
+<div class="card">
+  <div class="grid-3">
+    <div class="mini-card">
+      <h4>📦 Materia Prima</h4>
+      <p>Los materiales que se transforman en el producto final.</p>
+      <table><tr><th>Producto</th><th>Materia prima</th></tr>
+        <tr><td>Silla</td><td>Madera, tela, tornillos</td></tr>
+        <tr><td>Laptop</td><td>Procesador, RAM, pantalla</td></tr>
+        <tr><td>Pan</td><td>Harina, levadura, sal</td></tr>
+      </table>
+    </div>
+    <div class="mini-card">
+      <h4>👷 Mano de Obra Directa (MOD)</h4>
+      <p>Pago al personal que participa <strong>directamente</strong> en la producción.</p>
+      <table><tr><th>Producto</th><th>MOD</th></tr>
+        <tr><td>Silla</td><td>Carpintero que la fabrica</td></tr>
+        <tr><td>Laptop</td><td>Técnico que la ensambla</td></tr>
+        <tr><td>Pan</td><td>Panadero que amasa y hornea</td></tr>
+      </table>
+    </div>
+    <div class="mini-card">
+      <h4>🏭 Costos Indirectos (CIF)</h4>
+      <p>Gastos generales necesarios para fabricar, que no se asignan directamente a un producto.</p>
+      <ul style="font-size:.9rem;padding-left:20px;">
+        <li>Electricidad de la fábrica</li>
+        <li>Depreciación de maquinaria</li>
+        <li>Alquiler del local de producción</li>
+        <li>Supervisor de planta</li>
+      </ul>
+    </div>
+  </div>
+  <div class="destacado verde">💡 <strong>Fórmula:</strong> <code>Costo Total = MP + MOD + CIF</code></div>
+</div>
+
+<!-- 3. CALCULADORA -->
+<h2>3. Calculadora de costo unitario</h2>
+<div class="card">
+  <p>Calcula el costo de producir una unidad ajustando los 3 elementos:</p>
+  <div class="calc">
+    <label>Producto a analizar</label>
+    <select id="calc-producto">
+      <option value="silla">Silla Ergonómica</option>
+      <option value="laptop">Laptop Ensamblada</option>
+      <option value="pan">Pan (por kg)</option>
+    </select>
+    <label>Materia prima por unidad (Bs)</label>
+    <input type="number" id="calc-mp" value="600">
+    <label>Mano de obra directa por unidad (Bs)</label>
+    <input type="number" id="calc-mod" value="250">
+    <label>Costos indirectos por unidad (Bs)</label>
+    <input type="number" id="calc-cif" value="150">
+    <div class="calc-result">
+      <div class="calc-total" id="calc-total">Bs 1.000,00</div>
+      <div class="calc-linea"><span>Materia prima</span><strong id="calc-mp-pct">60%</strong></div>
+      <div class="calc-linea"><span>Mano de obra directa</span><strong id="calc-mod-pct">25%</strong></div>
+      <div class="calc-linea"><span>Costos indirectos</span><strong id="calc-cif-pct">15%</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. TIPOS -->
+<h2>4. Tipos de costos</h2>
+<div class="card">
+  <div class="grid-2">
+    <div class="mini-card">
+      <h4>📍 Según su identificación con el producto</h4>
+      <table><tr><th>Tipo</th><th>Definición</th><th>Ejemplo</th></tr>
+        <tr><td><strong>Directos</strong></td><td>Se pueden identificar fácilmente en cada producto</td><td>Madera para una silla</td></tr>
+        <tr><td><strong>Indirectos</strong></td><td>Afectan la producción general y se prorratean</td><td>Electricidad de la fábrica</td></tr>
+      </table>
+    </div>
+    <div class="mini-card">
+      <h4>📊 Según su comportamiento con el volumen</h4>
+      <table><tr><th>Tipo</th><th>Definición</th><th>Ejemplo</th></tr>
+        <tr><td><strong>Fijos</strong></td><td>No cambian con el volumen (corto plazo)</td><td>Alquiler, salario del supervisor</td></tr>
+        <tr><td><strong>Variables</strong></td><td>Suben o bajan según la cantidad fabricada</td><td>Materia prima, empaques</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 5. CLASIFICADOR -->
+<h2>5. Clasificador interactivo</h2>
+<div class="card">
+  <p><strong>Haz clic en cada costo</strong> para ver su clasificación correcta:</p>
+  <div class="clasificador" id="clasificador"></div>
+  <div id="feedback"></div>
+</div>
+
+<!-- 6. COSTO vs GASTO -->
+<h2>6. Diferencia entre costo y gasto</h2>
+<div class="card">
+  <div class="grid-2">
+    <div class="mini-card" style="background:#f0fdf4;">
+      <h4>💰 COSTO</h4>
+      <p>Es una <strong>inversión</strong> que se recupera al vender el producto.</p>
+      <table><tr><th>Ejemplos</th></tr>
+        <tr><td>Materia prima</td></tr>
+        <tr><td>Mano de obra directa</td></tr>
+        <tr><td>Electricidad de la fábrica</td></tr>
+        <tr><td>Depreciación de maquinaria</td></tr>
+      </table>
+      <div class="destacado verde">✅ Se incluye en el <strong>inventario</strong> y se convierte en <strong>costo de ventas</strong> al vender.</div>
+    </div>
+    <div class="mini-card" style="background:#fef2f2;">
+      <h4>💸 GASTO</h4>
+      <p>Es para <strong>operar el negocio</strong> (administración, ventas), no ligado a la fabricación.</p>
+      <table><tr><th>Ejemplos</th></tr>
+        <tr><td>Sueldo del gerente</td></tr>
+        <tr><td>Publicidad y marketing</td></tr>
+        <tr><td>Alquiler de oficinas</td></tr>
+        <tr><td>Comisiones de vendedores</td></tr>
+      </table>
+      <div class="destacado rojo">❌ Se registra directamente como <strong>gasto del período</strong> y reduce la utilidad.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. QUIZ -->
+<h2>7. Quiz: ¿Costo o gasto?</h2>
+<div class="card">
+  <p>Pon a prueba lo aprendido con estas 5 preguntas:</p>
+  <div id="quiz-costo-gasto"></div>
+  <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <button class="btn btn-outline" id="btn-reiniciar-quiz">🔄 Reiniciar quiz</button>
+    <span id="puntaje"></span>
+  </div>
+</div>
+
+<!-- 8. EJERCICIO -->
+<h2>8. Ejercicio práctico</h2>
+<div class="card">
+  <h4>Calcula el costo total de producir <strong>10 sillas ergonómicas</strong>:</h4>
+  <table>
+    <tr><th>Concepto</th><th>Por unidad</th><th>Por 10 unidades</th></tr>
+    <tr><td>Materia prima (madera, tela)</td><td>Bs 600</td><td>Bs 6.000</td></tr>
+    <tr><td>Mano de obra directa (carpintero, 4h @ Bs 50/h)</td><td>Bs 200</td><td>Bs 2.000</td></tr>
+    <tr><td>Costos indirectos (prorrateo)</td><td>Bs 150</td><td>Bs 1.500</td></tr>
+    <tr class="total"><td colspan="2">COSTO TOTAL DE PRODUCCIÓN</td><td>Bs 9.500</td></tr>
+  </table>
+  <div class="destacado">💡 <strong>Precio de venta sugerido</strong> con margen del 40%:<br>
+    <code>Precio = Costo ÷ (1 − Margen) = 9.500 ÷ 0,60 = Bs 15.833</code></div>
+</div>
+
+<script>
+const datosProductos = {
+  silla:  { mp: 600,  mod: 250, cif: 150 },
+  laptop: { mp: 3500, mod: 800, cif: 700 },
+  pan:    { mp: 8,    mod: 3,   cif: 2   }
+};
+const fmtBs = n => 'Bs ' + (Number(n)||0).toLocaleString('es-BO', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+function cargarDatosProducto() {
+  const d = datosProductos[document.getElementById('calc-producto').value];
+  document.getElementById('calc-mp').value = d.mp;
+  document.getElementById('calc-mod').value = d.mod;
+  document.getElementById('calc-cif').value = d.cif;
+  calcularCostoUnitario();
+}
+
+function calcularCostoUnitario() {
+  const mp  = Number(document.getElementById('calc-mp').value)  || 0;
+  const mod = Number(document.getElementById('calc-mod').value) || 0;
+  const cif = Number(document.getElementById('calc-cif').value) || 0;
+  const total = mp + mod + cif;
+  document.getElementById('calc-total').textContent = fmtBs(total);
+  document.getElementById('calc-mp-pct').textContent  = total > 0 ? ((mp/total)*100).toFixed(0)  + '%' : '0%';
+  document.getElementById('calc-mod-pct').textContent = total > 0 ? ((mod/total)*100).toFixed(0) + '%' : '0%';
+  document.getElementById('calc-cif-pct').textContent = total > 0 ? ((cif/total)*100).toFixed(0) + '%' : '0%';
+}
+
+const itemsClasificador = [
+  { texto: 'Madera para fabricar una silla',         directo: true,  fijo: false, explicacion: 'Es DIRECTO (se identifica con la silla) y VARIABLE (más sillas = más madera).' },
+  { texto: 'Electricidad de la fábrica',             directo: false, fijo: false, explicacion: 'Es INDIRECTO (se reparte entre productos) y VARIABLE (más producción = más electricidad).' },
+  { texto: 'Alquiler del local de producción',       directo: false, fijo: true,  explicacion: 'Es INDIRECTO (se reparte) y FIJO (no cambia con el volumen).' },
+  { texto: 'Salario del carpintero que arma sillas', directo: true,  fijo: false, explicacion: 'Es DIRECTO y VARIABLE (si paga por hora o destajo).' },
+  { texto: 'Depreciación de la maquinaria',          directo: false, fijo: true,  explicacion: 'Es INDIRECTO (beneficia toda la producción) y FIJO.' },
+  { texto: 'Tornillos para las sillas',              directo: true,  fijo: false, explicacion: 'Es DIRECTO y VARIABLE (más sillas = más tornillos).' }
+];
+
+function renderClasificador() {
+  const cont = document.getElementById('clasificador');
+  cont.innerHTML = itemsClasificador.map((it,i) => `<div class="item" data-i="${i}">${it.texto}</div>`).join('');
+  cont.querySelectorAll('.item').forEach(el => {
+    el.addEventListener('click', () => {
+      if (el.classList.contains('correcto')) return;
+      const it = itemsClasificador[Number(el.dataset.i)];
+      el.classList.add('correcto');
+      document.getElementById('feedback').innerHTML = `<strong>✅ ${it.texto}</strong><br>${it.directo ? '🎯 DIRECTO' : '🔷 INDIRECTO'} · ${it.fijo ? '📌 FIJO' : '📈 VARIABLE'}<br><em>${it.explicacion}</em>`;
+    });
+  });
+}
+
+const preguntasCG = [
+  { pregunta: 'El salario del carpintero que fabrica sillas es…', opciones: ['Costo','Gasto'], correcta: 0,
+    explicacion: 'Es <strong>COSTO</strong>: participa directamente en la producción.' },
+  { pregunta: 'La publicidad en Facebook para vender sillas es…', opciones: ['Costo','Gasto'], correcta: 1,
+    explicacion: 'Es <strong>GASTO</strong>: es para vender, no para fabricar.' },
+  { pregunta: 'La electricidad de la fábrica es…', opciones: ['Costo','Gasto'], correcta: 0,
+    explicacion: 'Es <strong>COSTO</strong> (indirecto): necesario para la producción.' },
+  { pregunta: 'El sueldo del gerente general es…', opciones: ['Costo','Gasto'], correcta: 1,
+    explicacion: 'Es <strong>GASTO</strong> administrativo: no fabrica.' },
+  { pregunta: 'La depreciación de la maquinaria de producción es…', opciones: ['Costo','Gasto'], correcta: 0,
+    explicacion: 'Es <strong>COSTO</strong> indirecto: la máquina fabrica productos.' }
+];
+
+let aciertosQuiz = 0, respondidasQuiz = 0;
+
+function renderQuiz() {
+  aciertosQuiz = 0; respondidasQuiz = 0;
+  document.getElementById('puntaje').textContent = '';
+  const cont = document.getElementById('quiz-costo-gasto');
+  cont.innerHTML = preguntasCG.map((p,i) => `
+    <div class="quiz-item" data-i="${i}">
+      <div class="pregunta">${i+1}. ${p.pregunta}</div>
+      <div class="opciones">${p.opciones.map((op,j)=>`<button data-j="${j}">${op}</button>`).join('')}</div>
+      <div class="explicacion">${p.explicacion}</div>
+    </div>`).join('');
+  cont.querySelectorAll('.quiz-item').forEach(item => {
+    const i = Number(item.dataset.i);
+    item.querySelectorAll('.opciones button').forEach(btn => {
+      btn.addEventListener('click', () => responderQuiz(i, Number(btn.dataset.j)));
+    });
+  });
+}
+
+function responderQuiz(i, j) {
+  const p = preguntasCG[i];
+  const item = document.querySelector(`.quiz-item[data-i="${i}"]`);
+  if (item.classList.contains('hecha')) return;
+  item.classList.add('hecha');
+  respondidasQuiz++;
+  item.querySelectorAll('.opciones button').forEach((btn,k) => {
+    btn.disabled = true;
+    if (k === p.correcta) btn.classList.add('correcta');
+    else if (k === j) btn.classList.add('incorrecta');
+  });
+  if (j === p.correcta) aciertosQuiz++;
+  if (respondidasQuiz === preguntasCG.length) {
+    const nota = aciertosQuiz === preguntasCG.length ? '🏆 ¡Perfecto!'
+      : aciertosQuiz >= 3 ? '💪 Muy bien.' : '📚 Repasa la sección 6.';
+    document.getElementById('puntaje').textContent = `Puntaje: ${aciertosQuiz}/${preguntasCG.length} — ${nota}`;
+  }
+}
+
+document.getElementById('calc-producto').addEventListener('change', cargarDatosProducto);
+['calc-mp','calc-mod','calc-cif'].forEach(id =>
+  document.getElementById(id).addEventListener('input', calcularCostoUnitario));
+document.getElementById('btn-reiniciar-quiz').addEventListener('click', renderQuiz);
+
+renderClasificador();
+renderQuiz();
+calcularCostoUnitario();
+</script>
+
+</body>
+</html>

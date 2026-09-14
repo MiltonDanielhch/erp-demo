@@ -7,6 +7,12 @@
   Gestión integral de costos: valuación de inventarios, centros de costo, órdenes de trabajo y análisis gerencial
 </p>
 
+<div style="margin: 12px 0;">
+  <button id="btn-abrir-fundamentos" class="btn btn-primary" style="background: linear-gradient(135deg, #22389f, #2f4bd7); font-size: 0.95rem; padding: 10px 20px;">
+    📚 Abrir Guía de Fundamentos de Costos
+  </button>
+</div>
+
 <!-- ═══════════ Tabs ═══════════ -->
 <div class="card" style="margin-bottom: var(--espacio-md);">
   <div class="tabs" style="display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid var(--color-borde); padding-bottom: 8px;">
@@ -357,3 +363,51 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/vistas/costos-vista.js"></script>
+
+<!-- Modal de Fundamentos -->
+<div id="modal-fundamentos" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white; border-radius:14px; width:100%; max-width:1100px; height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:linear-gradient(135deg, #22389f, #2f4bd7); color:white;">
+      <h3 style="margin:0; font-size:1.1rem;">📚 Fundamentos de Contabilidad de Costos</h3>
+      <button id="btn-cerrar-fundamentos" style="background:rgba(255,255,255,0.2); border:none; color:white; width:32px; height:32px; border-radius:50%; font-size:1.2rem; cursor:pointer; font-weight:700;">✕</button>
+    </div>
+    <iframe id="iframe-fundamentos" src="" style="flex:1; width:100%; border:none; background:white;"></iframe>
+  </div>
+</div>
+
+<script>
+(function() {
+  const modal = document.getElementById('modal-fundamentos');
+  const iframe = document.getElementById('iframe-fundamentos');
+  const btnAbrir = document.getElementById('btn-abrir-fundamentos');
+  const btnCerrar = document.getElementById('btn-cerrar-fundamentos');
+
+  btnAbrir.addEventListener('click', () => {
+    iframe.src = 'vistas/costos-fundamentos.html';
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  });
+
+  btnCerrar.addEventListener('click', () => {
+    modal.style.display = 'none';
+    iframe.src = '';
+    document.body.style.overflow = '';
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      iframe.src = '';
+      document.body.style.overflow = '';
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') {
+      modal.style.display = 'none';
+      iframe.src = '';
+      document.body.style.overflow = '';
+    }
+  });
+})();
+</script>
