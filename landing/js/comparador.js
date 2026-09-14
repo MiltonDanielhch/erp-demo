@@ -188,7 +188,18 @@ const SimuladorInventario = {
 // RENDERIZADO DE LA INTERFAZ
 // ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Precargar datos demo con 2 compras a precios DISTINTOS
+  // para que FIFO ≠ Promedio ≠ LIFO sea visible desde el inicio
+  SimuladorInventario.compras = [
+    { cantidad: 50, costoUnitario: 40, total: 2000 },   // Compra barata (antigua)
+    { cantidad: 50, costoUnitario: 80, total: 4000 }    // Compra cara (reciente)
+  ];
+  SimuladorInventario.ventas = [
+    { cantidad: 60, precioUnitario: 100, total: 6000 }  // Venta de 60u
+  ];
+
   renderizarComparador();
+  actualizarComparador();  // ← Calcular resultados al cargar
 });
 
 function renderizarComparador() {
