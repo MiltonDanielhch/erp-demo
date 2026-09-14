@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📘 Guía Interactiva — ERP Contable Bolivia</title>
+<style>
+:root{
+  --fondo:#f4f6fb; --tarjeta:#ffffff; --texto:#1e2433; --suave:#5b6478;
+  --primario:#2f4bd7; --primario-osc:#22389f; --acento:#f59e0b;
+  --exito:#16a34a; --error:#dc2626; --borde:#e3e7f2;
+  --sombra:0 6px 24px rgba(30,40,80,.08); --radio:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.65}
+
+/* ── Barra de progreso de lectura ── */
+#progreso{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--primario),var(--acento));z-index:1000}
+
+/* ── Header ── */
+header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--borde);z-index:900;padding:12px 24px;display:flex;align-items:center;gap:16px}
+header .logo{font-weight:800;font-size:1.05rem;color:var(--primario)}
+header .sub{color:var(--suave);font-size:.85rem}
+header a.volver{margin-left:auto;font-size:.85rem;color:var(--primario);text-decoration:none;font-weight:600}
+header a.volver:hover{text-decoration:underline}
+
+/* ── Layout ── */
+.contenedor{display:grid;grid-template-columns:250px 1fr;gap:28px;max-width:1200px;margin:0 auto;padding:24px}
+nav.lateral{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 90px);overflow:auto;background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);padding:14px}
+nav.lateral h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--suave);margin:10px 6px 6px}
+nav.lateral a{display:block;padding:7px 10px;border-radius:8px;color:var(--texto);text-decoration:none;font-size:.88rem}
+nav.lateral a:hover{background:#eef1fb}
+nav.lateral a.activo{background:var(--primario);color:#fff;font-weight:600}
+main{min-width:0}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,#22389f 0%,#2f4bd7 55%,#4f6ef7 100%);color:#fff;border-radius:20px;padding:44px 36px;margin-bottom:28px;box-shadow:var(--sombra)}
+.hero h1{font-size:2.1rem;margin-bottom:10px}
+.hero p{opacity:.92;max-width:640px}
+.hero .chips{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.hero .chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:999px;font-size:.8rem}
+
+/* ── Secciones y tarjetas ── */
+section{margin-bottom:36px;scroll-margin-top:80px}
+section>h2{font-size:1.45rem;margin-bottom:6px;color:var(--primario-osc)}
+section>p.intro{color:var(--suave);margin-bottom:16px;max-width:760px}
+.grid{display:grid;gap:16px}
+.grid.c2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.grid.c3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);padding:20px;box-shadow:var(--sombra)}
+.card h3{font-size:1.02rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card p{font-size:.92rem;color:var(--suave)}
+.card .num{width:30px;height:30px;border-radius:50%;background:var(--primario);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex:none}
+.destacado{border-left:4px solid var(--acento);background:#fff8ec;padding:12px 16px;border-radius:8px;font-size:.92rem;margin:12px 0}
+.destacado.verde{border-color:var(--exito);background:#f0fdf4}
+.destacado.rojo{border-color:var(--error);background:#fef2f2}
+
+/* ── Tablas ── */
+table{width:100%;border-collapse:collapse;font-size:.9rem;background:var(--tarjeta);border-radius:10px;overflow:hidden;box-shadow:var(--sombra)}
+th{background:var(--primario);color:#fff;text-align:left;padding:10px 12px;font-weight:600}
+td{padding:9px 12px;border-bottom:1px solid var(--borde)}
+tr:last-child td{border-bottom:none}
+td.derecha,th.derecha{text-align:right}
+tr.total td{font-weight:700;background:#eef1fb}
+
+/* ── Acordeones ── */
+.acordeon{border:1px solid var(--borde);border-radius:10px;margin-bottom:10px;overflow:hidden;background:var(--tarjeta)}
+.acordeon .cab{width:100%;text-align:left;padding:14px 16px;background:#f8f9fd;border:none;cursor:pointer;font-size:.95rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;color:var(--texto)}
+.acordeon .cab:hover{background:#eef1fb}
+.acordeon .cab .flecha{transition:transform .25s}
+.acordeon.abierto .cab .flecha{transform:rotate(180deg)}
+.acordeon .cuerpo{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.acordeon .cuerpo.int{padding:16px}
+
+/* ── Calculadoras ── */
+.calc{background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);padding:18px;box-shadow:var(--sombra)}
+.calc h3{font-size:.98rem;margin-bottom:12px;color:var(--primario-osc)}
+.calc label{display:block;font-size:.8rem;color:var(--suave);margin:8px 0 3px}
+.calc input{width:100%;padding:9px 10px;border:1px solid var(--borde);border-radius:8px;font-size:.95rem}
+.calc input:focus{outline:2px solid var(--primario);border-color:transparent}
+.calc .res{margin-top:12px;background:#f0f4ff;border-radius:10px;padding:12px;font-size:.9rem}
+.calc .res .grande{font-size:1.35rem;font-weight:800;color:var(--primario)}
+.calc .res .linea{display:flex;justify-content:space-between;padding:3px 0}
+
+/* ── Simulador partida doble ── */
+.pd input{width:90px;padding:7px;border:1px solid var(--borde);border-radius:6px;font-size:.9rem}
+.pd input.cuenta{width:100%}
+.semaforo{margin-top:12px;padding:12px;border-radius:10px;font-weight:700;text-align:center}
+.semaforo.ok{background:#f0fdf4;color:var(--exito);border:1px solid var(--exito)}
+.semaforo.mal{background:#fef2f2;color:var(--error);border:1px solid var(--error)}
+
+/* ── Quiz ── */
+.quiz .pregunta{background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);padding:18px;margin-bottom:14px;box-shadow:var(--sombra)}
+.quiz .opciones button{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:1px solid var(--borde);background:#fff;border-radius:8px;cursor:pointer;font-size:.9rem}
+.quiz .opciones button:hover{background:#eef1fb}
+.quiz .opciones button.correcta{background:#f0fdf4;border-color:var(--exito);font-weight:600}
+.quiz .opciones button.incorrecta{background:#fef2f2;border-color:var(--error)}
+.quiz .explicacion{display:none;margin-top:10px;font-size:.88rem;background:#fff8ec;border-left:4px solid var(--acento);padding:10px;border-radius:6px}
+#puntaje{font-size:1.05rem;font-weight:700;color:var(--primario)}
+
+/* ── Timeline ─ */
+.timeline{position:relative;margin:10px 0 0 12px;border-left:3px solid var(--primario);padding-left:22px}
+.timeline .hito{position:relative;margin-bottom:18px}
+.timeline .hito::before{content:'';position:absolute;left:-31px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--acento);border:3px solid #fff;box-shadow:0 0 0 2px var(--primario)}
+.timeline .hito h4{font-size:.95rem}
+.timeline .hito p{font-size:.88rem;color:var(--suave)}
+
+/* ── Botones ── */
+.btn{background:var(--primario);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.9rem}
+.btn:hover{background:var(--primario-osc)}
+.btn.sec{background:#eef1fb;color:var(--primario)}
+
+/* ── Código ── */
+pre{background:#1e2433;color:#e6e9f5;padding:14px;border-radius:10px;overflow:auto;font-size:.85rem;margin:10px 0}
+code{font-family:Consolas,monospace}
+
+footer{text-align:center;padding:30px;color:var(--suave);font-size:.85rem;border-top:1px solid var(--borde);margin-top:30px}
+
+@media(max-width:900px){
+  .contenedor{grid-template-columns:1fr}
+  nav.lateral{position:static;max-height:none}
+}
+</style>
+</head>
+<body>
+<div id="progreso"></div>
+
+<header>
+  <span class="logo">📘 Guía Interactiva</span>
+  <span class="sub">ERP Contable Bolivia · aprende haciendo</span>
+  <a class="volver" href="index.html">← Volver al ERP</a>
+</header>
+
+<div class="contenedor">
+
+<!-- ══════════ NAVEGACIÓN ══════════ -->
+<nav class="lateral" id="nav">
+  <h4>Fundamentos</h4>
+  <a href="#que-es">1. Qué es el sistema</a>
+  <a href="#capas">2. Las 5 capas</a>
+  <a href="#ciclo">3. El ciclo contable</a>
+  <a href="#partida-doble">4. Partida doble</a>
+  <h4>Uso del sistema</h4>
+  <a href="#arranque">5. Arrancar la demo</a>
+  <a href="#modulos">6. Módulo por módulo</a>
+  <h4>Contabilidad boliviana</h4>
+  <a href="#conceptos">7. Conceptos clave</a>
+  <a href="#calculadoras">8. Calculadoras en vivo</a>
+  <h4>Practica</h4>
+  <a href="#quiz">9. Ponte a prueba</a>
+  <a href="#demo">10. Demo en 10 minutos</a>
+  <a href="#glosario">11. Glosario</a>
+</nav>
+
+<main>
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <h1>Aprende el ERP Contable Bolivia jugando</h1>
+  <p>Esta guía te lleva de la mano: primero entiendes <strong>por qué</strong> existe cada
+     pantalla, luego lo <strong>pruebas</strong> con calculadoras en vivo y al final te
+     <strong>evalúas</strong> con un quiz. No necesitas saber contabilidad: todo se explica antes de usarse.</p>
+  <div class="chips">
+    <span class="chip">🇧 Ley 843</span><span class="chip">📐 DS 21060</span>
+    <span class="chip">🧮 Calculadoras en vivo</span><span class="chip">🎮 Simulador de partida doble</span>
+    <span class="chip">🏆 Quiz final</span>
+  </div>
+</div>
+
+<!-- ══════════ 1. QUÉ ES ══════════ -->
+<section id="que-es">
+  <h2>1. Qué es (y qué no es) este sistema</h2>
+  <p class="intro">Un ERP es el "sistema nervioso" de una empresa: registra cada operación y la
+     convierte automáticamente en contabilidad e impuestos.</p>
+  <div class="grid c2">
+    <div class="card"><h3>✅ SÍ es</h3>
+      <p>• Un simulador de una empresa real: <strong>Distribuidora Mamoré SRL</strong> (Trinidad, Beni).<br>
+         • Un material educativo: cada pantalla enseña un concepto.<br>
+         • Una app sin servidor: tus datos viven solo en tu navegador.</p>
+    </div>
+    <div class="card"><h3>⛔ NO es</h3>
+      <p>• Un sistema para contabilidad real (no envía nada al SIN).<br>
+         • Una base de datos compartida: cada navegador tiene su propia demo.<br>
+         • Algo complicado: si entiendes un ticket de compra, entiendes esto.</p>
+    </div>
+  </div>
+  <div class="destacado">💡 <strong>Idea central:</strong> ningún número está escrito a mano.
+     Todo es consecuencia de documentos y asientos. Por eso el sistema <em>siempre cuadra</em>.</div>
+</section>
+
+<!-- ══════════ 2. CAPAS ══════════ -->
+<section id="capas">
+  <h2>2. Las 5 capas (analogía del restaurante)</h2>
+  <p class="intro">Imagina un restaurante. El ERP se organiza exactamente igual:</p>
+  <div class="grid c3">
+    <div class="card"><h3><span class="num">1</span> Documentos</h3><p>El ticket físico. Facturas y recibos con NIT y CUF.</p></div>
+    <div class="card"><h3><span class="num">2</span> Módulos</h3><p>Cocina y caja: Compras, Ventas, Nómina, Impuestos.</p></div>
+    <div class="card"><h3><span class="num">3</span> Motor contable</h3><p>El libro del contador: asientos con partida doble.</p></div>
+    <div class="card"><h3><span class="num">4</span> Estados</h3><p>El reporte del dueño: Balance y Resultados.</p></div>
+    <div class="card"><h3><span class="num">5</span> Cumplimiento</h3><p>Pagar impuestos y licencias: Form. 200/400/500.</p></div>
+  </div>
+  <div class="destacado verde">⬇️ La información fluye <strong>hacia abajo</strong>:
+     documento → módulo → asiento → estado → formulario. Nunca al revés.</div>
+</section>
+
+<!-- ══════════ 3. CICLO ══════════ -->
+<section id="ciclo">
+  <h2>3. El ciclo contable en 7 pasos</h2>
+  <p class="intro">Todo lo que hace el sistema es repetir este ciclo. Si lo entiendes, entiendes el 100%.</p>
+  <div class="timeline">
+    <div class="hito"><h4>1. Ocurre un hecho</h4><p>Compramos 3 laptops por Bs 16.950.</p></div>
+    <div class="hito"><h4>2. Se documenta (Capa 1)</h4><p>Factura F-2026-001 con NIT y CUF válidos.</p></div>
+    <div class="hito"><h4>3. Se procesa (Capa 2)</h4><p>Módulo Compras: orden → recepción → factura.</p></div>
+    <div class="hito"><h4>4. Se contabiliza (Capa 3)</h4><p>Asiento automático: Inventario + IVA → Proveedores.</p></div>
+    <div class="hito"><h4>5. Se resume (Capa 4)</h4><p>Balanza y Balance General.</p></div>
+    <div class="hito"><h4>6. Se declara (Capa 5)</h4><p>Formulario 200 (IVA) y 400 (IT) al SIN.</p></div>
+    <div class="hito"><h4>7. Se analiza</h4><p>Ratios, punto de equilibrio, márgenes.</p></div>
+  </div>
+</section>
+
+<!-- ══════════ 4. PARTIDA DOBLE ══════════ -->
+<section id="partida-doble">
+  <h2>4. La partida doble, con tu propio dinero</h2>
+  <p class="intro">Cada movimiento toca al menos dos cuentas y el DEBE siempre iguala al HABER.
+     Prueba tú: escribe montos y el semáforo te dice si cuadra.</p>
+
+  <div class="card pd">
+    <h3>🎮 Simulador de partida doble</h3>
+    <table>
+      <thead><tr><th>Cuenta</th><th class="derecha">Debe (entra)</th><th class="derecha">Haber (sale)</th></tr></thead>
+      <tbody id="pd-filas">
+        <tr><td><input class="cuenta" value="1.1.06 Inventario"></td><td class="derecha"><input type="number" class="debe" value="15000"></td><td class="derecha"><input type="number" class="haber" value="0"></td></tr>
+        <tr><td><input class="cuenta" value="1.1.07 IVA Crédito Fiscal"></td><td class="derecha"><input type="number" class="debe" value="1950"></td><td class="derecha"><input type="number" class="haber" value="0"></td></tr>
+        <tr><td><input class="cuenta" value="2.1.01 Proveedores"></td><td class="derecha"><input type="number" class="debe" value="0"></td><td class="derecha"><input type="number" class="haber" value="16950"></td></tr>
+      </tbody>
+      <tfoot><tr class="total"><td>TOTALES</td><td class="derecha" id="pd-debe">0</td><td class="derecha" id="pd-haber">0</td></tr></tfoot>
+    </table>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn sec" onclick="agregarFilaPD()">+ Agregar línea</button>
+      <button class="btn" onclick="verificarPD()">Verificar cuadratura</button>
+    </div>
+    <div class="semaforo ok" id="pd-semaforo">✅ Cuadra: Debe = Haber = Bs 16.950,00</div>
+  </div>
+
+  <div class="destacado">📚 <strong>Regla de naturalezas:</strong> Activos y gastos aumentan por el DEBE.
+     Pasivos, patrimonio e ingresos aumentan por el HABER.</div>
+</section>
+
+<!-- ══════════ 5. ARRANQUE ══════════ -->
+<section id="arranque">
+  <h2>5. Arrancar la demo en 3 clics</h2>
+  <div class="grid c3">
+    <div class="card"><h3><span class="num">1</span> Abre</h3><p>Entra a la demo web o abre <code>index.html</code> con Live Server.</p></div>
+    <div class="card"><h3><span class="num">2</span> Siembra</h3><p>Pulsa <strong>"🚀 Cargar datos de ejemplo"</strong>: crea clientes, facturas y 21 asientos.</p></div>
+    <div class="card"><h3><span class="num">3</span> Explora</h3><p>El Dashboard te muestra ventas, deudas y vencimientos de un vistazo.</p></div>
+  </div>
+  <pre><code>// Comandos útiles en consola (F12)
+window.motorContable.obtenerDiario({})                 // ver todos los asientos
+window.moduloImpuestos.conciliarIVA('2026-09')         // conciliar IVA
+window.TablaBonoAntiguedad.obtenerTablaConMontos()     // tabla DS 21060
+localStorage.clear(); location.reload();               // reiniciar la demo</code></pre>
+</section>
+
+<!-- ══════════ 6. MÓDULOS ══════════ -->
+<section id="modulos">
+  <h2>6. Módulo por módulo (acordeones)</h2>
+  <p class="intro">Abre cada módulo para ver qué hace, el concepto que enseña y los datos de prueba listos para copiar.</p>
+
+  <div class="acordeon"><button class="cab">📄 Documentos Fuente (Capa 1) <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <p><strong>Qué hace:</strong> guarda el "papel" digital con los requisitos del SIN (NIT, CUF, montos).</p>
+      <p><strong>Concepto:</strong> sin documento válido no hay crédito fiscal.</p>
+      <pre><code>Tipo: FACTURA_COMPRA   Número: F-2026-010
+NIT: 400888777-5       Razón: Importadora Beni SA
+CUF: Z9Y8X7W6V5U4T3S2R1Q0P9O8N7M6L5K4J3I2H1G0F
+Monto total: 2260</code></pre>
+      <p>👀 Fíjate en <code>FGP-2026-001</code>: está RECHAZADO porque su CUF no coincide. Es un control real del SIN.</p>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">🛒 Compras — ciclo completo <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <p><strong>Flujo:</strong> SOLICITADA → APROBADA → ORDENADA → RECIBIDA → FACTURADA → PAGADA</p>
+      <pre><code>Solicitante: Ana Lucía Justiniano Torrez
+Producto: PAP-001 (Resma Papel)   Cantidad: 30
+Justificación: Reposición mensual</code></pre>
+      <p>Al facturar, el Motor crea solo el asiento <em>Inventario + IVA Crédito → Proveedores</em>.</p>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">💼 Ventas — ciclo completo <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <p><strong>Flujo:</strong> cotización → pedido → despacho → factura → cobro.</p>
+      <pre><code>Cliente: Ganadera Yacuma SRL
+SIL-001 Silla Ergonómica ×2 @ 1.695
+CAR-001 Cartucho HP 664   ×4 @ 169,50</code></pre>
+      <p>El sistema calcula solo: Neto = Total ÷ 1,13 · IVA = Total − Neto · IT = Total × 3%.</p>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">👥 Nómina y RRHH <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <table><thead><tr><th>Empleado</th><th class="derecha">Salario</th><th class="derecha">Antigüedad</th><th class="derecha">Bono DS 21060</th></tr></thead>
+      <tbody>
+        <tr><td>Juan Carlos Menacho</td><td class="derecha">5.000</td><td class="derecha">6 años</td><td class="derecha">825 (11%)</td></tr>
+        <tr><td>Ana Lucía Justiniano</td><td class="derecha">4.500</td><td class="derecha">4 años</td><td class="derecha">375 (5%)</td></tr>
+      </tbody></table>
+      <p>🔑 El bono se calcula sobre <strong>3 × SMN (Bs 7.500)</strong>, no sobre el sueldo real.</p>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">🧾 Impuestos (IVA · IT · IUE) <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <table><thead><tr><th>Impuesto</th><th>Fórmula</th><th class="derecha">Dato demo</th></tr></thead>
+      <tbody>
+        <tr><td>IVA (Form. 200)</td><td>Débito − Crédito</td><td class="derecha">2.112,50 − 941,15 = 1.171,35</td></tr>
+        <tr><td>IT (Form. 400)</td><td>Bruto × 3%</td><td class="derecha">550,88</td></tr>
+        <tr><td>IUE (Form. 500)</td><td>Utilidad × 25%</td><td class="derecha">0 (hay pérdida)</td></tr>
+      </tbody></table>
+      <div class="destacado rojo">⚠️ <strong>Art. 77:</strong> si el IT pagado supera al IUE, el exceso <strong>SE PIERDE</strong>. Pruébalo en la calculadora de abajo.</div>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">📖 Diario · Mayor · Balanza <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <p><strong>Diario:</strong> ¿qué pasó, en orden? · <strong>Mayor:</strong> ¿cuánto se movió cada cuenta? · <strong>Balanza:</strong> ¿todo cuadra?</p>
+      <pre><code>Σ Debe = Σ Haber = Bs 218.365,96  ✓
+Σ Saldos Deudores = Σ Acreedores = Bs 211.867,85  ✓</code></pre>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">📊 Estados Financieros <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <pre><code>ACTIVO   190.829,92 = PASIVO 45.617,85 + PATRIMONIO 145.212,07 ✅
+Patrimonio = Capital 150.000 − Pérdida del ejercicio 4.787,93</code></pre>
+      <p>La pérdida aparece en el patrimonio: es lo que cierra la ecuación contable.</p>
+    </div></div>
+  </div>
+
+  <div class="acordeon"><button class="cab">🏭 Costos y punto de equilibrio <span class="flecha">▼</span></button>
+    <div class="cuerpo"><div class="int">
+      <p>Comparador FIFO / LIFO / Promedio: vender 5 laptops da utilidades de 13.350 / 11.950 / 12.650.
+         La diferencia de IUE entre métodos: <strong>Bs 350</strong>. Por eso NIC 2 prohibió LIFO.</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════ 7. CONCEPTOS ══════════ -->
+<section id="conceptos">
+  <h2>7. Contabilidad boliviana en 6 conceptos</h2>
+  <div class="grid c2">
+    <div class="card"><h3>🧾 IVA incluido en el precio</h3><p>En Bolivia el precio ya trae el IVA.
+      Para separarlo: Neto = Total ÷ 1,13. Ejemplo: Bs 1.130 → Neto 1.000 + IVA 130.</p></div>
+    <div class="card"><h3>💸 IT y su trampa</h3><p>3% sobre el bruto de cada venta. Se descuenta del IUE anual;
+      si lo supera, el exceso se pierde para siempre.</p></div>
+    <div class="card"><h3>🎖️ Bono de antigüedad</h3><p>Tabla DS 21060 sobre 3 × SMN: 5% (2-4 años) hasta 71% (25+).</p></div>
+    <div class="card"><h3>🎄 Aguinaldo</h3><p>1 sueldo en diciembre, provisionado 1/12 cada mes. El segundo aguinaldo solo con PIB &gt; 4,5%.</p></div>
+    <div class="card"><h3>⚖️ Indemnización</h3><p>1 sueldo por año. Aplica <strong>también a la renuncia</strong> (DS 28699), por eso se provisiona siempre.</p></div>
+    <div class="card"><h3>📅 Calendario por NIT</h3><p>El día de vencimiento depende del último dígito: 1→10, 2→11 … 7→16 … 0→19.</p></div>
+  </div>
+</section>
+
+<!-- ══════════ 8. CALCULADORAS ══════════ -->
+<section id="calculadoras">
+  <h2>8. Calculadoras en vivo</h2>
+  <p class="intro">Mueve los números y mira el resultado al instante. Así se siente la contabilidad boliviana.</p>
+  <div class="grid c2">
+
+    <div class="calc"><h3>🧾 Separar IVA de un precio</h3>
+      <label>Monto total (con IVA)</label><input type="number" id="iva-total" value="1130" oninput="calcIVA()">
+      <div class="res">
+        <div class="linea"><span>Neto (sin IVA)</span><strong id="iva-neto">Bs 1.000,00</strong></div>
+        <div class="linea"><span>IVA (13%)</span><strong id="iva-iva">Bs 130,00</strong></div>
+      </div>
+    </div>
+
+    <div class="calc"><h3>💸 Calcular IT (3%)</h3>
+      <label>Venta bruta</label><input type="number" id="it-bruto" value="18362.50" oninput="calcIT()">
+      <div class="res"><div class="grande" id="it-res">Bs 550,88</div>
+      <div class="linea"><span>Este IT se acumula y descuenta del IUE en diciembre</span></div></div>
+    </div>
+
+    <div class="calc"><h3>🎖️ Bono de antigüedad (DS 21060)</h3>
+      <label>Años de servicio</label><input type="number" id="bono-anios" value="6" oninput="calcBono()">
+      <label>SMN vigente (Bs)</label><input type="number" id="bono-smn" value="2500" oninput="calcBono()">
+      <div class="res">
+        <div class="linea"><span>Tramo aplicado</span><strong id="bono-tramo">5-7 años → 11%</strong></div>
+        <div class="linea"><span>Base (3 × SMN)</span><strong id="bono-base">Bs 7.500,00</strong></div>
+        <div class="grande" id="bono-res">Bs 825,00 / mes</div>
+      </div>
+    </div>
+
+    <div class="calc"><h3>⚖️ Compensación IT vs IUE (Art. 77)</h3>
+      <label>Utilidad imponible anual</label><input type="number" id="iue-util" value="25000" oninput="calcIUE()">
+      <label>IT acumulado del año</label><input type="number" id="iue-it" value="550.88" oninput="calcIUE()">
+      <div class="res">
+        <div class="linea"><span>IUE determinado (25%)</span><strong id="iue-det">Bs 6.250,00</strong></div>
+        <div class="linea"><span>IT compensado</span><strong id="iue-comp">Bs 550,88</strong></div>
+        <div class="grande" id="iue-pagar">Bs 5.699,12 a pagar</div>
+        <div id="iue-msg" style="margin-top:6px;font-size:.85rem">📋 Compensación parcial: pagas la diferencia.</div>
+      </div>
+    </div>
+
+    <div class="calc"><h3>🎯 Punto de equilibrio</h3>
+      <label>Costos fijos (Bs)</label><input type="number" id="pe-cf" value="50000" oninput="calcPE()">
+      <label>Precio por unidad</label><input type="number" id="pe-precio" value="1020.14" oninput="calcPE()">
+      <label>Costo variable por unidad</label><input type="number" id="pe-cv" value="750" oninput="calcPE()">
+      <div class="res">
+        <div class="linea"><span>Margen de contribución</span><strong id="pe-mc">Bs 270,14</strong></div>
+        <div class="grande" id="pe-unidades">186 unidades</div>
+        <div class="linea"><span>Equivalente en Bs</span><strong id="pe-bs">Bs 188.821,75</strong></div>
+      </div>
+    </div>
+
+    <div class="calc"><h3>📅 Vencimiento por dígito del NIT</h3>
+      <label>NIT (con guion)</label><input type="text" id="nit-input" value="123456789-7" oninput="calcNit()">
+      <label>Período (AAAA-MM)</label><input type="text" id="nit-periodo" value="2026-09" oninput="calcNit()">
+      <div class="res"><div class="grande" id="nit-res">Vence: 16/10/2026</div>
+      <div class="linea"><span>Último dígito → día del mes siguiente</span><strong id="nit-dig">7 → 16</strong></div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ 9. QUIZ ══════════ -->
+<section id="quiz">
+  <h2>9. Ponte a prueba 🏆</h2>
+  <p class="intro">Cinco preguntas. El sistema te corrige y te explica cada respuesta.</p>
+  <div class="quiz" id="quiz-cont"></div>
+  <button class="btn" onclick="reiniciarQuiz()">🔄 Reiniciar quiz</button>
+  <div style="margin-top:12px"><span id="puntaje"></span></div>
+</section>
+
+<!-- ══════════ 10. DEMO ══════════ -->
+<section id="demo">
+  <h2>10. Guion de demo en 10 minutos</h2>
+  <div class="timeline">
+    <div class="hito"><h4>Min 1 — Dashboard</h4><p>"Así ve el gerente la empresa hoy": ventas, deudas y vencimientos.</p></div>
+    <div class="hito"><h4>Min 2 — Documentos</h4><p>"Todo empieza con un papel válido": NIT y CUF verificados.</p></div>
+    <div class="hito"><h4>Min 4 — Compras</h4><p>Ciclo completo en vivo: solicitud → orden → recepción → pago.</p></div>
+    <div class="hito"><h4>Min 6 — Nómina</h4><p>Planilla + bono DS 21060 + provisión de indemnización.</p></div>
+    <div class="hito"><h4>Min 7 — Impuestos</h4><p>Conciliación de IVA y calendario con semáforo.</p></div>
+    <div class="hito"><h4>Min 8 — Diario y Balanza</h4><p>"21 asientos, partida doble cuadrada al centavo".</p></div>
+    <div class="hito"><h4>Min 9 — Balance</h4><p>La ecuación contable en verde: Activo = Pasivo + Patrimonio.</p></div>
+    <div class="hito"><h4>Min 10 — Costos</h4><p>Comparador FIFO/LIFO/Promedio y punto de equilibrio.</p></div>
+  </div>
+  <div class="destacado verde">🎤 <strong>Frase de cierre:</strong> "Ningún número está escrito a mano:
+     todo es consecuencia de documentos y asientos. Por eso siempre cuadra."</div>
+</section>
+
+<!-- ══════════ 11. GLOSARIO ══════════ -->
+<section id="glosario">
+  <h2>11. Glosario con buscador</h2>
+  <input type="text" id="buscador" placeholder="🔍 Busca un término (ej: CUF, SMN, LCV)…"
+         style="width:100%;padding:10px;border:1px solid var(--borde);border-radius:8px;margin-bottom:12px" oninput="filtrarGlosario()">
+  <table id="tabla-glosario">
+    <thead><tr><th>Término</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td>CUF</td><td>Código Único de Factura: la identidad digital del documento.</td></tr>
+      <tr><td>NIT</td><td>Número de Identificación Tributaria de la empresa o persona.</td></tr>
+      <tr><td>LCV</td><td>Libro de Compras y Ventas: reporte mensual de IVA.</td></tr>
+      <tr><td>SMN</td><td>Salario Mínimo Nacional (Bs 2.500 en la demo).</td></tr>
+      <tr><td>FIFO / PEPS</td><td>Primero en Entrar, Primero en Salir: método de valuación de inventario.</td></tr>
+      <tr><td>NC CTNAC</td><td>Normas de Contabilidad del Consejo Técnico Nacional (no NIIF puras).</td></tr>
+      <tr><td>RC-IVA</td><td>Régimen Complementario al IVA: lo pagan consumidores y empleados.</td></tr>
+      <tr><td>IUE-BE</td><td>IUE para Beneficiarios del Exterior: 12,5% efectivo sobre remesas.</td></tr>
+      <tr><td>Partida doble</td><td>Principio: todo movimiento afecta al menos dos cuentas y siempre cuadra.</td></tr>
+      <tr><td>Punto de equilibrio</td><td>Unidades necesarias para no ganar ni perder.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+</div>
+
+<footer>
+  Guía Interactiva v1.0 · ERP Contable Bolivia · Normativa: Ley 843, Ley 1733, DS 21060, DS 1802, DS 28699, LGT y NC del CTNAC.<br>
+  Prototipo educativo — no usar para contabilidad real.
+</footer>
+
+<script>
+/* ══════════ UTILIDADES ══════════ */
+const bs = n => 'Bs ' + (Number(n)||0).toLocaleString('es-BO',{minimumFractionDigits:2,maximumFractionDigits:2});
+const r2 = n => Math.round((Number(n)||0)*100)/100;
+
+/* ══════════ PROGRESO DE LECTURA ══════════ */
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('progreso').style.width = pct + '%';
+  resaltarNav();
+});
+
+/* ══════════ SCROLL-SPY DEL NAV ══════════ */
+function resaltarNav(){
+  const secciones = document.querySelectorAll('section[id]');
+  let actual = '';
+  secciones.forEach(s => { if (window.scrollY >= s.offsetTop - 120) actual = s.id; });
+  document.querySelectorAll('nav.lateral a').forEach(a => {
+    a.classList.toggle('activo', a.getAttribute('href') === '#' + actual);
+  });
+}
+
+/* ══════════ ACORDEONES ══════════ */
+document.querySelectorAll('.acordeon .cab').forEach(cab => {
+  cab.addEventListener('click', () => {
+    const ac = cab.parentElement;
+    const cuerpo = ac.querySelector('.cuerpo');
+    const abierto = ac.classList.toggle('abierto');
+    cuerpo.style.maxHeight = abierto ? cuerpo.scrollHeight + 'px' : '0';
+  });
+});
+
+/* ══════════ SIMULADOR PARTIDA DOBLE ══════════ */
+function sumarPD(){
+  let d=0,h=0;
+  document.querySelectorAll('#pd-filas tr').forEach(tr=>{
+    d += Number(tr.querySelector('.debe').value)||0;
+    h += Number(tr.querySelector('.haber').value)||0;
+  });
+  document.getElementById('pd-debe').textContent = bs(d);
+  document.getElementById('pd-haber').textContent = bs(h);
+  return {d,h};
+}
+function verificarPD(){
+  const {d,h} = sumarPD();
+  const sem = document.getElementById('pd-semaforo');
+  if (Math.abs(d-h) < 0.01){
+    sem.className='semaforo ok';
+    sem.textContent = '✅ Cuadra: Debe = Haber = ' + bs(d);
+  } else {
+    sem.className='semaforo mal';
+    sem.textContent = '❌ No cuadra: diferencia de ' + bs(Math.abs(d-h)) + '. Ajusta una línea.';
+  }
+}
+function agregarFilaPD(){
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input class="cuenta" value="Nueva cuenta"></td>'+
+    '<td class="derecha"><input type="number" class="debe" value="0"></td>'+
+    '<td class="derecha"><input type="number" class="haber" value="0"></td>';
+  document.getElementById('pd-filas').appendChild(tr);
+  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input', sumarPD));
+  sumarPD();
+}
+document.querySelectorAll('#pd-filas input').forEach(i=>i.addEventListener('input', sumarPD));
+sumarPD();
+
+/* ══════════ CALCULADORAS ══════════ */
+function calcIVA(){
+  const t = Number(document.getElementById('iva-total').value)||0;
+  const neto = r2(t/1.13);
+  document.getElementById('iva-neto').textContent = bs(neto);
+  document.getElementById('iva-iva').textContent = bs(r2(t-neto));
+}
+function calcIT(){
+  const b = Number(document.getElementById('it-bruto').value)||0;
+  document.getElementById('it-res').textContent = bs(r2(b*0.03));
+}
+function calcBono(){
+  const anios = Number(document.getElementById('bono-anios').value)||0;
+  const smn = Number(document.getElementById('bono-smn').value)||0;
+  const tramos = [[2,4,5],[5,7,11],[8,10,19],[11,14,29],[15,19,41],[20,24,55],[25,999,71]];
+  let pct=0, nombre='Menos de 2 años: no aplica';
+  for (const [min,max,p] of tramos){ if (anios>=min && anios<=max){ pct=p; nombre=min+'-'+(max>100?'más':max)+' años → '+p+'%'; break; } }
+  const base = smn*3;
+  document.getElementById('bono-tramo').textContent = nombre;
+  document.getElementById('bono-base').textContent = bs(base);
+  document.getElementById('bono-res').textContent = bs(r2(base*pct/100)) + ' / mes';
+}
+function calcIUE(){
+  const util = Number(document.getElementById('iue-util').value)||0;
+  const it = Number(document.getElementById('iue-it').value)||0;
+  const iue = util>0 ? r2(util*0.25) : 0;
+  let comp=0, pagar=0, msg='';
+  if (iue<=0){ msg='⚠️ Hay pérdida: no se paga IUE y todo el IT se pierde.'; }
+  else if (it < iue){ comp=it; pagar=r2(iue-it); msg='📋 Compensación parcial: pagas la diferencia.'; }
+  else { comp=iue; pagar=0; msg='🚨 El IT supera al IUE: el exceso de '+bs(r2(it-iue))+' SE PIERDE (Art. 77).'; }
+  document.getElementById('iue-det').textContent = bs(iue);
+  document.getElementById('iue-comp').textContent = bs(comp);
+  document.getElementById('iue-pagar').textContent = bs(pagar) + (pagar>0?' a pagar':' — no pagas');
+  document.getElementById('iue-msg').textContent = msg;
+}
+function calcPE(){
+  const cf = Number(document.getElementById('pe-cf').value)||0;
+  const p = Number(document.getElementById('pe-precio').value)||0;
+  const cv = Number(document.getElementById('pe-cv').value)||0;
+  const mc = r2(p-cv);
+  document.getElementById('pe-mc').textContent = bs(mc);
+  if (mc>0){
+    const u = Math.ceil(cf/mc);
+    const pct = mc/p;
+    document.getElementById('pe-unidades').textContent = u + ' unidades';
+    document.getElementById('pe-bs').textContent = bs(r2(cf/pct));
+  } else {
+    document.getElementById('pe-unidades').textContent = '∞ (margen negativo)';
+    document.getElementById('pe-bs').textContent = '—';
+  }
+}
+function calcNit(){
+  const nit = document.getElementById('nit-input').value.replace(/[-\s.]/g,'');
+  const periodo = document.getElementById('nit-periodo').value;
+  const dias = {1:10,2:11,3:12,4:13,5:14,6:15,7:16,8:17,9:18,0:19};
+  if (!/^\d+$/.test(nit) || !/^\d{4}-\d{2}$/.test(periodo)){ document.getElementById('nit-res').textContent='NIT o período inválido'; return; }
+  const dig = parseInt(nit.slice(-1),10);
+  const [a,m] = periodo.split('-').map(Number);
+  let ma=m+1, aa=a; if (ma>12){ma=1;aa++;}
+  const f = aa+'-'+String(ma).padStart(2,'0')+'-'+String(dias[dig]).padStart(2,'0');
+  document.getElementById('nit-dig').textContent = dig+' → '+dias[dig];
+  document.getElementById('nit-res').textContent = 'Vence: '+f.split('-').reverse().join('/');
+}
+calcIVA(); calcIT(); calcBono(); calcIUE(); calcPE(); calcNit();
+
+/* ══════════ QUIZ ══════════ */
+const PREGUNTAS = [
+  { q:'En Bolivia, una factura de Bs 1.130 tiene un IVA de…',
+    o:['Bs 130','Bs 146,90','Bs 113'], c:0,
+    e:'El IVA está INCLUIDO en el precio: Neto = 1.130 ÷ 1,13 = 1.000; IVA = 1.130 − 1.000 = 130.' },
+  { q:'El IT se calcula sobre…',
+    o:['El monto neto','El monto bruto (con IVA)','La utilidad'], c:1,
+    e:'Art. 72 Ley 843: el IT es 3% sobre el monto BRUTO de cada transacción.' },
+  { q:'Si el IT pagado en el año supera al IUE determinado, el exceso…',
+    o:['Se devuelve al contribuyente','Se arrastra al año siguiente','Se pierde'], c:2,
+    e:'Art. 77 Ley 843: el exceso de IT no se devuelve ni se arrastra. SE PIERDE.' },
+  { q:'El bono de antigüedad se calcula sobre…',
+    o:['El sueldo real del empleado','3 veces el SMN','El total ganado con bonos'], c:1,
+    e:'DS 21060: la base es 3 × SMN (Bs 7.500 con SMN de 2.500), no el sueldo real.' },
+  { q:'La indemnización por tiempo de servicios aplica…',
+    o:['Solo en despido injustificado','También en renuncia voluntaria','Solo con más de 10 años'], c:1,
+    e:'DS 28699: aplica también a la renuncia voluntaria. Por eso se provisiona mensualmente.' }
+];
+let aciertos = 0, respondidas = 0;
+function pintarQuiz(){
+  aciertos=0; respondidas=0;
+  document.getElementById('puntaje').textContent='';
+  const cont = document.getElementById('quiz-cont');
+  cont.innerHTML = PREGUNTAS.map((p,i)=>`
+    <div class="pregunta" data-i="${i}">
+      <strong>${i+1}. ${p.q}</strong>
+      <div class="opciones">
+        ${p.o.map((op,j)=>`<button data-j="${j}">${op}</button>`).join('')}
+      </div>
+      <div class="explicacion">${p.e}</div>
+    </div>`).join('');
+  cont.querySelectorAll('.pregunta').forEach(preg=>{
+    const i = Number(preg.dataset.i);
+    preg.querySelectorAll('.opciones button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        if (preg.classList.contains('hecha')) return;
+        preg.classList.add('hecha');
+        respondidas++;
+        const j = Number(btn.dataset.j);
+        if (j === PREGUNTAS[i].c){ btn.classList.add('correcta'); aciertos++; }
+        else {
+          btn.classList.add('incorrecta');
+          preg.querySelectorAll('.opciones button')[PREGUNTAS[i].c].classList.add('correcta');
+        }
+        preg.querySelector('.explicacion').style.display='block';
+        if (respondidas === PREGUNTAS.length){
+          const nota = aciertos===PREGUNTAS.length ? '🏆 ¡Perfecto! Dominas la contabilidad boliviana.'
+            : aciertos>=3 ? '💪 Muy bien. Repasa las que fallaste.'
+            : '📚 Vuelve a leer las secciones 7 y 8 y reintenta.';
+          document.getElementById('puntaje').textContent =
+            'Puntaje: '+aciertos+'/'+PREGUNTAS.length+' — '+nota;
+        }
+      });
+    });
+  });
+}
+function reiniciarQuiz(){ pintarQuiz(); }
+pintarQuiz();
+
+/* ══════════ BUSCADOR DE GLOSARIO ══════════ */
+function filtrarGlosario(){
+  const q = document.getElementById('buscador').value.toLowerCase();
+  document.querySelectorAll('#tabla-glosario tbody tr').forEach(tr=>{
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
